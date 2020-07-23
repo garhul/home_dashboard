@@ -2,7 +2,7 @@ import React from 'react';
 // import Nav from 'react-bootstrap/Nav';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-import './App.css';
+import './app.css';
 import { DevicesList, DeviceControls } from './components/devicesList';
 
 /** TODO:: to be replaced with a websockets enabled store */
@@ -23,7 +23,7 @@ const devices = [
   },
   {
     "name": "Window lights",
-    "topic": "window/#",
+    "topic": "home/living/window/",
     "ip": "192.168.0.221",
     "chipId": "aa3ff34",
     "firmwareVersion": "1.0.0"

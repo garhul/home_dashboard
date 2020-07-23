@@ -79,13 +79,19 @@ export class CMDSliider extends React.Component {
 
   clickHandler(ev) {
     ev.preventDefault();
+
+    console.log(ev.currentTarget.offsetLeft);
+    console.log(ev.clientX);
+    console.log(ev.currentTarget.offsetWidth);
+
     const percentil = (ev.clientX - ev.currentTarget.offsetLeft) / ev.currentTarget.offsetWidth;
     console.log(`${percentil * 100} %`);
-    this.setState({ value: (percentil * 100) });
+    this.setState({ value: Math.floor(percentil * 100)});
 
+    console.log(this.state);
     this.props.update({
-      cmd: this.props.cmd, payload:
-        ('transform' in this.props) ? this.props.transform(this.state.value) : this.state.value
+      cmd: this.props.cmd,
+      payload: ('transform' in this.props) ? this.props.transform(this.state.value).toString() : this.state.value.toString()
     });
 
   }
@@ -96,8 +102,5 @@ export class CMDSliider extends React.Component {
 
       <ProgressBar striped variant="dark" now={this.state.value} />
     </div>
-
   }
-
-
 }
