@@ -1,6 +1,5 @@
 const { inspect } = require('util');
 const { resolve } = require('path');
-const devices = require('./devices');
 
 const data = {
   path: resolve(__dirname, '../data'),
@@ -17,11 +16,11 @@ const mqtt = {
 };
 
 const cfg = {
-  devices,
+  baseScanAddress: '192.168.0.',
   mqtt,
   ws,
   data,
 };
 
-global.logger.i(`Config results ${inspect(cfg)}`);
+// global.logger.i(`Config results ${inspect(cfg)}`);
 module.exports = cfg;
