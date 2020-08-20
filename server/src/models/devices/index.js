@@ -1,8 +1,10 @@
 /* eslint-disable max-classes-per-file */
 const fetch = require('node-fetch');
 const { inspect } = require('util');
-const ObservableList = require('./observableList');
-const { wait } = require('../utils');
+const ObservableList = require('../observableList');
+const { wait } = require('../../utils');
+const ws = require('../../services/ws');
+const evs = require('../../services/ws/events');
 
 const { logger, config } = global;
 
@@ -14,12 +16,17 @@ class Devices {
   }
 
   update(list) {
-    console.log('Devices list updated');
-    console.log(inspect(list));
+    ws.broadcast(evs.DEVICE_UPDATE, list);
+    logger.i('Device list updatd');
+    logger.d(inspect(list));
   }
 
   get(id) {
     return this.data.find((device) => id === device.device_id);
+  }
+
+  getAll() {
+    return this.data;
   }
 
   async getInfo(ip) {

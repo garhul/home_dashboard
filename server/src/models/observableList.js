@@ -17,6 +17,6 @@ module.exports = class ObservableList {
   }
 
   addItems(items) {
-    this.data = [...this.data, ...items];
+    this.data.push(items);
   }
 };

@@ -1,6 +1,6 @@
 const WebSocket = require('ws');
 const evs = require('./events');
-const { devices } = require('../../model');
+const { devices } = require('../../models');
 
 const { config, logger } = global;
 const mqttClient = require('../mqtt');
@@ -16,6 +16,12 @@ const handlers = [{
   },
 },
 {
+  ev: evs.SENSOR_UPDATE,
+  handler: () => {
+    logger.i('Rquested sensor update');
+  },
+},
+{
   ev: evs.DEVICE_SCAN,
   handler: () => {
     devices.scan();
@@ -24,14 +30,10 @@ const handlers = [{
 {
   ev: evs.DEVICE_CMD,
   handler: (message) => {
-    console.dir(message);
+    logger.i(message);
     mqttClient.publish('');
   },
 }];
-
-// devices.onChange((d) => {
-//   exports.broadcast(evs.DEVICE_UPDATE, d);
-// });
 
 wss.on('connection', (ws) => {
   ws.on('message', (message) => {
@@ -45,6 +47,8 @@ wss.on('connection', (ws) => {
 
     hndlr.handler(data, ws);
   });
+
+  ws.send(JSON.stringify({ ev: evs.DEVICE_UPDATE, data: devices.getAll() }));
 });
 
 exports.broadcast = (ev, data) => {

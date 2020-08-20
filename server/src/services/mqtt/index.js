@@ -1,8 +1,8 @@
-const mqtt = require('mqtt');
-
 const { logger, config } = global;
+const mqtt = require('mqtt');
+const msgHandler = require('./handler');
+
 const mqttClient = mqtt.connect(config.mqtt.broker);
-const msgHandler = require('./handlers');
 
 mqttClient.on('connect', () => {
   logger.i(`Connected to mosquitto broker on ${config.mqtt.broker}`);
@@ -20,7 +20,7 @@ mqttClient.on('connect', () => {
       logger.e(err);
       throw err;
     }
-    logger.i(`Subscribbed to home topic ${config.mqtt.homeTopic}`);
+    logger.i(`Subscribbed to home sensors topic ${config.mqtt.homeTopic}`);
   });
 
   mqttClient.on('error', (err) => {
@@ -28,7 +28,7 @@ mqttClient.on('connect', () => {
   });
 
   mqttClient.on('message', (topic, message) => {
-    logger.i(`Received |${message.toString()}| on topic:|${topic}|`);
+    logger.d(`Received |${message.toString()}| on topic:|${topic}|`);
     msgHandler(topic, message);
   });
 });
