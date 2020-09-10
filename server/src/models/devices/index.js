@@ -5,8 +5,8 @@ const ObservableList = require('../observableList');
 const { wait } = require('../../utils');
 const ws = require('../../services/ws');
 const evs = require('../../services/ws/events');
-
-const { logger, config } = global;
+const logger = require('../../services/logger');
+const config = require('../../../config');
 
 class Devices {
   constructor() {
@@ -36,7 +36,9 @@ class Devices {
       const obj = [{ ip, info: await res.json() }];
       this.data.addItems(obj);
     } catch (err) {
-      if (err.code !== 'EHOSTUNREACH' && err.code !== 'ECONNREFUSED') { logger.w(err); }
+      if (err.code !== 'EHOSTUNREACH' && err.code !== 'ECONNREFUSED') {
+        logger.w(err);
+      }
     }
   }
 
@@ -44,8 +46,12 @@ class Devices {
     const { baseScanAddress } = config;
     for (let i = 1; i < 255; i++) {
       this.getInfo(`${baseScanAddress}${i}`);
-      if ((i % this.scanBatchSize) === 0) {
-        logger.i(`Scanning ips in range (${baseScanAddress}${i - this.scanBatchSize}, ${baseScanAddress}${i})`);
+      if (i % this.scanBatchSize === 0) {
+        logger.i(
+          `Scanning ips in range (${baseScanAddress}${
+            i - this.scanBatchSize
+          }, ${baseScanAddress}${i})`,
+        );
         await wait(this.scanTimeout);
       }
     }

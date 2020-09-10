@@ -1,8 +1,6 @@
-global.config = Object.freeze(require('../config'));
-global.logger = Object.freeze(require('simple-fancy-logger')({ logString: '[TSTAMP] [LEVEL] [TEXT]' }));
-
 const ws = require('./services/ws');
 const mqtt = require('./services/mqtt');
+const logger = require('./services/logger');
 
 const { devices, sensors } = require('./models');
 
@@ -10,11 +8,11 @@ const { devices, sensors } = require('./models');
 // devices.scan();
 
 process.on('beforeExit', () => {
-  global.logger.i('closing connections...');
+  logger.i('closing connections...');
   mqtt.end();
   ws.end();
 });
 
 process.on('uncaughtExceptionMonitor', (ex) => {
-  global.logger.e(ex.message);
+  logger.e(ex.message);
 });

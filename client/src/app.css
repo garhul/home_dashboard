@@ -4,44 +4,53 @@ body {
   font-size: 14pt;
   font-family: Helvetica;
   background-color: #232324;
-  color:#A0A0A0;
+  color: #a0a0a0;
 }
 
 #AppContainer {
- display:flex;
- flex-direction:row;
- align-items:center;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
-#DevicesList {
-  width:30%;
-  margin-right:2em;  
-  background-color: #282c34;
+#Widgets {
+  width: 80%;
+  margin: 0 auto;
+
   min-height: 100vh;
   /* font-size: calc(10px + 2vmin); */
   color: white;
 }
 
+.widget {
+  width: 80%;
+  background-color: #282c34;
+  margin: 1em auto;
+  padding: 1em;
+  border-radius: 0.5em;
+  min-height: 8em;
+  border: 1px solid rgb(93, 93, 100);
+}
+
 #DevicesList > h3 {
-  margin-top:1em;
-  margin-bottom:2em;
+  margin-top: 1em;
+  margin-bottom: 2em;
 }
 
 #DeviceControl {
-  width:60%;
-  padding:1em;
+  width: 60%;
+  padding: 1em;
   flex-grow: 2;
 }
 
-
-.device-item {  
+.device-item {
   background-color: #202022;
-  cursor:pointer;
-  padding-left:2em;
-  margin-bottom:1em;
-  width:100%;
+  cursor: pointer;
+  padding-left: 2em;
+  margin-bottom: 1em;
+  width: 100%;
 }
 
-.device-item:hover {  
-  filter:brightness(120%);
+.device-item:hover {
+  filter: brightness(120%);
 }

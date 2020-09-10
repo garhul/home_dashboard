@@ -1,36 +1,18 @@
-const defaults = {
-  dbFile: null,
-  depth: 24,
-  validator: () => true,
-};
-
 class TimeSeries {
-  constructor(options) {
-    this.opts = Object.freeze(Object.assign(defaults, options));
+  constructor(depth = 1440) {
     this.data = [];
     this.cursor = 0;
-    this.depth = this.opts.depth;
-    this.avg = 0;
-    this.min = 0;
-    this.max = 0;
+    this.depth = depth;
   }
 
-  datapointValid(datapoint) {
-    return this.validator(datapoint);
-  }
-
-  addDataPoint(value, ts = Date.now()) {
-    if (this.data.length === this.depth) {
-      this.cursor = (this.cursor + 1) % this.depth;
-      this.data[this.cursor] = { ts, value };
-
-      this.avg = (this.avg + value) / 2;
-      if (value < this.min) {
-        this.min = value;
-      } else if (value > this.max) {
-        this.max = value;
-      }
+  addDataPoint(value) {
+    const ts = ('ts' in value) ? value.ts : Date.now();
+    if (this.cursor === this.depth) {
+      this.data.shift();
+    } else {
+      this.cursor++;
     }
+    this.data[this.cursor] = [ts, value];
   }
 
   get last() {

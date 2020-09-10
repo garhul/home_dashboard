@@ -1,8 +1,8 @@
 /* eslint-disable security/detect-object-injection */
-const { config, logger } = global;
-const fs = require('fs');
+const config = require('../../../config');
+const logger = require('../logger');
 const { devices, sensors } = require('../../models');
-const DB = require('../rrd');
+const ws = require('../ws');
 
 function announceHndlr(_topic, payload) {
   const data = payload.toString().split('|');
@@ -14,57 +14,35 @@ function announceHndlr(_topic, payload) {
 }
 
 function sensorHndlr(topic, payload) {
-  logger.i(`New datapoint received for ${topic} data`);
+  logger.d(`New datapoint received for ${topic} data`);
   const data = JSON.parse(payload.toString());
-  // Key should be "living " for topic home/living/sensor
-  const key = `${topic.split('/')[1]}.${data.deviceInfo.device_id}`;
-  const dataPoint = JSON.stringify({
-    dht_temp: data.dht_t, // temperature in celcius
-    dht_humidity: data.dht_h, // humidity relative
-    bmp280_pressure: data.bmp280_p / 100, // pressure in hPA
-    bmp280_temp: data.bmp280_t,
-    bat_voltage: data.vbat, // Battery voltage
-  });
+  const dataPoint = {
+    ts: Date.now(),
+    dht_temp: parseFloat(data.dht_t).toFixed(2), // temperature in celcius
+    dht_humidity: parseFloat(data.dht_h).toFixed(2), // humidity relative
+    bmp280_pressure: (data.bmp280_p / 100).toFixed(2), // pressure in hPA
+    bmp280_temp: parseFloat(data.bmp280_t).toFixed(2),
+    bat_voltage: parseFloat(data.vbat).toFixed(2), // Battery voltage
+  };
 
-  if (!(sensors.has(key)) {
-    sensors.add(key, {
-      device_id: data.deviceInfo.device_id,
-      description: data.deviceInfo.description,
-      topic
-    });
-  } else {
-    const sensor = sensor.get(key);
-    sensor.addDataPoint()
-  }
-
-
-
-  Object.keys(dataPoint)
-    .forEach(field => {
-      const key = `${keyBase}.${field}`;
-      const table = (DB.hasTable(key)) ? DB.getTable(key) : DB.addTable(key, data.deviceInfo.description);
-      table.timeSeries.addDataPoint(dataPoint[field]);
-    });
-
-
-  sensors.a
-  fs.writeFileSync('sensorData', `${dataPoint}\n`, { flag: 'a+' });
+  sensors.addData(dataPoint, data.deviceInfo);
+  ws.broadcast(ws.evs.SENSOR_UPDATE, { dataPoint, deviceInfo: data.deviceInfo });
 }
 
 /** HANDLERS LOADING LOGIC  */
-
 const handlers = [
   {
     topic: config.mqtt.announceTopic,
     handler: announceHndlr,
   },
   {
-    topic: 'home/living/sensor',
+    topic: 'home/living/weatherst',
     handler: sensorHndlr,
-  }];
+  },
+];
 
 module.exports = (topic, payload) => {
-  const hndlr = handlers.find((h) => (h.topic === topic));
+  const hndlr = handlers.find((h) => h.topic === topic);
 
   if (hndlr === undefined) {
     logger.e(`No handler registered for topic ${topic}`);

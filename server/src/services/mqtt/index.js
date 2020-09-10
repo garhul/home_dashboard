@@ -1,5 +1,6 @@
-const { logger, config } = global;
 const mqtt = require('mqtt');
+const config = require('../../../config');
+const logger = require('../logger');
 const msgHandler = require('./handler');
 
 const mqttClient = mqtt.connect(config.mqtt.broker);
