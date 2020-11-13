@@ -7,7 +7,7 @@ class Widgets {
     this.widgets = [];
 
     this.bus.on('sensors.list', (data) => {      
-      data.map((item) => {
+      data.forEach((item) => {
         this.add({
           type: 'sensors',
           name: item.label,
@@ -15,6 +15,17 @@ class Widgets {
           device_id: item.device_id,
           properties: item.props
         })
+      });
+    });
+
+    this.bus.on('devices.update', (data) => {      
+      data.forEach((item) => {
+        this.add({
+          type: 'device',
+          name: item.human_name,
+          ip: item.ip,
+          device_id: item.device_id
+        });
       });
     });
 

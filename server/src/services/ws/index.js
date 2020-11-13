@@ -1,7 +1,7 @@
 const WebSocket = require('ws');
+const { inspect } = require('util');
 const evs = require('./events');
 const { devices, sensors } = require('../../models');
-
 const config = require('../../../config');
 const logger = require('../logger');
 const mqttClient = require('../mqtt');
@@ -20,13 +20,13 @@ const handlers = [
   {
     ev: evs.SENSORS_LIST,
     handler: (msg, client) => {
-      logger.i('Requested sensor list');
-      console.dir(sensors.getList());
+      logger.i('Requested sensor list: ');
+      logger.i(inspect(sensors.getList()));
       send(client, { ev: evs.SENSORS_LIST, data: sensors.getList() });
     },
   },
   {
-    ev: evs.DEVICE_GET,
+    ev: evs.DEVICE_LIST,
     handler: (message, client) => {
       send(client, { ev: evs.DEVICE_UPDATE, data: devices.getAll() });
     },
@@ -68,7 +68,7 @@ wss.on('connection', (ws) => {
   ws.send(JSON.stringify({ ev: evs.DEVICE_UPDATE, data: devices.getAll() }));
 });
 
-exports.broadcast = (ev, data) => {
+const broadcast = (ev, data) => {
   const msg = JSON.stringify({ ev, data });
   wss.clients.forEach((client) => {
     if (client.readyState === WebSocket.OPEN) {
@@ -77,9 +77,16 @@ exports.broadcast = (ev, data) => {
   });
 };
 
+devices.on('change', () => {
+  broadcast(evs.DEVICE_UPDATE, devices.getAll());
+});
+
 exports.end = () => {
   logger.i('Closing websocket connections');
   wss.close();
 };
 
 exports.evs = evs;
+exports.broadcast = broadcast;
+
+// console.log(exports);

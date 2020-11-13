@@ -20,21 +20,21 @@ class App extends React.Component {
   onSelected(widget) {
     console.log(widget);
 
-    // const index = this.state.selected.findIndex(el => el.ip === device.ip);
-    // if (index === -1) {
-    //   this.state.selected.push(widget);
-    // } else {
-    //   this.state.selected.splice(index, 1);
-    // }    
+    const index = this.state.selected.findIndex(el => el.ip === widget.ip);
+    if (index === -1) {
+      this.state.selected.push(widget);
+    } else {
+      this.state.selected.splice(index, 1);
+    }    
 
-    // this.setState({ ...this.state });
+    this.setState({ ...this.state });
 
   }
 
   render() {    
     return (              
       <div id="AppContainer">
-        <WidgetList onSelected={(wg) => this.onSelected(wg)} widgets={Widgets.getAll()}></WidgetList>
+        <WidgetList onSelected={(wg) => this.onSelected(wg)} selected widgets={Widgets.getAll()}></WidgetList>
       </div >
     );
   }

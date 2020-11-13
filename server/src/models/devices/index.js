@@ -1,32 +1,34 @@
 /* eslint-disable max-classes-per-file */
+const { EventEmitter } = require('events');
 const fetch = require('node-fetch');
 const { inspect } = require('util');
 const ObservableList = require('../observableList');
 const { wait } = require('../../utils');
-const ws = require('../../services/ws');
-const evs = require('../../services/ws/events');
 const logger = require('../../services/logger');
 const config = require('../../../config');
+const mockData = require('./mock');
 
-class Devices {
-  constructor() {
-    this.data = new ObservableList((list) => this.update(list));
+class Devices extends EventEmitter {
+  constructor(data = null) {
+    super();
+    this.devicesList = new ObservableList((list) => this.update(list));
+    if (data !== null) this.devicesList.set(data);
     this.scanBatchSize = 24;
     this.scanTimeout = 2000;
   }
 
   update(list) {
-    ws.broadcast(evs.DEVICE_UPDATE, list);
+    this.emit('change');
     logger.i('Device list updatd');
     logger.d(inspect(list));
   }
 
   get(id) {
-    return this.data.find((device) => id === device.device_id);
+    return this.devicesList.find((device) => id === device.device_id);
   }
 
   getAll() {
-    return this.data;
+    return this.devicesList.data;
   }
 
   async getInfo(ip) {
@@ -34,7 +36,7 @@ class Devices {
       const addr = `http://${ip}/info`;
       const res = await fetch(addr);
       const obj = [{ ip, info: await res.json() }];
-      this.data.addItems(obj);
+      this.devicesList.addItems(obj);
     } catch (err) {
       if (err.code !== 'EHOSTUNREACH' && err.code !== 'ECONNREFUSED') {
         logger.w(err);
@@ -58,4 +60,11 @@ class Devices {
   }
 }
 
-module.exports = new Devices();
+const useMock = true;
+
+if (useMock) {
+  logger.i('Using mock devices');
+  module.exports = new Devices(mockData);
+} else {
+  module.exports = new Devices();
+}
