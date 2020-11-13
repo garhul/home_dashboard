@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "mqtt": "^4.1.0",
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^2.6.1",
     "simple-fancy-logger": "^1.2.2",
     "ws": "^7.3.1"
   }
