@@ -230,7 +230,9 @@ export class Widget extends React.Component {
       <div
         className="widget"
         onClick={() => {
+          this.className = "selected"
           this.props.onSelected(this.props);
+          this.setState({});
         }}
       >
         <WidgetTitle {...this.props} />
