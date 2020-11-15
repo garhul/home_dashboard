@@ -4,6 +4,7 @@ class Bus {
   constructor(socket) {
     this.socket = socket;
     this.listeners = [];
+    this.of = [];
     
     this.socket.addEventListener('open', (event) => {
       console.info('Socket connected')
@@ -19,10 +20,22 @@ class Bus {
     this.socket.addEventListener('error', (err) => {
       console.error(err);
     });
+
+    setInterval( () => {
+      if (this.of.length !== 0) {
+        const cmd = this.of.shift();
+        this.emit(cmd.ev, cmd.payload);
+      }
+    }, 100);
+
   }
 
   emit(ev, payload) {
-    this.socket.send(JSON.stringify({ev, payload}));
+    if (!this.socket.isConnected) {
+      // this.of.push({ ev, payload });
+    } else {    
+      this.socket.send(JSON.stringify({ev, payload}));
+    }
   }
 
   handleEvent(ev, data) {

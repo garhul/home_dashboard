@@ -1,7 +1,7 @@
 const WebSocket = require('ws');
 const { inspect } = require('util');
 const evs = require('./events');
-const { devices, sensors } = require('../../models');
+const { devices, sensors, groups } = require('../../models');
 const config = require('../../../config');
 const logger = require('../logger');
 const mqttClient = require('../mqtt');
@@ -18,16 +18,26 @@ function send(client, data) {
 
 const handlers = [
   {
+    ev: evs.GROUPS_LIST,
+    handler: (msg, client) => {
+      logger.i('Requested groups list: ');
+      logger.d(inspect(groups.getList()));
+      send(client, { ev: evs.GROUPS_LIST, data: groups.getList() });
+    },
+  },
+  {
     ev: evs.SENSORS_LIST,
     handler: (msg, client) => {
       logger.i('Requested sensor list: ');
-      logger.i(inspect(sensors.getList()));
+      logger.d(inspect(sensors.getList()));
       send(client, { ev: evs.SENSORS_LIST, data: sensors.getList() });
     },
   },
   {
     ev: evs.DEVICE_LIST,
     handler: (message, client) => {
+      logger.i('Requested device list: ');
+      logger.d(inspect(sensors.getList()));
       send(client, { ev: evs.DEVICE_UPDATE, data: devices.getAll() });
     },
   },

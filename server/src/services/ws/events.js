@@ -8,4 +8,7 @@ module.exports = {
   SENSORS_UPDATE: 'sensors.update',
   SENSORS_FETCH_DATA: 'sensors.fetch',
   SENSORS_LIST: 'sensors.list',
+
+  GROUPS_LIST: 'groups.list',
+  GROUPS_UPDATE: 'groups.update',
 };

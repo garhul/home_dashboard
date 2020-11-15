@@ -1,6 +1,8 @@
 const { resolve } = require('path');
 
 const cfg = {
+  scanAtStartup: false,
+  useMocs: true,
   wsPort: process.env.WS_PORT || 3030,
   baseScanAddress: '192.168.0.',
   mqtt: {

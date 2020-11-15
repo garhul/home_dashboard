@@ -46,6 +46,18 @@ body {
   flex-grow: 2;
 }
 
+.sliderContainer {
+  padding:1em;
+}
+
+.sliderContainer > span {  
+  text-transform: capitalize;
+  font-weight: bold;
+  margin-bottom:.4em;
+  display: block;
+  color:#BBB
+}
+
 .device-item {
   background-color: #202022;
   cursor: pointer;
