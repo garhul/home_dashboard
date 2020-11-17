@@ -10,7 +10,7 @@ export default function NavBar(props) {
     setLocation(loc);
   },[props]);
 
-  useEffect(() => { changeLocation(window.location.hash || '#home') }, [changeLocation]);
+  useEffect(() => { changeLocation(window.location.hash || '#home') });
 
   return (
     <Navbar bg="dark" expand="lg">

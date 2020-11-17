@@ -5,8 +5,8 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Launch Program",
-      "program": "${workspaceFolder}/server/app.js",
+      "name": "Launch Server",
+      "program": "${workspaceFolder}/server/src/app.js",
       "request": "launch",
       "skipFiles": [
         "<node_internals>/**"

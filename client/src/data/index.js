@@ -11,8 +11,7 @@ class Bus {
       this.handleEvent('open');
     });
     
-    this.socket.addEventListener('message', (event) => {
-      console.info('Message from server ', event.data);  
+    this.socket.addEventListener('message', (event) => {      
       const {ev, data} = JSON.parse(event.data);
       this.handleEvent(ev, data);
     });
@@ -20,26 +19,18 @@ class Bus {
     this.socket.addEventListener('error', (err) => {
       console.error(err);
     });
-
-    setInterval( () => {
-      if (this.of.length !== 0) {
-        const cmd = this.of.shift();
-        this.emit(cmd.ev, cmd.payload);
-      }
-    }, 100);
-
   }
 
-  emit(ev, payload) {
-    if (!this.socket.isConnected) {
-      // this.of.push({ ev, payload });
-    } else {    
-      this.socket.send(JSON.stringify({ev, payload}));
+  emit(ev, payload) {    
+    if (this.socket.readyState === 1) {      
+      this.socket.send(JSON.stringify({ev, payload}));    
+    } else {
+      console.log('not ready yet', ev, payload);
     }
   }
 
   handleEvent(ev, data) {
-    this.listeners.map(val => {      
+    this.listeners.forEach(val => {      
       if (val.ev === ev) {
         val.fn.call(this, data);
       }
@@ -49,11 +40,14 @@ class Bus {
   on(ev, fn) {
     this.listeners.push({ev, fn});
   }
-
-  isConnected() {
-    return this.socket.isConnected;
-  }
 }
 
 const bus = new Bus(socket);
+
+bus.on('open', () => {
+  bus.emit('devices.list', {});
+  bus.emit('sensors.list', {});
+  bus.emit('groups.list', {});
+})
+
 export default bus;

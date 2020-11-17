@@ -4,7 +4,6 @@ import Widgets from './widgets';
 import NavBar from './navigation';
 import DataBus from '../data';
 
-
 export default function MainView() {  
   const [devices, updateDevices] = useState([]);  
   const [sensors, updateSensors] = useState([]);
@@ -12,10 +11,6 @@ export default function MainView() {
   const [location, updateLocation] = useState("");
 
   useEffect(() => {
-    DataBus.emit('devices.list', {});
-    DataBus.emit('groups.list', {});
-    DataBus.emit('sensors.list', {});
-
     DataBus.on('devices.update',(d) => {
       console.log('Received devices.update', d);
       updateDevices(d);
@@ -30,16 +25,23 @@ export default function MainView() {
       console.log('Received groups.update', d);
       updateGroups(d);
     });
-
-
-  });
+  }, []);
 
   function getWidgets() {    
-    if (location === 'devices') return devices;
-    if (location === 'sensors') return sensors;
-    //default return 
-    return groups;
-  }
+    switch(location) {
+      case 'devices':      
+        return devices;        
+
+      case 'sensors':        
+        return sensors;        
+
+      case 'home':        
+        return groups;     
+      
+      default:
+        return groups;
+    }
+  }   
 
   return (              
     <div id="MainView">

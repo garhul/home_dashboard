@@ -1,9 +1,11 @@
 const mqtt = require('mqtt');
+const { inspect } = require('util');
 const config = require('../../../config');
 const logger = require('../logger');
-const msgHandler = require('./handler');
+const handlers = require('./handlers');
 
 const mqttClient = mqtt.connect(config.mqtt.broker);
+const eventBus = require('../../eventBus');
 
 mqttClient.on('connect', () => {
   logger.i(`Connected to mosquitto broker on ${config.mqtt.broker}`);
@@ -30,8 +32,21 @@ mqttClient.on('connect', () => {
 
   mqttClient.on('message', (topic, message) => {
     logger.d(`Received |${message.toString()}| on topic:|${topic}|`);
-    msgHandler(topic, message);
+
+    // TODO:: implement wildcards for topics such as 'home/+/weatherst'
+    const hndlr = handlers.find((h) => h.topic === topic);
+
+    if (hndlr === undefined) {
+      logger.e(`No handler registered for topic ${topic}`);
+      return;
+    }
+
+    hndlr.handler(topic, message);
   });
+});
+
+eventBus.addListener(eventBus.EVS.DEVICES.CMD, (payload) => {
+  logger.i(`Sending device CMD ${inspect(payload)}`);
 });
 
 module.exports = mqttClient;

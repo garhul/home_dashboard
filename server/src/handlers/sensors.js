@@ -1,9 +1,25 @@
 const fs = require('fs');
 const path = require('path');
 const { inspect } = require('util');
-const logger = require('../../services/logger');
-const config = require('../../../config');
-const { TimeSeries } = require('../../utils');
+const logger = require('../services/logger');
+const config = require('../../config');
+const { TimeSeries } = require('../utils');
+
+function sensorHndlr(topic, payload) {
+  logger.d(`New datapoint received for ${topic} data`);
+  const data = JSON.parse(payload.toString());
+  const dataPoint = {
+    ts: Date.now(),
+    dht_temp: parseFloat(data.dht_t).toFixed(2), // temperature in celcius
+    dht_humidity: parseFloat(data.dht_h).toFixed(2), // humidity relative
+    bmp280_pressure: (data.bmp280_p / 100).toFixed(2), // pressure in hPA
+    bmp280_temp: parseFloat(data.bmp280_t).toFixed(2),
+    bat_voltage: parseFloat(data.vbat).toFixed(2), // Battery voltage
+  };
+
+  sensors.addData(dataPoint, data.deviceInfo);
+  ws.broadcast(ws.evs.SENSOR_UPDATE, { dataPoint, deviceInfo: data.deviceInfo });
+}
 
 const sensors = new Map();
 /** Sensors is a map of <key, sensor>
@@ -72,6 +88,7 @@ exports.getList = () => {
   });
   return output;
 };
+
 // reload data from files into memory
 function restore() {
   // read files in the dir

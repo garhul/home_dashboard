@@ -1,9 +1,9 @@
 module.exports = {
-  DEVICE_UPDATE: 'devices.update',
-  DEVICE_LIST: 'devices.list',
-  DEVICE_GET: 'devices.get',
-  DEVICE_CMD: 'devices.cmd',
-  DEVICE_SCAN: 'devices.scan',
+  DEVICES_UPDATE: 'devices.update',
+  DEVICES_LIST: 'devices.list',
+  DEVICES_GET: 'devices.get',
+  DEVICES_CMD: 'devices.cmd',
+  DEVICES_SCAN: 'devices.scan',
 
   SENSORS_UPDATE: 'sensors.update',
   SENSORS_FETCH_DATA: 'sensors.fetch',

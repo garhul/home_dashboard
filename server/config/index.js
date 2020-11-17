@@ -2,9 +2,11 @@ const { resolve } = require('path');
 
 const cfg = {
   scanAtStartup: false,
-  useMocs: true,
+  useMocks: true,
   wsPort: process.env.WS_PORT || 3030,
   baseScanAddress: '192.168.0.',
+  scanBatchSize: 24,
+  scanTimeout: 2000,
   mqtt: {
     broker: 'mqtt://192.168.0.10',
     announceTopic: 'announce',

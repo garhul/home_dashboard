@@ -1,11 +1,8 @@
 const ws = require('./services/ws');
 const mqtt = require('./services/mqtt');
 const logger = require('./services/logger');
-
-const { devices, sensors } = require('./models');
-
-// sensor.loadData();
-// devices.scan();
+// eslint-disable-next-line no-unused-vars
+const handlers = require('./handlers');
 
 process.on('beforeExit', () => {
   logger.i('closing connections...');
