@@ -6,12 +6,13 @@ const config = require('../../config');
 const { wait } = require('../utils');
 const eventBus = require('../eventBus');
 const mockData = require('../mocks/devices');
+const controls = require('../../data/deviceControls.js');
 
 const store = new Map();
 const logTag = 'DEVICES_HANDLER';
 
 if (config.useMocks) {
-  mockData.forEach(val => store.set(val.device_id, val));
+  mockData.forEach(val => store.set(val.device_id, { ...val, controls }));
 }
 
 function notifyUpdate(client = null) {
@@ -29,6 +30,7 @@ async function inscribe(ip) {
     const addr = `http://${ip}/info`;
     const res = await fetch(addr);
     const obj = [{ ip, info: await res.json() }];
+    obj.controls = controls;
     store.set(obj.device_id, obj);
     eventBus.emit(eventBus.EVS.DEVICES.UPDATE, store);
   } catch (err) {
@@ -55,8 +57,17 @@ eventBus.addListener(eventBus.EVS.DEVICES.SCAN, async () => {
   eventBus.emit(eventBus.EVS.DEVICES.UPDATE, Array.from(store));
 });
 
-eventBus.addListener(eventBus.EVS.DEVICES.CMD, async (payload) => {
-  logger.d(`Received CMD ${inspect(payload)}`, logTag);
+eventBus.addListener(eventBus.EVS.DEVICES.CMD, async (msg) => {
+  msg.topics.forEach(topic => {
+    const payload = (msg.data !== undefined && msg.data !== null)
+      ? msg.payload.replace('$1', `"${msg.data}"`)
+      : msg.payload;
+
+    eventBus.emit(eventBus.EVS.MQTT.PUBLISH, {
+      topic,
+      payload,
+    });
+  });
 });
 
 eventBus.addListener(eventBus.EVS.DEVICES.LIST, async (client) => {

@@ -13,8 +13,8 @@ export default function NavBar(props) {
   useEffect(() => { changeLocation(window.location.hash || '#home') });
 
   return (
-    <Navbar bg="dark" expand="lg">
-      <Navbar.Brand onClick={() => {changeLocation('#home')}} href="#home">{`Home Dashboard >> ${location}`}</Navbar.Brand>
+    <Navbar bg="dark" expand="lg" collapseOnSelect={true}>
+      <Navbar.Brand onClick={() => {changeLocation('#home')}} href="#home"><span>Dashboard</span>{` - ${location}`}</Navbar.Brand>
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="mr-auto">

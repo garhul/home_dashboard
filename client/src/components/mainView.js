@@ -46,7 +46,7 @@ export default function MainView() {
   return (              
     <div id="MainView">
       <NavBar onChange={(w)=>updateLocation(w)}></NavBar>      
-      <Widgets widgets={getWidgets()}></Widgets>
+      <Widgets location={location} widgets={getWidgets()}></Widgets>
     </div >
   );
 }

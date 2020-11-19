@@ -56,23 +56,30 @@ const handlers = [
   {
     ev: evs.DEVICES_CMD,
     handler: (msg) => {
-      logger.d(`Requested devices CMD: ${inspect(msg)}`, 'WS');
+      logger.d(`Requested to send devices CMD: ${inspect(msg)}`, 'WS');
       eventBus.emit(eventBus.EVS.DEVICES.CMD, msg);
+    },
+  },
+  {
+    ev: evs.GROUPS_CMD,
+    handler: (msg) => {
+      // TODO:: eliminate as function is deprecated
+      logger.d(`Requested to send groups CMD: ${inspect(msg)}`, 'WS');
+      eventBus.emit(eventBus.EVS.GROUPS.CMD, msg);
     },
   },
 ];
 
 wss.on('connection', (ws) => {
   ws.on('message', (message) => {
-    logger.d(`received ws message ${message}`);
-    const { ev, payload } = JSON.parse(message);
+    const { ev, msg } = JSON.parse(message);
     const hndlr = handlers.find((h) => h.ev === ev);
     if (hndlr === undefined) {
       logger.e(`No handler registered for ws event ${ev}`, 'WS');
       return;
     }
 
-    hndlr.handler(payload, ws);
+    hndlr.handler(msg, ws);
   });
 });
 

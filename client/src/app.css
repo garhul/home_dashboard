@@ -25,14 +25,22 @@ body {
 .widget {  
   background-color: #282c34;
   margin: 1em auto;
-  padding: 1em;
   border-radius: 0.5em;
   min-height: 8em;
   border: 1px solid rgb(93, 93, 100);
+  width:95%
 }
 
 #Widgets > .selected {
   box-shadow: 0em 0em 0.5em #ff0099;
+}
+
+.widget > .title {
+  text-align: center;
+  font-size:2rem;
+  font-weight: bold;
+  color:#ddd;
+  margin-bottom:.4em;
 }
 
 #DevicesList > h3 {
@@ -40,10 +48,19 @@ body {
   margin-bottom: 2em;
 }
 
+/* #DeviceControl >  */
+
+.navbar-brand > span {
+  color:#BBB;
+}
+
 #DeviceControl {
-  width: 60%;
-  padding: 1em;
-  flex-grow: 2;
+  margin: 0 auto;
+}
+
+#DeviceControl, .col > button {
+  width:100%;
+  margin:.4em auto;
 }
 
 .sliderContainer {

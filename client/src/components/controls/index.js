@@ -1,15 +1,16 @@
-import React from 'react';
+import React, {useState} from 'react';
 import Button from 'react-bootstrap/Button'
 import ProgressBar from 'react-bootstrap/ProgressBar'
+import { Basic } from 'react-dial-knob'
 
-export class CMDButton extends React.Component {
-  clickHandler() {
-    console.log(`cmd: ${this.props.cmd} payload: ${this.props.payload}`);
-    this.props.update({ cmd: this.props.cmd, payload: this.props.payload });
+export function CMDButton(props) {
+  function clickHandler() {
+    props.update({data: null, payload: props.payload, topics: props.topics});
   }
-  render() {
-    return <Button variant="outline-info" size="lg" onClick={() => this.clickHandler()}>{this.props.label}</Button>
-  }
+  return (
+    <Button block="true" variant={(!props.style)? "outline-info": props.style} size="lg" onClick={() => clickHandler()}>
+      {props.label}
+    </Button>)
 }
 
 export class CMDSliider extends React.Component {
@@ -21,20 +22,16 @@ export class CMDSliider extends React.Component {
   clickHandler(ev) {
     ev.preventDefault();
 
-    console.log(ev.currentTarget.offsetLeft);
-    console.log(ev.clientX);
-    console.log(ev.currentTarget.offsetWidth);
+    // console.log(ev.currentTarget.offsetLeft);
+    // console.log(ev.clientX);
+    // console.log(ev.currentTarget.offsetWidth);
 
     const percentil = (ev.clientX - ev.currentTarget.offsetLeft) / ev.currentTarget.offsetWidth;
-    console.log(`${percentil * 100} %`);
+    // console.log(`${percentil * 100} %`);
     this.setState({ value: Math.floor(percentil * 100)});
 
     console.log(this.state);
-    this.props.update({
-      cmd: this.props.cmd,
-      payload: ('transform' in this.props) ? this.props.transform(this.state.value).toString() : this.state.value.toString()
-    });
-
+    this.props.update({data: this.state.value, payload: this.props.payload, topics:this.props.topics});
   }
 
   render() {
@@ -44,4 +41,26 @@ export class CMDSliider extends React.Component {
       <ProgressBar striped variant="dark" now={this.state.value} />
     </div>
   }
+}
+
+
+export function CMDKnob (props) {
+  const [value, setValue] = useState(10);
+
+  function update(val) {
+    setValue(val);
+    props.update({data: val, payload: props.payload, topics:props.topics});
+  
+  }
+  return <Basic
+      diameter={props.diameter ? props.diameter : 120}
+      min={props.min}
+      max={props.max}
+      step={1}
+      value={value}
+      theme={{donutColor: '#17a2b8', centerColor:'#343a40',bgrColor:'#343a40',centerFocusedColor:'#343a40'}}
+      onValueChange={(val) => update(val)}
+  >
+      <label>{props.label}</label>
+  </Basic>
 }

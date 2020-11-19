@@ -8,7 +8,7 @@ const cfg = {
   scanBatchSize: 24,
   scanTimeout: 2000,
   mqtt: {
-    broker: 'mqtt://192.168.0.10',
+    broker: 'mqtt://192.168.1.10',
     announceTopic: 'announce',
     homeTopic: 'home/+/weatherst',
   },

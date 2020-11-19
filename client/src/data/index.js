@@ -21,11 +21,11 @@ class Bus {
     });
   }
 
-  emit(ev, payload) {    
+  emit(ev, msg) {    
     if (this.socket.readyState === 1) {      
-      this.socket.send(JSON.stringify({ev, payload}));    
+      this.socket.send(JSON.stringify({ev, msg}));    
     } else {
-      console.log('not ready yet', ev, payload);
+      console.log('not ready yet', ev, msg);
     }
   }
 

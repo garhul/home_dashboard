@@ -20,6 +20,9 @@ const EVS = {
     UPDATE: 'groups.update',
     CMD: 'groups.cmd',
   },
+  MQTT: {
+    PUBLISH: 'mqtt.publish',
+  },
 };
 
 class EventBus extends EventEmitter {

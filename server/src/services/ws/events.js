@@ -11,4 +11,5 @@ module.exports = {
 
   GROUPS_LIST: 'groups.list',
   GROUPS_UPDATE: 'groups.update',
+  GROUPS_CMD: 'groups.cmd',
 };
