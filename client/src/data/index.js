@@ -1,4 +1,4 @@
-const socket = new WebSocket('ws://localhost:3030');
+const socket = new WebSocket(`ws://${window.location.host.split(':')[0]}:3030`);
 
 class Bus {
   constructor(socket) {
@@ -18,7 +18,13 @@ class Bus {
 
     this.socket.addEventListener('error', (err) => {
       console.error(err);
+      this.handleEvent('error');
     });
+
+    this.socket.addEventListener('close', () => {
+      console.log('socket closed');
+      this.handleEvent('close');
+    })
   }
 
   emit(ev, msg) {    

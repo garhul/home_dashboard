@@ -86,3 +86,25 @@ body {
 .device-item:hover {
   filter: brightness(120%);
 }
+
+#ws-overlay {
+  position: fixed;
+  z-index:99;
+  width:100%;
+  height:100%;
+  background-color:rgba(0,0,0,.5);
+  align-items: center;
+  justify-content: center;
+  display: flex;
+}
+
+#ws-overlay > div {
+  background-color: #130512;
+  color:#853c69;
+  text-align: center;
+}
+
+#ws-overlay.hide {
+  visibility: hidden;
+  display:none;
+}

@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Widgets from './widgets';
+import WsOverlay from './wsOverlay';
 import NavBar from './navigation';
 import DataBus from '../data';
 

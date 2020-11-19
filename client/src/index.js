@@ -3,8 +3,10 @@ import ReactDOM from 'react-dom';
 import MainView from './components/mainView';
 import * as serviceWorker from './serviceWorker';
 import './app.css';
+import WsOverlay from './components/wsOverlay';
 ReactDOM.render(
   <React.StrictMode>
+    <WsOverlay />
     <MainView />
   </React.StrictMode>,
   document.getElementById('root')

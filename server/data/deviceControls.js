@@ -3,25 +3,26 @@ module.exports = [
     label: 'Off',
     type: 'Button',
     style: 'outline-warning',
-    payload: '{"cmd": "off", "payload": "" }',
+    payload: { cmd: 'off', payload: '' },
   }],
   [
     {
       label: 'Rainbow',
       type: 'Button',
-      payload: '{"cmd": "fx", "payload": 1}',
+      payload: { cmd: 'fx', payload: '1' },
     },
     {
       label: 'Aurora',
       type: 'Button',
-      payload: '{"cmd": "fx", "payload": 2 }',
+      payload: { cmd: 'fx', payload: '2' },
     },
   ],
   [
     {
       label: 'Fire',
+      topics: ['home/living/tv', 'home/living/radiator'],
       type: 'Button',
-      payload: '{"cmd": "fx", payload: 3 }',
+      payload: { cmd: 'fx', payload: '3' },
     },
     {
       label: 'Chaser',

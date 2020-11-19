@@ -1,5 +1,4 @@
 const mqtt = require('mqtt');
-const { inspect } = require('util');
 const config = require('../../../config');
 const logger = require('../logger');
 const handlers = require('./handlers');
@@ -48,8 +47,8 @@ mqttClient.on('connect', () => {
 });
 
 eventBus.addListener(eventBus.EVS.MQTT.PUBLISH, (data) => {
-  logger.i(`Sending mqtt device CMD ${inspect(data)}`, TAG);
-  mqttClient.publish(data.topic, data.payload);
+  logger.i(`Sending mqtt device at topic ${data.topic} payload ${JSON.stringify(data.payload)}`, TAG);
+  mqttClient.publish(data.topic, JSON.stringify(data.payload));
 });
 
 module.exports = mqttClient;
