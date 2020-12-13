@@ -1,6 +1,8 @@
 exports.timedPromise = (promise, ms) => new Promise((resolve, reject) => {
   const timeoutId = setTimeout(() => {
-    reject(new Error('Timed out'));
+    const err = new Error('Timed out');
+    err.code = 'TIMEOUT';
+    reject(err);
   }, ms);
 
   promise.then((res) => {

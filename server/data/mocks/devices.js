@@ -1,7 +1,7 @@
 module.exports = [{
   ssid: 'Brothel Misa',
   ap_ssid: 'tv bar',
-  human_name: 'under tv bar',
+  human_name: 'Mock device #1',
   announce_topic: 'announce',
   device_id: 'under tv bar_aeb62d',
   broker: '192.168.1.10',
@@ -14,7 +14,7 @@ module.exports = [{
 {
   ssid: 'Brothel Misa',
   ap_ssid: 'tv bar',
-  human_name: 'under tv bar',
+  human_name: 'Mock device #2',
   announce_topic: 'announce',
   device_id: 'under tv bar_bcbe2d',
   broker: '192.168.1.10',
@@ -27,7 +27,7 @@ module.exports = [{
 {
   ssid: 'Brothel Misa',
   ap_ssid: 'tv bar',
-  human_name: 'Heater Right',
+  human_name: 'Mock device #3',
   announce_topic: 'announce',
   device_id: 'under tv bar_aab621',
   broker: '192.168.1.10',
@@ -39,7 +39,7 @@ module.exports = [{
 }, {
   ssid: 'Brothel Misa',
   ap_ssid: 'heater_a',
-  human_name: 'Heater Left',
+  human_name: 'Mock device #4',
   announce_topic: 'announce',
   device_id: 'under tv bar_a0b62d',
   broker: '192.168.1.10',

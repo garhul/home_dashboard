@@ -3,6 +3,7 @@ const { inspect } = require('util');
 const config = require('../../../config');
 const logger = require('../logger');
 const evs = require('./events');
+const busEvents = require('../../events');
 const eventBus = require('../../eventBus');
 
 const wss = new WebSocket.Server({ port: config.wsPort });
@@ -28,44 +29,36 @@ const handlers = [
   {
     ev: evs.GROUPS_LIST,
     handler: (msg, client) => {
-      logger.i('Requested groups list: ', 'WS');
-      eventBus.emit(eventBus.EVS.GROUPS.LIST, client);
+      logger.d('Requested groups list: ', 'WS');
+      eventBus.emit(busEvents.GROUPS.LIST, client);
     },
   },
   {
     ev: evs.SENSORS_LIST,
     handler: (msg, client) => {
       logger.d('Requested sensor list: ', 'WS');
-      eventBus.emit(eventBus.EVS.SENSORS.LIST, client);
+      eventBus.emit(busEvents.SENSORS.LIST, client);
     },
   },
   {
     ev: evs.DEVICES_LIST,
     handler: (message, client) => {
       logger.d('Requested devices list: ', 'WS');
-      eventBus.emit(eventBus.EVS.DEVICES.LIST, client);
+      eventBus.emit(busEvents.DEVICES.LIST, client);
     },
   },
   {
     ev: evs.DEVICES_SCAN,
     handler: () => {
       logger.d('Requested devices SCAN: ', 'WS');
-      eventBus.emit(eventBus.EVS.DEVICES.SCAN);
+      eventBus.emit(busEvents.DEVICES.SCAN);
     },
   },
   {
     ev: evs.DEVICES_CMD,
     handler: (msg) => {
       logger.d(`Requested to send devices CMD: ${inspect(msg)}`, 'WS');
-      eventBus.emit(eventBus.EVS.DEVICES.CMD, msg);
-    },
-  },
-  {
-    ev: evs.GROUPS_CMD,
-    handler: (msg) => {
-      // TODO:: eliminate as function is deprecated
-      logger.d(`Requested to send groups CMD: ${inspect(msg)}`, 'WS');
-      eventBus.emit(eventBus.EVS.GROUPS.CMD, msg);
+      eventBus.emit(busEvents.DEVICES.CMD, msg);
     },
   },
 ];
@@ -83,12 +76,12 @@ wss.on('connection', (ws) => {
   });
 });
 
-eventBus.on(eventBus.EVS.DEVICES.UPDATE, ({ client, data }) => {
+eventBus.on(busEvents.DEVICES.UPDATE, ({ client, data }) => {
   logger.d('Sending devices update data', 'WS');
   send(client, { ev: evs.DEVICES_UPDATE, data });
 });
 
-eventBus.on(eventBus.EVS.GROUPS.UPDATE, ({ client, data }) => {
+eventBus.on(busEvents.GROUPS.UPDATE, ({ client, data }) => {
   logger.d('Sending groups update data', 'WS');
   send(client, { ev: evs.GROUPS_UPDATE, data });
 });

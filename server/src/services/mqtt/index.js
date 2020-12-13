@@ -4,6 +4,7 @@ const logger = require('../logger');
 const handlers = require('./handlers');
 
 const mqttClient = mqtt.connect(config.mqtt.broker);
+const busEvents = require('../../events');
 const eventBus = require('../../eventBus');
 
 const TAG = 'MQTT';
@@ -46,8 +47,9 @@ mqttClient.on('connect', () => {
   });
 });
 
-eventBus.addListener(eventBus.EVS.MQTT.PUBLISH, (data) => {
+eventBus.addListener(busEvents.MQTT.PUBLISH, (data) => {
   logger.i(`Sending mqtt device at topic ${data.topic} payload ${JSON.stringify(data.payload)}`, TAG);
+  
   mqttClient.publish(data.topic, JSON.stringify(data.payload));
 });
 

@@ -1,35 +1,13 @@
 const { EventEmitter } = require('events');
-
-const EVS = {
-  DEVICES: {
-    UPDATE: 'devices.update',
-    ANNOUNCE: 'devices.announce',
-    CMD: 'devices.cmd',
-    SCAN: 'devices.scan',
-    GET: 'devices.get',
-    LIST: 'devices.list',
-  },
-  SENSORS: {
-    UPDATE: 'sensors.update',
-    FETCH_DATA: 'sensors.fetch_data',
-    LIST: 'sensors.list',
-    ADD_DATA: 'sensors.add_data',
-  },
-  GROUPS: {
-    LIST: 'groups.list',
-    UPDATE: 'groups.update',
-    CMD: 'groups.cmd',
-  },
-  MQTT: {
-    PUBLISH: 'mqtt.publish',
-  },
-};
-
+const logger = require('./services/logger');
 class EventBus extends EventEmitter {
-  constructor() {
-    super();
-    this.EVS = EVS;
-    this.topics = [];
+  emit(evName, ...args) {
+    const hasListeners = super.emit(evName, ...args);
+    if (!hasListeners) {
+      logger.w(`Unhandled event emmited ${evName}`, 'EVENT_BUS');
+    }
+
+    return hasListeners;
   }
 }
 

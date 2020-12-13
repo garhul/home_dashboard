@@ -4,9 +4,9 @@ const cfg = {
   scanAtStartup: false,
   useMocks: true,
   wsPort: process.env.WS_PORT || 3030,
-  baseScanAddress: '192.168.0.',
+  baseScanAddress: '192.168.1.',
   scanBatchSize: 24,
-  scanTimeout: 2000,
+  scanTimeout: 5000,
   mqtt: {
     broker: 'mqtt://192.168.1.10',
     announceTopic: 'announce',

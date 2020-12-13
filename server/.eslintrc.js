@@ -2,6 +2,7 @@ module.exports = {
   extends: [
     'airbnb-base',
     'plugin:security/recommended',
+    '@babel/plugin-proposal-private-methods',
   ],
   rules: {
     'no-unused-vars': ['error', { argsIgnorePattern: 'next' }],

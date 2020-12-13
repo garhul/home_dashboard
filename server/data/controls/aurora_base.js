@@ -50,6 +50,8 @@ module.exports = [
       min: '0',
       max: '100',
     },
+  ],
+  [
     {
       label: 'Brightness',
       type: 'Knob',
