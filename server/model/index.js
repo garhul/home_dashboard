@@ -1,1 +1,0 @@
-exports.devices = require('./devices');

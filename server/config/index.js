@@ -1,25 +1,21 @@
-const { inspect } = require('util');
 const { resolve } = require('path');
 
-const data = {
-  path: resolve(__dirname, '../data'),
-};
-
-const ws = {
-  port: process.env.WS_PORT || 3030,
-};
-
-const mqtt = {
-  broker: 'mqtt://192.168.0.10',
-  announceTopic: 'announce',
-  homeTopic: 'home/sensors/#',
-};
-
 const cfg = {
-  baseScanAddress: '192.168.0.',
-  mqtt,
-  ws,
-  data,
+  scanAtStartup: false,
+  useMocks: true,
+  wsPort: process.env.WS_PORT || 3030,
+  baseScanAddress: '192.168.1.',
+  scanBatchSize: 24,
+  scanTimeout: 5000,
+  mqtt: {
+    broker: 'mqtt://192.168.1.10',
+    announceTopic: 'announce',
+    homeTopic: 'home/+/weatherst',
+  },
+  sensors: {
+    dataPath: resolve(__dirname, '../data'),
+    timeSeriesDepth: 1440,
+  },
 };
 
 // global.logger.i(`Config results ${inspect(cfg)}`);

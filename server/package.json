@@ -2,16 +2,17 @@
   "name": "server",
   "version": "1.0.0",
   "description": "",
-  "main": "app.js",
+  "main": "src/app.js",
   "scripts": {
-    "dev": "npx nodemon app.js",
+    "dev": "npx nodemon src/app.js",
     "debug": "node --inspect-brk app.js ",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint . --ext .js"
   },
-  "author": "adrian gesto",
-  "license": "ISC",
+  "author": "Adrian Gesto",
+  "license": "MIT",
   "devDependencies": {
+    "babel-eslint": "^10.1.0",
     "eslint": "^7.4.0",
     "eslint-config-airbnb-base": "^14.2.0",
     "eslint-plugin-import": "^2.22.0",
@@ -20,7 +21,8 @@
   },
   "dependencies": {
     "mqtt": "^4.1.0",
-    "node-fetch": "^2.6.0",
+    "node-cron": "^2.0.3",
+    "node-fetch": "^2.6.1",
     "simple-fancy-logger": "^1.2.2",
     "ws": "^7.3.1"
   }
