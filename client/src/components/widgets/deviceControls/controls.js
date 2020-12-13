@@ -13,7 +13,7 @@ export function CMDButton(props) {
     </Button>)
 }
 
-export class CMDSliider extends React.Component {
+export class CMDSlider extends React.Component {
   constructor(props) {
     super(props);
     this.state = { value: 0 };
@@ -22,9 +22,9 @@ export class CMDSliider extends React.Component {
   clickHandler(ev) {
     ev.preventDefault();
 
-    // console.log(ev.currentTarget.offsetLeft);
-    // console.log(ev.clientX);
-    // console.log(ev.currentTarget.offsetWidth);
+    console.log(ev.currentTarget.offsetLeft);
+    console.log(ev.clientX);
+    console.log(ev.currentTarget.offsetWidth);
 
     const percentil = (ev.clientX - ev.currentTarget.offsetLeft) / ev.currentTarget.offsetWidth;
     // console.log(`${percentil * 100} %`);

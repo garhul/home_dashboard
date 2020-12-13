@@ -1,18 +1,18 @@
 import React from 'react';
 import DataBus from '../../../data';
-import { CMDButton, CMDSliider, CMDKnob } from '../../controls';
+import { CMDButton, CMDSlider, CMDKnob } from './controls';
 import { Container, Row, Col } from 'react-bootstrap';
 
 export default class DeviceControl extends React.Component {
   update({data, payload, topics = null}) {
     if (topics === null) {
-      topics = [this.props.topic];
+      topics = this.props.topics || [this.props.topic];
     }
     
     DataBus.emit('devices.cmd',{
       topics,
       data,
-      payload: payload
+      payload
     });
   }
   
@@ -27,13 +27,13 @@ export default class DeviceControl extends React.Component {
                   <CMDButton update={(data) => this.update(data)} key={`btn_${index}`} {...ctrl}></CMDButton>
                   </Col>);
 
-              case 'SLIDER':
+              case 'KNOB':
                 return (
                   <Col  key={`slider_${index}`}>
-                    <CMDSliider update={(data) => this.update(data)} key={`slider_${index}`} {...ctrl}></CMDSliider >
+                    <CMDSlider update={(data) => this.update(data)} key={`slider_${index}`} {...ctrl}></CMDSlider >
                   </Col>);
 
-              case 'KNOB': 
+              case 'SLIDER': 
                 return (
                   <Col  key={`slider_${index}`}>
                     <CMDKnob update={(data) => this.update(data)} key={`knob_${index}`} {...ctrl}></CMDKnob >

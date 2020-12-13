@@ -13,14 +13,14 @@ export default function NavBar(props) {
   useEffect(() => { changeLocation(window.location.hash || '#home') });
 
   return (
-    <Navbar bg="dark" expand="lg" collapseOnSelect={true}>
+    <Navbar  fixed="top" bg="dark" expand="lg" collapseOnSelect={true}>
       <Navbar.Brand onClick={() => {changeLocation('#home')}} href="#home"><span>Dashboard</span>{` - ${location}`}</Navbar.Brand>
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="mr-auto">
           <Nav.Link onClick={() => {changeLocation('#devices')}} href="#devices">Devices</Nav.Link>
           <Nav.Link onClick={() => {changeLocation('#sensors')}} href="#sensors">Sensors</Nav.Link>
-          <Nav.Link onClick={() => {changeLocation('#config')}} href="#config">Config</Nav.Link>        
+          <Nav.Link onClick={() => {changeLocation('#admin')}} href="#admin">Admin</Nav.Link>        
         </Nav>      
       </Navbar.Collapse>
     </Navbar>

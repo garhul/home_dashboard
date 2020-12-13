@@ -33,7 +33,7 @@ mqttClient.on('connect', () => {
   });
 
   mqttClient.on('message', (topic, message) => {
-    logger.d(`Received |${message.toString()}| on topic:|${topic}|`, TAG);
+    logger.d(`Received |${message.toString()}| on topic: ${topic}`, TAG);
 
     // TODO:: implement wildcards for topics such as 'home/+/weatherst'
     const hndlr = handlers.find((h) => h.topic === topic);

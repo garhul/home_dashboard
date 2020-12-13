@@ -1,7 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Widgets from './widgets';
-import WsOverlay from './wsOverlay';
 import NavBar from './navigation';
 import DataBus from '../data';
 
@@ -45,9 +44,11 @@ export default function MainView() {
   }   
 
   return (              
-    <div id="MainView">
-      <NavBar onChange={(w)=>updateLocation(w)}></NavBar>      
-      <Widgets location={location} widgets={getWidgets()}></Widgets>
-    </div >
+    <div>
+      <NavBar onChange={(w)=>updateLocation(w)}></NavBar>
+      <div id="MainView">
+        <Widgets location={location} widgets={getWidgets()}></Widgets>
+      </div >
+    </div>
   );
 }

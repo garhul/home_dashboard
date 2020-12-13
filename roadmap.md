@@ -5,9 +5,9 @@
 - ~~device announcement management~~
 - ~~device scan~~
 - ~~device info gathering~~
-- device cmd publishing
-- groups definitions from files
-- groups cmd publishing
+- ~~device cmd publishing~~
+- ~~groups definitions from files~~
+- ~~groups cmd publishing~~
 - startup scripts
 - log management
 - cron tasks definition
@@ -18,3 +18,4 @@
 - devices feedback (status, requires firmware upgrade)
 - groups settings / crud UI
 - devices settings UI
+- control sets

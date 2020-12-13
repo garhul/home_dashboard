@@ -28,7 +28,7 @@ class Devices {
     
     this.bus.addListener(EVS.DEVICES.CMD, async (msg) => {
       if (!msg.topics instanceof Array) msg.topcis = [msg.topcis];
-      logger.i(`Relaying message [${msg.payload}] to topics [${msg.topics.join(', ')}]`);
+      logger.d(`Relaying message [${msg.payload}] to topics [${msg.topics.join(', ')}]`);
       console.log(msg.topics);
       msg.topics.forEach(topic => {
         const payload = (msg.data !== undefined && msg.data !== null)

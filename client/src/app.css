@@ -23,12 +23,12 @@ body {
 }
 
 .widget {  
+  border:.4em solid #222;
   background-color: #282c34;
-  margin: 1em auto;
-  border-radius: 0.5em;
+  margin: 4em auto;
   min-height: 8em;
-  border: 1px solid rgb(93, 93, 100);
-  width:95%
+  /* border: 1px solid rgb(93, 93, 100); */
+  width:100%
 }
 
 #Widgets > .selected {
