@@ -12,21 +12,16 @@ const TAG = 'MQTT';
 mqttClient.on('connect', () => {
   logger.i(`Connected to mosquitto broker on ${config.mqtt.broker}`, TAG);
 
-  mqttClient.subscribe(config.mqtt.announceTopic, (err) => {
-    if (err) {
-      logger.e(err, TAG);
-      throw err;
-    }
-    logger.i(`Subscribbed to announcements topic ${config.mqtt.announceTopic}`, TAG);
+  handlers.forEach(h => {
+    mqttClient.subscribe(h.topic, (err) => {
+      if (err) {
+        logger.e(err, TAG);
+        throw err;
+      }
+      logger.i(`Subscribbed to topic ${h.topic}`, TAG);
+    });    
   });
 
-  mqttClient.subscribe(config.mqtt.homeTopic, (err) => {
-    if (err) {
-      logger.e(err);
-      throw err;
-    }
-    logger.i(`Subscribbed to home sensors topic ${config.mqtt.homeTopic}`, TAG);
-  });
 
   mqttClient.on('error', (err) => {
     logger.e(err, TAG);
@@ -35,7 +30,6 @@ mqttClient.on('connect', () => {
   mqttClient.on('message', (topic, message) => {
     logger.d(`Received |${message.toString()}| on topic: ${topic}`, TAG);
 
-    // TODO:: implement wildcards for topics such as 'home/+/weatherst'
     const hndlr = handlers.find((h) => h.topic === topic);
 
     if (hndlr === undefined) {

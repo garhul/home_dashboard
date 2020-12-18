@@ -10,6 +10,7 @@ module.exports = [{
   use_mqtt: true,
   strip_size: 32,
   ip: '192.168.1.32',
+  state: {"br":25,"spd":250,"fx":2,"mode":2,"size":30}
 },
 {
   ssid: 'Brothel Misa',
@@ -23,6 +24,7 @@ module.exports = [{
   use_mqtt: true,
   strip_size: 32,
   ip: '192.168.1.32',
+  state: {"br":25,"spd":250,"fx":2,"mode":2,"size":30}
 },
 {
   ssid: 'Brothel Misa',
@@ -36,17 +38,6 @@ module.exports = [{
   use_mqtt: true,
   strip_size: 32,
   ip: '192.168.1.32',
-}, {
-  ssid: 'Brothel Misa',
-  ap_ssid: 'heater_a',
-  human_name: 'Mock device #4',
-  announce_topic: 'announce',
-  device_id: 'under tv bar_a0b62d',
-  broker: '192.168.1.10',
-  topic: 'under_tv',
-  build: 'v0.1.42 - 2020-10-31 19:36:47.426951',
-  use_mqtt: true,
-  strip_size: 32,
-  ip: '192.168.1.32',
-},
+  state: {"br":25,"spd":250,"fx":2,"mode":2,"size":30}
+}
 ];

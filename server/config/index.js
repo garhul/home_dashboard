@@ -10,7 +10,7 @@ const cfg = {
   mqtt: {
     broker: 'mqtt://192.168.1.10',
     announceTopic: 'announce',
-    homeTopic: 'home/+/weatherst',
+    sensorsTopic: 'sensors',
   },
   sensors: {
     dataPath: resolve(__dirname, '../data'),

@@ -4,4 +4,5 @@ module.exports = [{
     'living/desk-lamp',
     'living/fafafa'],
   control_template: 'groups',
+  state: {}
 }];

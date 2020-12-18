@@ -1,3 +1,15 @@
+/** Devices management service
+ * 
+ * 
+ * Thi service taps onto the eventBus and handles the addition and removal of devices
+ * as well as emiting notifications when a new device is added or it's state changes
+ * 
+ * Devices are not persisted in disk.
+ * 
+ * 
+ */
+
+
 /* eslint-disable max-classes-per-file */
 const fetch = require('node-fetch');
 const logger = require('../logger');
@@ -8,7 +20,6 @@ const { aurora } = require('../../../data/controls');
 const { timedPromise } = require('../../utils');
 
 const TAG = 'DEVICES_SV';
-
 class Devices {
 
   constructor(bus) {
@@ -18,6 +29,7 @@ class Devices {
       mockData.forEach(val => this.store.set(val.device_id, { ...val, controls: aurora }));
     }
     this.init();
+    this.scan();
   }
 
   init() {
@@ -47,15 +59,35 @@ class Devices {
       this.notifyUpdate(client);
     });
     
-    this.bus.addListener(EVS.DEVICES.ANNOUNCE, async (msg) => {
+    this.bus.addListener(EVS.DEVICES.ANNOUNCE, async (payload) => {
       try {
-        await this.inscribe(msg.toString().split('|')[1]);
-        this.notifyUpdate();
+        const msg = JSON.parse(payload.toString());
+        switch(msg.ev) {
+          case 'stateChange':
+            this.updateState(msg.id,
+              { 
+                spd: msg.spd,
+                fx: msg.fx,
+                br: msg.br,
+                size: msg.size,
+                mode: msg.mode
+              });
+            break;
+          case 'birth':
+            const data = await this.queryDevice()
+            this.add(data);            
+            break;
+          case 'death':
+            await this.remove(msg.id);
+            
+            break;
+          default:
+            throw new Error(`Unexpected message event ${msg.ev}`);
+        }        
       } catch (e) {
-        logger.e(e);
+        logger.e(e, TAG);
       }
     });
-    
   }
 
   notifyUpdate(client = null) {
@@ -71,10 +103,35 @@ class Devices {
     );
   }
 
+  remove(id) {
+    if (this.store.has(id)) {
+      this.store.delete(id);
+      this.notifyUpdate();
+    } else {
+      logger.w(`Attempted to remove non registered device ${id}`, TAG);
+    }
+  }
+
+  updateState(id, state) {
+    if (this.store.has(id)) {
+      const d = this.store.get(id);
+      d.state = state;
+      this.notifyUpdate();
+    } else {
+      logger.w(`Received state update from non registered device: ${id}`, TAG);
+    }
+  }
+
+  add(...devices) {
+    devices.forEach( d => this.store.set(d.device_id, d));
+    this.notifyUpdate();
+  }
+
   async scan() {
     const { baseScanAddress, scanBatchSize, scanTimeout } = config;
   
     const ips = [];
+    const data = [];
     for (let i = 1; i < 255; i++) {
       ips.push(`${baseScanAddress}${i}`);
   
@@ -82,7 +139,11 @@ class Devices {
         logger.i(`Scanning ips in range (${baseScanAddress}${i - scanBatchSize}, ${baseScanAddress}${i})`, TAG);
         await Promise.all(ips.map(async (ip) => {
           try {
-            await timedPromise(this.inscribe(ip), scanTimeout);
+            
+            await timedPromise((async () => {
+              const d = await this.queryDevice(ip);
+              if (d) data.push(d);             
+            })(), scanTimeout);
           } catch (ex) {
             if (ex.code !== 'TIMEOUT') {
               logger.w(ex, TAG);
@@ -91,21 +152,24 @@ class Devices {
         }));
         ips.splice(0);
       }
-    }
+    }    
+    this.add(...data);
   }
   
-  /** Retrieves info json from a given ip address and stores it
-   *  on the store and emits a devices update event
+  /** Retrieves info json and state from a given ip address 
    *
    * @param ip  the ip address
   */
-  async inscribe(ip) {
+  async queryDevice(ip) {
     try {
-      const addr = `http://${ip}/info`;
-      const res = await fetch(addr);
-      const obj = { ...(await res.json()), controls: aurora };
-      if (this.isValidInfo(obj)) {
-        this.store.set(obj.device_id, obj);
+      const infoAddr = `http://${ip}/info`;
+      const stateAddr = `http://${ip}/state`;
+      
+      const res = await fetch(infoAddr);      
+      const obj = await res.json();
+      if (this.isValidInfo(obj)) {      
+        const state = await fetch(stateAddr);
+        return {...obj, ...{state: state.json()}};        
       } else {
         logger.i(`Found device at ip ${ip} with invalid info json ${obj}`);
       }
