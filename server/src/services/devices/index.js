@@ -74,12 +74,11 @@ class Devices {
               });
             break;
           case 'birth':
-            const data = await this.queryDevice()
+            const data = await this.queryDevice(msg.ip)
             this.add(data);            
             break;
           case 'death':
             await this.remove(msg.id);
-            
             break;
           default:
             throw new Error(`Unexpected message event ${msg.ev}`);
@@ -138,8 +137,7 @@ class Devices {
       if (i % scanBatchSize === 0) {
         logger.i(`Scanning ips in range (${baseScanAddress}${i - scanBatchSize}, ${baseScanAddress}${i})`, TAG);
         await Promise.all(ips.map(async (ip) => {
-          try {
-            
+          try {            
             await timedPromise((async () => {
               const d = await this.queryDevice(ip);
               if (d) data.push(d);             
