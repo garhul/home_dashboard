@@ -12,7 +12,7 @@ module.exports = [
     },
   },
   {
-    topic: 'home/living/weatherst', // TODO :: implement wildcards on topic resolve
+    topic: config.mqtt.sensorsTopic,
     handler: (_topic, payload) => {
       eventBus.emit(busevents.SENSORS.ADD_DATA, payload);
     },
