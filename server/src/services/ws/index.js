@@ -27,24 +27,10 @@ function send(client = null, data) {
 
 const handlers = [
   {
-    ev: evs.GROUPS_LIST,
+    ev: evs.WIDGETS.lIST,
     handler: (msg, client) => {
       logger.d('Requested groups list: ', 'WS');
-      eventBus.emit(busEvents.GROUPS.LIST, client);
-    },
-  },
-  {
-    ev: evs.SENSORS_LIST,
-    handler: (msg, client) => {
-      logger.d('Requested sensor list: ', 'WS');
-      eventBus.emit(busEvents.SENSORS.LIST, client);
-    },
-  },
-  {
-    ev: evs.DEVICES_LIST,
-    handler: (message, client) => {
-      logger.d('Requested devices list: ', 'WS');
-      eventBus.emit(busEvents.DEVICES.LIST, client);
+      eventBus.emit(busEvents.WIDGETS.LIST, client);
     },
   },
   {
@@ -76,12 +62,7 @@ wss.on('connection', (ws) => {
   });
 });
 
-eventBus.on(busEvents.DEVICES.UPDATE, ({ client, data }) => {
-  logger.d('Sending devices update data', 'WS');
-  send(client, { ev: evs.DEVICES_UPDATE, data });
-});
-
-eventBus.on(busEvents.GROUPS.UPDATE, ({ client, data }) => {
+eventBus.on(busEvents.WIDGETS.UPDATE, ({ client, data }) => {
   logger.d('Sending groups update data', 'WS');
   send(client, { ev: evs.GROUPS_UPDATE, data });
 });

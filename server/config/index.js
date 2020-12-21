@@ -1,7 +1,7 @@
 const { resolve } = require('path');
 
 const cfg = {
-  scanAtStartup: false,
+  scanAtStartup: true,
   useMocks: true,
   wsPort: process.env.WS_PORT || 3030,
   baseScanAddress: '192.168.1.',
@@ -18,5 +18,4 @@ const cfg = {
   },
 };
 
-// global.logger.i(`Config results ${inspect(cfg)}`);
 module.exports = cfg;

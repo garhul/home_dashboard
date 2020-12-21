@@ -24,6 +24,7 @@
     "node-cron": "^2.0.3",
     "node-fetch": "^2.6.1",
     "simple-fancy-logger": "^1.2.2",
+    "uuid": "^8.3.2",
     "ws": "^7.3.1"
   }
 }

@@ -4,22 +4,20 @@
  * Thi service taps onto the eventBus and handles the addition and removal of devices
  * as well as emiting notifications when a new device is added or it's state changes
  * 
- * Devices are not persisted in disk.
+ * Devices are not persisted on disk.
  * 
  * 
  */
-
-
 /* eslint-disable max-classes-per-file */
 const fetch = require('node-fetch');
-const logger = require('../logger');
+const logger = require('../logger')('DEVICES_SV');
 const config = require('../../../config');
 const mockData = require('../../../data/mocks/devices');
 const EVS = require('../../events.js');
 const { aurora } = require('../../../data/controls');
 const { timedPromise } = require('../../utils');
+const eventBus = require('../../eventBus');
 
-const TAG = 'DEVICES_SV';
 class Devices {
 
   constructor(bus) {
@@ -28,8 +26,9 @@ class Devices {
     if (config.useMocks) {
       mockData.forEach(val => this.store.set(val.device_id, { ...val, controls: aurora }));
     }
-    this.init();
-    this.scan();
+
+    this.init();    
+    if (config.scanAtStartup) this.scan();
   }
 
   init() {
@@ -180,4 +179,4 @@ class Devices {
 
 }
 
-module.exports = Devices;
+module.exports = new Devices(eventBus);
