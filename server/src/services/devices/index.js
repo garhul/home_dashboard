@@ -20,9 +20,8 @@ const eventBus = require('../../eventBus');
 
 class Devices {
 
-  constructor(bus) {
-    this.store = new Map();
-    this.bus = bus;
+  constructor() {
+    this.store = new Map();    
     if (config.useMocks) {
       mockData.forEach(val => this.store.set(val.device_id, { ...val, controls: aurora }));
     }
@@ -32,12 +31,12 @@ class Devices {
   }
 
   init() {
-    this.bus.addListener(EVS.DEVICES.SCAN, async () => {
+    eventBus.addListener(EVS.DEVICES.SCAN, async () => {
       await this.scan();
       this.notifyUpdate();
     });
     
-    this.bus.addListener(EVS.DEVICES.CMD, async (msg) => {
+    eventBus.addListener(EVS.DEVICES.CMD, async (msg) => {
       if (!msg.topics instanceof Array) msg.topcis = [msg.topcis];
       logger.d(`Relaying message [${msg.payload}] to topics [${msg.topics.join(', ')}]`);
       console.log(msg.topics);
@@ -46,19 +45,19 @@ class Devices {
           ? msg.payload.replace('$1', `"${msg.data}"`)
           : msg.payload;
     
-        this.bus.emit(EVS.MQTT.PUBLISH, {
+        eventBus.emit(EVS.MQTT.PUBLISH, {
           topic,
           payload,
         });
       });
     });
     
-    this.bus.addListener(EVS.DEVICES.LIST, async (client) => {
-      logger.d('Requested device list', TAG);
+    eventBus.addListener(EVS.DEVICES.LIST, async (client) => {
+      logger.d('Requested device list');
       this.notifyUpdate(client);
     });
     
-    this.bus.addListener(EVS.DEVICES.ANNOUNCE, async (payload) => {
+    eventBus.addListener(EVS.DEVICES.ANNOUNCE, async (payload) => {
       try {
         const msg = JSON.parse(payload.toString());
         switch(msg.ev) {
@@ -83,14 +82,14 @@ class Devices {
             throw new Error(`Unexpected message event ${msg.ev}`);
         }        
       } catch (e) {
-        logger.e(e, TAG);
+        logger.e(e);
       }
     });
   }
 
   notifyUpdate(client = null) {
-    logger.d('Notifying devices store change', TAG);
-    this.bus.emit(EVS.DEVICES.UPDATE, { client, data: Array.from(this.store.values()) });
+    logger.d('Notifying devices store change');
+    eventBus.emit(EVS.DEVICES.UPDATE, { client, data: Array.from(this.store.values()) });
   }
 
   isValidInfo(info) {
@@ -106,7 +105,7 @@ class Devices {
       this.store.delete(id);
       this.notifyUpdate();
     } else {
-      logger.w(`Attempted to remove non registered device ${id}`, TAG);
+      logger.w(`Attempted to remove non registered device ${id}`);
     }
   }
 
@@ -116,7 +115,7 @@ class Devices {
       d.state = state;
       this.notifyUpdate();
     } else {
-      logger.w(`Received state update from non registered device: ${id}`, TAG);
+      logger.w(`Received state update from non registered device: ${id}`);
     }
   }
 
@@ -134,7 +133,7 @@ class Devices {
       ips.push(`${baseScanAddress}${i}`);
   
       if (i % scanBatchSize === 0) {
-        logger.i(`Scanning ips in range (${baseScanAddress}${i - scanBatchSize}, ${baseScanAddress}${i})`, TAG);
+        logger.i(`Scanning ips in range (${baseScanAddress}${i - scanBatchSize}, ${baseScanAddress}${i})`);
         await Promise.all(ips.map(async (ip) => {
           try {            
             await timedPromise((async () => {
@@ -143,7 +142,9 @@ class Devices {
             })(), scanTimeout);
           } catch (ex) {
             if (ex.code !== 'TIMEOUT') {
-              logger.w(ex, TAG);
+              logger.w(ex.toString());
+            } else {
+              logger.w(`Info request from ${ip} timed out`);
             }
           }
         }));
@@ -166,17 +167,17 @@ class Devices {
       const obj = await res.json();
       if (this.isValidInfo(obj)) {      
         const state = await fetch(stateAddr);
-        return {...obj, ...{state: state.json()}};        
+        return {...obj, ...{state: await state.json()}};        
       } else {
-        logger.i(`Found device at ip ${ip} with invalid info json ${obj}`);
+        logger.i(`Found device at ip ${ip} with invalid info json`, obj);
       }
     } catch (err) {
       if (err.code !== 'EHOSTUNREACH' && err.code !== 'ECONNREFUSED' && err.code !== 'ETIMEDOUT') {
-        logger.w(err, TAG);
+        logger.w(err.toString());
       }
     }
   }
 
 }
 
-module.exports = new Devices(eventBus);
+module.exports = new Devices();

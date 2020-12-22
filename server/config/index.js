@@ -2,7 +2,7 @@ const { resolve } = require('path');
 
 const cfg = {
   scanAtStartup: true,
-  useMocks: true,
+  useMocks: false,
   wsPort: process.env.WS_PORT || 3030,
   baseScanAddress: '192.168.1.',
   scanBatchSize: 24,

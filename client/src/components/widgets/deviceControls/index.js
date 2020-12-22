@@ -4,13 +4,9 @@ import { CMDButton, CMDSlider, CMDKnob } from './controls';
 import { Container, Row, Col } from 'react-bootstrap';
 
 export default class DeviceControl extends React.Component {
-  update({data, payload, topics = null}) {
-    if (topics === null) {
-      topics = this.props.topics || [this.props.topic];
-    }
-    
-    DataBus.emit('devices.cmd',{
-      topics,
+  update({data, payload}) {
+    DataBus.emit('WIDGETS_CMD',{
+      id: this.props.id,   
       data,
       payload
     });
@@ -21,6 +17,8 @@ export default class DeviceControl extends React.Component {
       return (
         <Row key={`row_${i}`}>
           {row.map((ctrl, index) => {
+            if (!ctrl.type) return null;
+            
             switch (ctrl.type.toUpperCase()) {
               case 'BUTTON':
                 return (<Col  key={`btn_${index}`}>

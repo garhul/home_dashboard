@@ -5,7 +5,7 @@ import { Basic } from 'react-dial-knob'
 
 export function CMDButton(props) {
   function clickHandler() {
-    props.update({data: null, payload: props.payload, topics: props.topics});
+    props.update({data: null, payload: props.payload});
   }
   return (
     <Button block="true" variant={(!props.style)? "outline-info": props.style} size="lg" onClick={() => clickHandler()}>
@@ -31,7 +31,7 @@ export class CMDSlider extends React.Component {
     this.setState({ value: Math.floor(percentil * 100)});
 
     console.log(this.state);
-    this.props.update({data: this.state.value, payload: this.props.payload, topics:this.props.topics});
+    this.props.update({data: this.state.value, payload: this.props.payload});
   }
 
   render() {
@@ -49,7 +49,7 @@ export function CMDKnob (props) {
 
   function update(val) {
     setValue(val);
-    props.update({data: val, payload: props.payload, topics:props.topics});
+    props.update({data: val, payload: props.payload});
   
   }
   return <Basic

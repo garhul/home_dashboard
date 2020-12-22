@@ -2,12 +2,14 @@ const sfl = require('simple-fancy-logger')({ logString: '[TSTAMP] [LEVEL] [TAG] 
 const { inspect } = require('util');
 
 function parseArgs(...args) {
-  return args.reduce((acc, v) => {
-    if (typeof v !== String && typeof v !== Number) {
-      return acc + `${inspect(v)}`;
+  const d = args.map(v => {
+    if (typeof v !== 'string' && typeof v !== 'number') {
+      return `${inspect(v)}`;
     } 
-    return acc + `${v}`;
+    return `${v}`;
   });
+
+  return d.join(' ');
 }
 
 module.exports = (TAG = 'GENERAL') => ({

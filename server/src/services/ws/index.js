@@ -1,7 +1,7 @@
 const WebSocket = require('ws');
 const { inspect } = require('util');
 const config = require('../../../config');
-const logger = require('../logger');
+const logger = require('../logger')('WS');
 const evs = require('./events');
 const busEvents = require('../../events');
 const eventBus = require('../../eventBus');
@@ -27,24 +27,24 @@ function send(client = null, data) {
 
 const handlers = [
   {
-    ev: evs.WIDGETS.lIST,
+    ev: evs.WIDGETS_LIST,
     handler: (msg, client) => {
-      logger.d('Requested groups list: ', 'WS');
+      logger.d('Requested widgets list: ');
       eventBus.emit(busEvents.WIDGETS.LIST, client);
     },
   },
   {
     ev: evs.DEVICES_SCAN,
     handler: () => {
-      logger.d('Requested devices SCAN: ', 'WS');
+      logger.d('Requested devices SCAN: ');
       eventBus.emit(busEvents.DEVICES.SCAN);
     },
   },
   {
-    ev: evs.DEVICES_CMD,
+    ev: evs.WIDGETS_CMD,
     handler: (msg) => {
-      logger.d(`Requested to send devices CMD: ${inspect(msg)}`, 'WS');
-      eventBus.emit(busEvents.DEVICES.CMD, msg);
+      logger.d(`Requested to send CMD: ${inspect(msg)}`);
+      eventBus.emit(busEvents.WIDGETS_CMD, msg);
     },
   },
 ];
@@ -54,7 +54,7 @@ wss.on('connection', (ws) => {
     const { ev, msg } = JSON.parse(message);
     const hndlr = handlers.find((h) => h.ev === ev);
     if (hndlr === undefined) {
-      logger.e(`No handler registered for ws event ${ev}`, 'WS');
+      logger.e(`No handler registered for ws event ${ev}`);
       return;
     }
 
@@ -63,11 +63,11 @@ wss.on('connection', (ws) => {
 });
 
 eventBus.on(busEvents.WIDGETS.UPDATE, ({ client, data }) => {
-  logger.d('Sending groups update data', 'WS');
-  send(client, { ev: evs.GROUPS_UPDATE, data });
+  logger.d('Sending widget update data');
+  send(client, { ev: evs.WIDGETS_UPDATE, data });
 });
 
 exports.end = () => {
-  logger.d('Closing websocket connections', 'WS');
+  logger.d('Closing websocket connections');
   wss.close();
 };
