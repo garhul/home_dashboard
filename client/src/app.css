@@ -108,3 +108,8 @@ body {
   visibility: hidden;
   display:none;
 }
+
+.badge-warning {
+  color: #e7b621;
+  background-color: #171b1f;
+}

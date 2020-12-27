@@ -10,7 +10,7 @@ export default function MainView() {
 
   useEffect(() => {
     DataBus.on('WIDGETS_UPDATE',(d) => {
-      console.log('Received widgets.update', d);
+      // console.log('Received widgets.update', d);
       updateWidgets(d);
     });
   }, []);
@@ -21,7 +21,7 @@ export default function MainView() {
         return widgets.filter(w => w.type === 'aurora');        
 
       case 'sensors':        
-        return widgets.filter(w => w.type === 'sensors');  
+        return widgets.filter(w => w.type === 'sensor');  
 
       case 'home':        
         return widgets.filter(w => w.type === 'group');     

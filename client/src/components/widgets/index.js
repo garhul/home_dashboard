@@ -1,16 +1,11 @@
 import React from 'react';
-import SensorControls from './sensor'
 import AdminControls from './admin';
-import DeviceControls from './deviceControls';
+import DeviceControls from './device';
 
 
 export function Widget(props) {
-  function getControls() {
-    if (props.type === 'sensors') return <SensorControls {...props} />
-    if (props.type === 'devices') return <DeviceControls {...props} />
-    if (props.type === 'groups') return <DeviceControls {...props} />
+  function getControls() {    
     if (props.type === 'admin') return <AdminControls {...props} />
-
     return <DeviceControls {...props} />
   }
 

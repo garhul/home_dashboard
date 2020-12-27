@@ -1,6 +1,6 @@
 import React from 'react';
 import DataBus from '../../../data';
-import { CMDButton, CMDSlider, CMDKnob } from './controls';
+import { CMDButton, CMDSlider, CMDKnob, CMDLabel, Plot } from './controls';
 import { Container, Row, Col } from 'react-bootstrap';
 
 export default class DeviceControl extends React.Component {
@@ -27,15 +27,30 @@ export default class DeviceControl extends React.Component {
 
               case 'KNOB':
                 return (
-                  <Col  key={`slider_${index}`}>
-                    <CMDSlider update={(data) => this.update(data)} key={`slider_${index}`} {...ctrl}></CMDSlider >
+                  <Col  key={`knob_${index}`}>
+                    <CMDSlider update={(data) => this.update(data)} key={`knob_${index}`} {...ctrl}></CMDSlider >
                   </Col>);
 
               case 'SLIDER': 
                 return (
                   <Col  key={`slider_${index}`}>
-                    <CMDKnob update={(data) => this.update(data)} key={`knob_${index}`} {...ctrl}></CMDKnob >
+                    <CMDKnob update={(data) => this.update(data)} key={`slider_${index}`} {...ctrl}></CMDKnob >
                   </Col>);
+
+              case 'LABEL':
+                return (
+                  <Col key={`label_${index}`}>
+                    <CMDLabel {...ctrl}></CMDLabel>
+                  </Col>
+                )
+
+              case 'PLOT':
+                return (
+                  <Col key={`plot_${index}`}>
+                    <Plot {...ctrl}></Plot>
+                  </Col>
+                )
+                
               default: 
                 return null;
             }

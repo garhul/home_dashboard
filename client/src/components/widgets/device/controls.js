@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import Button from 'react-bootstrap/Button'
 import ProgressBar from 'react-bootstrap/ProgressBar'
 import { Basic } from 'react-dial-knob'
+import Badge from 'react-bootstrap/Badge'
 
 export function CMDButton(props) {
   function clickHandler() {
@@ -63,4 +64,12 @@ export function CMDKnob (props) {
   >
       <label>{props.label}</label>
   </Basic>
+}
+
+export function CMDLabel (props) {
+  return <Badge variant="warning">{props.label}</Badge>  
+}
+
+export function Plot(props) {
+  return <div>Plot Be Here</div>;
 }

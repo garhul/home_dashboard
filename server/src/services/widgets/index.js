@@ -89,7 +89,7 @@ class WidgetsService {
   }
 
   updateFromSensors(sensor) {
-    logger.i("Updating sensor widgets", sensor.data.t);
+    logger.i("Updating sensor widgets");
     this.store.set(sensor.id,
       {
         id: sensor.id,
