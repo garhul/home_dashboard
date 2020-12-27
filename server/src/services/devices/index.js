@@ -18,11 +18,11 @@ const { aurora } = require('../../../data/controls');
 const { timedPromise } = require('../../utils');
 const eventBus = require('../../eventBus');
 
-class Devices {
+class DevicesService {
 
   constructor() {
     this.store = new Map();    
-    if (config.useMocks) {
+    if (config.mockDevices) {
       mockData.forEach(val => this.store.set(val.device_id, { ...val, controls: aurora }));
     }
 
@@ -180,4 +180,4 @@ class Devices {
 
 }
 
-module.exports = new Devices();
+module.exports = new DevicesService();

@@ -3,6 +3,7 @@ const DevicesService = require('./services/devices');
 const mqtt = require('./services/mqtt');
 const logger = require('./services/logger')('MAIN');
 const WidgetService = require('./services/widgets');
+const SensorsService = require('./services/sensors');
 const config = require('../config');
 
 

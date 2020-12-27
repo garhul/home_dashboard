@@ -1,17 +1,9 @@
-/** Widgets service:
- *  
- *  widgets are displayed on the frontend as a representation of a control set, either for a group, a device, or for a sensor.
- *  
- * 
- */
-
 const { v4: uuid } = require('uuid');
 const events = require('../../events');
 const eventBus = require('../../eventBus');
 const controls = require('../../../data/controls');
 const controlGroups = require('../../../data/controlGroups');
 const logger = require('../logger')('WIDGETS_SV');
-
 
 class Widget {
   constructor() {
@@ -35,14 +27,12 @@ class Widget {
   }
 }
 
-
-
 class WidgetsService {
   
   constructor() {
     this.store = new Map();    
     
-    this.loadGroups();    
+    this.loadGroups();  
     this.addEventHandlers();
     this.notifyUpdate();
 
@@ -67,14 +57,7 @@ class WidgetsService {
     });
   }
 
-
-  /** constructs a widget from a device */
-  getDeviceWidget(device) {
-    return new Widget();
-  }
-
-  parsecontrols(controls, state) {
-    // Im tired now bu tproblem here is that the refrence of control ends up being shared across all widgets
+  parsecontrols(controls, state) {    
     return controls.map(row => row.map(control => {        
       const ret = {};        
       Object.keys(control).forEach(prop => {
@@ -86,12 +69,11 @@ class WidgetsService {
       });
       
       return ret;
-      }));
+    }));
   }
 
-  addEventHandlers() {    
-    eventBus.addListener(events.DEVICES.UPDATE, ({data: devices}) => {      
-      logger.i("Updating device widgets");
+  updateFromDevices(devices) {
+    logger.i("Updating device widgets");
       devices.forEach(d => {        
         this.store.set(d.device_id,
           {
@@ -100,16 +82,28 @@ class WidgetsService {
             name: d.human_name,
             topic: d.topic,            
             controls: this.parsecontrols(controls.aurora, d.state),            
-          });        
+          });
           logger.d(d.state);
       });
       this.notifyUpdate();
-    });
+  }
 
-    eventBus.addListener(events.WIDGETS.LIST, (client) => {
-     this.notifyUpdate(client);
-    });
+  updateFromSensors(sensor) {
+    logger.i("Updating sensor widgets", sensor.data.t);
+    this.store.set(sensor.id,
+      {
+        id: sensor.id,
+        type: 'sensor',
+        name: sensor.name,        
+        controls: this.parsecontrols(controls.sensor, sensor.data),
+      });
+    this.notifyUpdate();
+  }
 
+  addEventHandlers() {    
+    eventBus.addListener(events.DEVICES.UPDATE, ({data: devices}) => this.updateFromDevices(data));
+    eventBus.addListener(events.SENSORS.UPDATE, (data) => this.updateFromSensors(data));
+    eventBus.addListener(events.WIDGETS.LIST, (client) => this.notifyUpdate(client));
     eventBus.addListener(events.WIDGETS.CMD, (...args) => this.issueCMD(...args));
   }
 

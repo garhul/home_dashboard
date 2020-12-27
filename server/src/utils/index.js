@@ -18,5 +18,3 @@ exports.timedPromise = (promise, ms) => new Promise((resolve, reject) => {
 exports.wait = (ms) => new Promise(resolve => {
   setTimeout(resolve, ms);
 });
-
-exports.TimeSeries = require('./timeSeries');

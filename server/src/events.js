@@ -13,10 +13,10 @@ module.exports = {
     LIST: 'devices.list',
   },
   SENSORS: {
-    UPDATE: 'sensors.update',
-    FETCH_DATA: 'sensors.fetch_data',
-    LIST: 'sensors.list',
-    ADD_DATA: 'sensors.add_data',
+    DATA: 'sensors.data',   // Emitted when new sensor data arrives
+    LIST: 'sensors.list',  // Emitted when a request to list sensors is registered
+    UPDATE: 'sensors.update', // Emmitted when a sensor model changes
+    FETCH: 'sensors.fetch', // Emitted when a request to get a specific sensor data is registered
   },
   MQTT: {
     PUBLISH: 'mqtt.publish',
