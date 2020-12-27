@@ -14,7 +14,9 @@ const cfg = {
     sensorsTopic: 'sensors',
   },
   sensors: {
-    dataPath: resolve(__dirname, '../data'),
+    dataPath: resolve(__dirname, '../data/sensors'),
+    persistToFile: false,
+    
     /* 
     144 points in 24 hours -> 10 min resolution
     144 points in 7 days -> 70 min resolution 

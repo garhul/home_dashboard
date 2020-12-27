@@ -1,3 +1,5 @@
+const fs = require('fs');
+const path = require('path');
 const { v4: uuid } = require('uuid');
 const logger = require('../logger')('SENSORS_SV');
 const eventBus = require('../../eventBus');
@@ -10,12 +12,23 @@ class Sensor {
     this.id = id;
     this.name = name;
     this._data = new Map();
+    this.file = path.resolve(config.sensors.dataPath, `${this.id}.data`);
   }
 
   addDataSet(data) {
     const t = Date.now();
-    if (false && config.sensors.persistToFile ) {
-      // TODO :: persist to file?    
+    if (config.sensors.persistToFile ) {      
+      try {
+        if (!fs.existsSync(this.file)) {
+          const header = `${JSON.stringify({id: this.id, name: this.name})}  \n` 
+          + 'time,' + Object.keys(data).join(', ') + '\n';
+          fs.writeFileSync(this.file, header, { flag: 'w+' });
+        }
+        const row = `${t},${Object.keys(data).map(k => data[k]).join(',')}\n`;
+        fs.writeFileSync(this.file, row, {flag: 'a'});              
+      } catch (e) {
+        logger.e(e.toString());
+      }
     }
 
     for (const key in data) {
