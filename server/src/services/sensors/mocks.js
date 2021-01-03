@@ -8,6 +8,7 @@ class mockSensor {
     this.interval = null;
     this.name = name;    
     this.id = uuid();
+    this.last = 0;
   }
 
   start() {
@@ -15,7 +16,7 @@ class mockSensor {
   }
 
 
-  getRand(min, max) {
+  getRand(min, max) {    
     return (min + Math.random() * max).toFixed(2);
   }
 
@@ -25,7 +26,7 @@ class mockSensor {
       id: this.id,
       name: this.name,
       data: {
-        t: this.getRand(-5, 40),
+        t: this.last++,
         h: this.getRand(10, 90),
         p: this.getRand(800, 1200),
         vbat: this.getRand(3, 4.2)

@@ -44,7 +44,7 @@ const handlers = [
     ev: evs.WIDGETS_CMD,
     handler: (msg) => {
       logger.d(`Requested to send CMD: ${inspect(msg)}`);
-      eventBus.emit(busEvents.WIDGETS_CMD, msg);
+      eventBus.emit(busEvents.WIDGETS.CMD, msg);
     },
   },
 ];

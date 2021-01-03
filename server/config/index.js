@@ -1,7 +1,7 @@
 const { resolve } = require('path');
 
 const cfg = {
-  scanAtStartup: false, //true,
+  scanAtStartup: true, //true,
   mockDevices: false,
   mockSensors: true,
   wsPort: process.env.WS_PORT || 3030,
@@ -16,6 +16,7 @@ const cfg = {
   sensors: {
     dataPath: resolve(__dirname, '../data/sensors'),
     persistToFile: false,
+    recoverOnStartup: true,
     
     /* 
     144 points in 24 hours -> 10 min resolution
@@ -23,7 +24,7 @@ const cfg = {
     144 points in 31 days ~> 5.1 hr resolution
     144 points in 1 Yr -> 2.5 days resolution
     */
-    timeSeriesDepth: 144, 
+    timeSeriesDepth: 2800 //144, 
   },
 };
 

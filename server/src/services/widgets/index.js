@@ -89,7 +89,7 @@ class WidgetsService {
   }
 
   updateFromSensors(sensor) {
-    logger.i("Updating sensor widgets");
+    logger.i("Updating sensor widgets");    
     this.store.set(sensor.id,
       {
         id: sensor.id,
@@ -101,15 +101,22 @@ class WidgetsService {
   }
 
   addEventHandlers() {    
-    eventBus.addListener(events.DEVICES.UPDATE, ({data: devices}) => this.updateFromDevices(data));
+    eventBus.addListener(events.DEVICES.UPDATE, ({data: devices}) => this.updateFromDevices(devices));
     eventBus.addListener(events.SENSORS.UPDATE, (data) => this.updateFromSensors(data));
     eventBus.addListener(events.WIDGETS.LIST, (client) => this.notifyUpdate(client));
     eventBus.addListener(events.WIDGETS.CMD, (...args) => this.issueCMD(...args));
   }
 
-  issueCMD(payload) {
-    logger.d('Command issued');
-    logger.d(payload);
+  issueCMD({payload, data, id}) {
+    logger.d(`Issuing command`, payload);
+    const widget = this.store.get(id);
+    if (!widget) {
+      logger.e(`No widget found with provided ID`, id);
+      return;
+    }
+    
+    const topics = widget.topics ?? [widget.topic];
+    eventBus.emit(events.DEVICES.CMD, { topics, payload, data } );
   }
 }
 

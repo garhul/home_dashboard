@@ -1,59 +1,66 @@
+const DAY = 24 * 3600000;  //miliseconds in a day
+const WEEK = DAY * 7;
+const MONTH = DAY * 31;
+const YEAR = DAY * 365;
+
 class TimeSeries {
   constructor(depth = 1440) {
-    this._data = [];
-    this.cursor = 0;
     this.depth = depth;
-    this._min = null;
-    this._max = null;
-    this._avg = null;
+    this.subSets = {
+      D: { resolution:1 , data:[], keys: {}},
+      // D: { resolution:Math.floor(DAY / depth) , data:[], keys: {}},
+      W: { resolution:Math.floor(WEEK / depth), data:[], keys: {}},
+      M: { resolution:Math.floor(MONTH / depth), data:[], keys: {}},
+      Y: { resolution:Math.floor(YEAR / depth), data:[], keys: {}},
+    };    
   }
 
   get data() {
-    return this._data;
+    return this.subSets;
   }
-
-  addDataPoint(t, value) {
-    let v = (typeof(value) === 'number') ? value : parseFloat(value);
-    this._data[this.cursor] = [t, v];
-
-    if (this._min === null || this._min > v) this._min = v;
-    if (this._max === null || this._max < v) this._max = v;
-    this._avg = (this._avg === null) ? v : (this._avg + v) / 2 ;
-    
-    if (this.cursor === this.depth) {
-      this._data.shift();
+  
+  _addToSubset(t, v, subSet) {
+    if (
+      (subSet.data.length === 0) ||
+      ((subSet.data[subSet.data.length -1].t + subSet.resolution) < t) 
+      ) {        
+        subSet.data.push({ t,  v: {...v} }); // do not store a reference to v
     } else {
-      this.cursor++;
+      // store superSample as average  
+      Object.keys(v).forEach(j => {
+        subSet.data[subSet.data.length - 1].v[j] = (subSet.data[subSet.data.length - 1].v[j] + v[j]) / 2;
+      });
     }
-  }
-  
-  get last() {
-    return this._data[this.cursor];
-  }
-  
-  get min() {
-    return this._min;
-  }
-
-  get max() {
-    return this._max;
-  }
-
-  get avg() {
-    return this._avg;
-  }
-
-  getRange(tsLeft, tsRight, granularity = 1) {
-    let cc = 0;
-    return this.data.filter((val) => {
-      if (val.ts >= tsRight && val.ts <= tsLeft) {
-        cc++;
-        if (cc % granularity === 0) {
-          return true;
+    
+    Object.keys(v).forEach(k => {        
+      const lastInsertion = (subSet.data[subSet.data.length -1].v)[k];
+      if (!subSet.keys[k]) {
+        subSet.keys[k] = {
+          avg: lastInsertion,
+          min: lastInsertion,
+          max: lastInsertion,
+          last: lastInsertion
         }
+      } else {
+        subSet.keys[k].avg = (subSet.keys[k].avg + lastInsertion) / 2;
+        subSet.keys[k].min = (subSet.keys[k].min > lastInsertion) ? lastInsertion : subSet.keys[k].min;
+        subSet.keys[k].max = (subSet.keys[k].max < lastInsertion) ? lastInsertion : subSet.keys[k].max;
+        subSet.keys[k].last = lastInsertion;
       }
-      return false;
     });
+    
+    // Adjust the buffer length
+    if (subSet.data.length > this.depth) subSet.data.shift();
+  }
+
+  addDataPoint(t, values) {
+    let v = {};
+
+    Object.keys(values).forEach(k => {
+      v[k] = (typeof(values[k]) === 'number') ? values[k] : parseFloat(values[k]);
+    });
+    
+    Object.keys(this.subSets).forEach(k => this._addToSubset(t, v, this.subSets[k]));
   }
 }
 

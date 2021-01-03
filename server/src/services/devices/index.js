@@ -36,10 +36,8 @@ class DevicesService {
       this.notifyUpdate();
     });
     
-    eventBus.addListener(EVS.DEVICES.CMD, async (msg) => {
-      if (!msg.topics instanceof Array) msg.topcis = [msg.topcis];
-      logger.d(`Relaying message [${msg.payload}] to topics [${msg.topics.join(', ')}]`);
-      console.log(msg.topics);
+    eventBus.addListener(EVS.DEVICES.CMD, async (msg) => {     
+      logger.d('Relaying message',msg.payload, `to topics [${msg.topics.join(', ')}]`);      
       msg.topics.forEach(topic => {
         const payload = (msg.data !== undefined && msg.data !== null)
           ? msg.payload.replace('$1', `"${msg.data}"`)

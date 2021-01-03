@@ -3,6 +3,9 @@ import Button from 'react-bootstrap/Button'
 import ProgressBar from 'react-bootstrap/ProgressBar'
 import { Basic } from 'react-dial-knob'
 import Badge from 'react-bootstrap/Badge'
+import { Line } from 'react-chartjs-2'
+import { Row, Col } from 'react-bootstrap';
+
 
 export function CMDButton(props) {
   function clickHandler() {
@@ -67,9 +70,64 @@ export function CMDKnob (props) {
 }
 
 export function CMDLabel (props) {
-  return <Badge variant="warning">{props.label}</Badge>  
+  return <Badge variant="warning" style={{color:props.color}}>{props.label}</Badge>  
 }
 
 export function Plot(props) {
-  return <div>Plot Be Here</div>;
+  const [showScale, setShowScale] = useState(false);
+  const [subset, setSubset] = useState('D');
+
+  const options = {        
+    scales: {
+      yAxes: props.plots.map(plot => ({
+        ticks: {
+          callback: (value, index, values) => `${value} ${plot.unit}`,
+          maxTicksLimit: 5,
+          fontColor: plot.color
+        },       
+        type: 'linear',
+        display: showScale,
+        id: `axis-${plot.key}`        
+      })),
+      xAxes: [{
+        type: 'time',
+        distribution: 'linear',
+        time: {
+          unit: 'minute'
+        }
+      }],
+    }
+  };  
+  const data = {
+    datasets: props.plots.map(plot => ({
+      label: plot.label,
+      borderColor: plot.color,
+      fill: false,
+      data:props.data[subset].data.map(p => ({ t:p.t, y: p.v[plot.key] })),  
+      yAxisID: `axis-${plot.key}`
+    }))
+  };
+
+  return (
+    <div>
+      <Line data={data} options={options}  />
+      <Row>
+        <Col>
+        <Button variant={(showScale)? 'outline-success':'outline-secondary'} onClick={() => {setShowScale(!showScale)}} size="sm">scale</Button>
+        </Col>
+        <Col>
+          <Button variant={(subset === 'Y')? 'outline-success':'outline-secondary'} onClick={() => {setSubset('Y')}} size="sm">Year</Button>
+        </Col>
+        <Col>
+          <Button variant={(subset === 'M')? 'outline-success':'outline-secondary'} onClick={() => {setSubset('M')}} size="sm">Month</Button>
+        </Col>
+        <Col>
+          <Button variant={(subset === 'W')? 'outline-success':'outline-secondary'} onClick={() => {setSubset('W')}} size="sm">Week</Button>
+        </Col>
+        <Col>
+          <Button variant={(subset === 'D')? 'outline-success':'outline-secondary'} onClick={() => {setSubset('D')}} size="sm">Day</Button>
+        </Col>
+      </Row>      
+    </div>
+  )
 }
