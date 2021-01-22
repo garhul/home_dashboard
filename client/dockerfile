@@ -1,0 +1,17 @@
+FROM node:14-alpine
+
+USER dash_cli
+WORKDIR /dashboard
+
+ADD ./src /dashboard/src
+ADD ./package-lock.json /dashboard/package-lock.json
+ADD ./package.json /dashboard/package.json
+ADD ./public /dashboard/public
+
+RUN npm ci
+
+ENV NODE_ENV=prod
+
+EXPOSE 3000
+
+CMD ["npm", "start"]

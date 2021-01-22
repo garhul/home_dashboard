@@ -8,6 +8,9 @@ const cfg = {
   baseScanAddress: '192.168.1.',
   scanBatchSize: 24,
   scanTimeout: 5000,
+  logger:{
+    
+  },
   mqtt: {
     broker: 'mqtt://192.168.1.10',
     announceTopic: 'announce',
