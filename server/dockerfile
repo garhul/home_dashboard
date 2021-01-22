@@ -1,6 +1,5 @@
 FROM node:14-alpine
 
-USER dash_sv
 WORKDIR /dashboard
 
 ADD ./src /dashboard/src
@@ -10,9 +9,10 @@ ADD ./config /dashboard/config
 ADD ./data /dashboard/data
 
 RUN npm ci
+RUN apk update && apk add bash
 
 ENV NODE_ENV=prod
-ENV WS_PORT=3030
+ENV WS_PORT=3030ls
 
 EXPOSE 3030
 

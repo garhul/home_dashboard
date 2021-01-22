@@ -1,6 +1,5 @@
 FROM node:14-alpine
 
-USER dash_cli
 WORKDIR /dashboard
 
 ADD ./src /dashboard/src
