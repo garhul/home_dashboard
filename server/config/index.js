@@ -1,6 +1,6 @@
 const { resolve } = require('path');
 
-const cfg = {
+const baseCfg = {
   scanAtStartup: true, //true,
   mockDevices: false,
   mockSensors: true,
@@ -31,4 +31,22 @@ const cfg = {
   },
 };
 
-module.exports = cfg;
+const cfg = {
+  prod: {
+    mockDevices: false,
+    mockSensors: false,
+    logger: {
+      path: resolve('/data/dashboard_sv.log')
+    },
+    sensors: {
+      dataPath: resolve('/data'),
+      persistToFile: true,
+      recoverOnStartup: true,
+      timeSeriesDepth: 288,
+    },
+  },
+  dev: {}
+}
+
+
+module.exports = Object.assign({}, baseCfg, cfg[process.env.NODE_ENV]);

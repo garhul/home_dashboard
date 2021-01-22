@@ -40,6 +40,7 @@ class Sensor {
     const t = ts ?? Date.now();
     if (config.sensors.persistToFile ) this.persist(t, data);
     this.series.addDataPoint(t, data);
+    
     // logger.d(`Adding data point  `, data);    
   }
 

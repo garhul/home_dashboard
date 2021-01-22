@@ -1,5 +1,7 @@
-const sfl = require('simple-fancy-logger')({ logString: '[TSTAMP] [LEVEL] [TAG] [TEXT]' });
+const config = require('../../config');
+const sfl = require('simple-fancy-logger')({ logString: '[TSTAMP] [LEVEL] [TAG] [TEXT]',  of: config.logger.path});
 const { inspect } = require('util');
+
 
 function parseArgs(...args) {
   const d = args.map(v => {

@@ -7,8 +7,8 @@ class TimeSeries {
   constructor(depth = 1440) {
     this.depth = depth;
     this.subSets = {
-      D: { resolution:1 , data:[], keys: {}},
-      // D: { resolution:Math.floor(DAY / depth) , data:[], keys: {}},
+      I: { resolution:1 , data:[], keys: {}},
+      D: { resolution:Math.floor(DAY / depth) , data:[], keys: {}},
       W: { resolution:Math.floor(WEEK / depth), data:[], keys: {}},
       M: { resolution:Math.floor(MONTH / depth), data:[], keys: {}},
       Y: { resolution:Math.floor(YEAR / depth), data:[], keys: {}},
