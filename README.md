@@ -1,7 +1,16 @@
 ### Home dashboard
 
 
+## Instructions:
+App is meant to be run in two different docker containers one serving the front end, and the other the backend service which interfaces with mosquitto
 
-## install ?
+Prequisites:
+- Mosquitto broker
+- Docker
 
-## something here?
+Running it:
+ - run `startup.sh`
+
+
+
+

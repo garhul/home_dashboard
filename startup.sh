@@ -9,5 +9,5 @@ cd ../client
 
 docker build -t dash_web .
 
-docker run -d dash_sv -p 3030:3030
-docker run -d dash_web -p 3000:3000
+docker run -d -p 3030:3030 dash_sv
+docker run -d -p 3000:3000 dash_web

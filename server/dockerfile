@@ -12,7 +12,7 @@ RUN npm ci
 RUN apk update && apk add bash
 
 ENV NODE_ENV=prod
-ENV WS_PORT=3030ls
+ENV WS_PORT=3030
 
 EXPOSE 3030
 
