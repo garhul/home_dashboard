@@ -35,14 +35,12 @@ const cfg = {
   prod: {
     mockDevices: false,
     mockSensors: false,
-    // logger: {
-    //   path: resolve('/data/dashboard_sv.log')
-
-
-    // },
+    logger: {
+      path: resolve('/data/dashboard_sv.log')
+    },
     sensors: {
-      // dataPath: resolve('/data'),
-      // persistToFile: true,
+      dataPath: resolve('/data'),
+      persistToFile: true,
       recoverOnStartup: true,
       timeSeriesDepth: 288,
     },
