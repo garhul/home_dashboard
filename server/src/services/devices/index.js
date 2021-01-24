@@ -113,6 +113,7 @@ class DevicesService {
       d.state = state;
       this.notifyUpdate();
     } else {
+      logger.d(Array.from(this.store));
       logger.w(`Received state update from non registered device: ${id}`);
     }
   }

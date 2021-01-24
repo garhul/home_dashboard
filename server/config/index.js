@@ -9,7 +9,7 @@ const baseCfg = {
   scanBatchSize: 24,
   scanTimeout: 5000,
   logger:{
-    
+    path:null,
   },
   mqtt: {
     broker: 'mqtt://192.168.1.10',
@@ -35,12 +35,14 @@ const cfg = {
   prod: {
     mockDevices: false,
     mockSensors: false,
-    logger: {
-      path: resolve('/data/dashboard_sv.log')
-    },
+    // logger: {
+    //   path: resolve('/data/dashboard_sv.log')
+
+
+    // },
     sensors: {
-      dataPath: resolve('/data'),
-      persistToFile: true,
+      // dataPath: resolve('/data'),
+      // persistToFile: true,
       recoverOnStartup: true,
       timeSeriesDepth: 288,
     },
