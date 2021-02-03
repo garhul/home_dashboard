@@ -55,7 +55,7 @@ class TimeSeries {
 
   addDataPoint(t, values) {
     let v = {};
-
+   
     Object.keys(values).forEach(k => {
       v[k] = (typeof(values[k]) === 'number') ? values[k] : parseFloat(values[k]);
     });

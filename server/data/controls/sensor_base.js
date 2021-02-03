@@ -41,25 +41,33 @@ module.exports = [
         label: 'Temperature',        
         unit: 'C',        
         color: colors[0],
-        key: 't'
+        key: 't',
+        min: 10,
+        max: 30
       },
       {
         label: 'Humidity',
         unit: '%',
         color: colors[1],
-        key: 'h'
+        key: 'h',
+        min: 0,
+        max: 100
       },
       {
         label: 'Pressure',
         unit: 'hPa',
         color: colors[2],
-        key: 'p'
+        key: 'p',
+        min: 800,
+        max: 1400
       },
       {
         label: 'Battery',
         unit: 'V',
         color: colors[3],
-        key: 'vbat'
+        key: 'vbat',
+        min: 0,
+        max: 5
       }
     ]
   }]

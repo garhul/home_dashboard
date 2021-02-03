@@ -39,9 +39,9 @@ class Sensor {
   addDataSet(data, ts = null) {
     const t = ts ?? Date.now();
     if (config.sensors.persistToFile ) this.persist(t, data);
+    logger.d(`Adding data point  `, data);    
     this.series.addDataPoint(t, data);
     
-    // logger.d(`Adding data point  `, data);    
   }
 
 
@@ -89,7 +89,9 @@ class SensorsService {
       }      
     }
 
-    eventBus.on(events.SENSORS.DATA, (payload) => { this.addSensorData(payload) });
+    eventBus.on(events.SENSORS.DATA, (payload) => { 
+      console.log(payload.toString());
+      this.addSensorData(JSON.parse(payload.toString())) });
   }
 
   addSensorData({id, name, data}) {

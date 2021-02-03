@@ -14,7 +14,7 @@ module.exports = [
   {
     topic: config.mqtt.sensorsTopic,
     handler: (_topic, payload) => {
-      eventBus.emit(busevents.SENSORS.DATA, payload);
+      eventBus.emit(busEvents.SENSORS.DATA, payload);
     },
   },
 ];

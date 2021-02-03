@@ -3,7 +3,7 @@ const { resolve } = require('path');
 const baseCfg = {
   scanAtStartup: true, //true,
   mockDevices: false,
-  mockSensors: true,
+  mockSensors: false,
   wsPort: process.env.WS_PORT || 3030,
   baseScanAddress: '192.168.1.',
   scanBatchSize: 24,

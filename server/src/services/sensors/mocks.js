@@ -22,7 +22,7 @@ class mockSensor {
 
   // Generate a single random event of sensor input
   update() {
-    eventBus.emit(events.SENSORS.DATA, {
+    eventBus.emit(events.SENSORS.DATA, JSON.stringify({
       id: this.id,
       name: this.name,
       data: {
@@ -31,13 +31,13 @@ class mockSensor {
         p: this.getRand(800, 1200),
         vbat: this.getRand(3, 4.2)
       }
-    });
+    }));
   }
 }
 
 exports.init = (count) => {  
   for (let i =0; i<count; i++) {
-    const m = new mockSensor(`Mock sensor ${i}`, 2000);
+    const m = new mockSensor(`Mock sensor ${i}`, 30000);
     m.start();
   }
 }

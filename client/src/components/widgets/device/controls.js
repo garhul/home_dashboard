@@ -83,7 +83,9 @@ export function Plot(props) {
         ticks: {
           callback: (value, index, values) => `${value} ${plot.unit}`,
           maxTicksLimit: 5,
-          fontColor: plot.color
+          fontColor: plot.color,
+          suggestedMin: plot.min ?? 0,
+          suggestedMax: plot.max ?? 100,
         },       
         type: 'linear',
         display: showScale,
