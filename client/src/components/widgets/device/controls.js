@@ -77,26 +77,30 @@ export function Plot(props) {
   const [showScale, setShowScale] = useState(false);
   const [subset, setSubset] = useState('D');
 
-  const options = {        
+  const options = {     
+    maintainAspectRatio:true,
     scales: {
-      yAxes: props.plots.map(plot => ({
+      yAxes: props.plots.map(plot => ({        
         ticks: {
           callback: (value, index, values) => `${value} ${plot.unit}`,
           maxTicksLimit: 5,
           fontColor: plot.color,
           suggestedMin: plot.min ?? 0,
-          suggestedMax: plot.max ?? 100,
+          suggestedMax: plot.max ?? 100,          
         },       
         type: 'linear',
         display: showScale,
-        id: `axis-${plot.key}`        
+        id: `axis-${plot.key}`,
+
+
       })),
       xAxes: [{
         type: 'time',
-        distribution: 'linear',
+        distribution: 'linear',        
         time: {
           unit: 'minute'
-        }
+        },
+        drawTicks:false
       }],
     }
   };  
@@ -106,13 +110,13 @@ export function Plot(props) {
       borderColor: plot.color,
       fill: false,
       data:props.data[subset].data.map(p => ({ t:p.t, y: p.v[plot.key] })),  
-      yAxisID: `axis-${plot.key}`
+      yAxisID: `axis-${plot.key}`,      
     }))
   };
 
   return (
     <div>
-      <Line data={data} options={options}  />
+      <Line data={data} options={options} />
       <Row>
         <Col>
         <Button variant={(showScale)? 'outline-success':'outline-secondary'} onClick={() => {setShowScale(!showScale)}} size="sm">scale</Button>

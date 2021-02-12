@@ -27,7 +27,7 @@ const baseCfg = {
     144 points in 31 days ~> 5.1 hr resolution
     144 points in 1 Yr -> 2.5 days resolution
     */
-    timeSeriesDepth: 2800 //144, 
+    timeSeriesDepth: 144 //144, 
   },
 };
 

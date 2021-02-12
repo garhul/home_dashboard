@@ -13,7 +13,10 @@ class Sensor {
     this.name = name;
     this.series = new TimeSeries(config.sensors.timeSeriesDepth);
     this.file = path.resolve(config.sensors.dataPath, `${this.id}.data`);
+    this.state = "OPERATIVE";
   }
+
+  load
 
   persist(t, data) {
     try {
@@ -36,14 +39,17 @@ class Sensor {
    * 
    * @param {} data 
    */
-  addDataSet(data, ts = null) {
+  addDataSet(data, ts = null, persist = true) {
     const t = ts ?? Date.now();
-    if (config.sensors.persistToFile ) this.persist(t, data);
+    if (config.sensors.persistToFile && persist) this.persist(t, data);
     logger.d(`Adding data point  `, data);    
     this.series.addDataPoint(t, data);
     
   }
 
+  updateState(newState) {
+    this.state = newState;    
+  }
 
   /**
    * Returns the data associated with each one of the sensor readouts grouped by timestamp and subset (day, week, etc)
@@ -77,7 +83,7 @@ class SensorsService {
               v[k.trim()] = vals[i];
             });
 
-            sensor.addDataSet(v, parseInt(ts));
+            sensor.addDataSet(v, Number(ts));
           });
           
           this.sensors.set(header.id, sensor);
@@ -89,20 +95,26 @@ class SensorsService {
       }      
     }
 
-    eventBus.on(events.SENSORS.DATA, (payload) => { 
-      console.log(payload.toString());
-      this.addSensorData(JSON.parse(payload.toString())) });
+    eventBus.on(events.SENSORS.DATA, (payload) => {      
+      const data = JSON.parse(payload.toString());
+      this.updateSensor(data);        
+    });
   }
 
-  addSensorData({id, name, data}) {
-    const sensor = this.sensors.get(id) ?? new Sensor(id, name);
-    
-    sensor.addDataSet(data);
-    this.sensors.set(id, sensor);
-    logger.d(`New sensor [${name}] data`, data);
+  updateSensor(data) {
+    const { id, name } = data
+    const sensor = this.sensors.get(id) ?? new Sensor(id, name?? 'unknown');
+    if (data.alert) {
+      sensor.updateState(data.alert)
+    } else {
+      sensor.addDataSet(data);
+      this.sensors.set(id, sensor);
+      logger.d(`New sensor [${name}] data`, data);
+    }
 
     eventBus.emit(events.SENSORS.UPDATE, sensor);
   }
+
 }
 
 if (config.mockSensors) {

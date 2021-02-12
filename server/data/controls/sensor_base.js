@@ -26,12 +26,14 @@ module.exports = [
   [{    
     type: 'plot',
     data: (d) => d,
-    options: {
+    options: {      
       scales: {
         xAxes: [{
-          type: 'time',
+          type: 'line', //'time',
           time: {
-              unit: 'minute'
+              unit: 'hour',
+              stepSize:5,
+              minUnit:'hour'
           }
         }]
       }
