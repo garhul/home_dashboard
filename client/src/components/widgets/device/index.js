@@ -1,6 +1,6 @@
 import React from 'react';
 import DataBus from '../../../data';
-import { CMDButton, CMDSlider, CMDKnob, CMDLabel, Plot } from './controls';
+import { CMDButton, Sensor, CMDSlider, CMDKnob, CMDLabel, Plot } from './controls';
 import { Container, Row, Col } from 'react-bootstrap';
 
 export default class DeviceControl extends React.Component {
@@ -49,6 +49,13 @@ export default class DeviceControl extends React.Component {
                   <Col key={`plot_${index}`}>
                     <Plot {...ctrl}></Plot>
                   </Col>
+                )
+
+              case 'SENSOR':
+                return (
+                  <Col key={`sensor_${index}`}>
+                  <Sensor {...ctrl}></Sensor>
+                </Col>
                 )
                 
               default: 

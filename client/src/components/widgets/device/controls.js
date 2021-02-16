@@ -1,10 +1,12 @@
 import React, {useState} from 'react';
-import Button from 'react-bootstrap/Button'
-import ProgressBar from 'react-bootstrap/ProgressBar'
-import { Basic } from 'react-dial-knob'
-import Badge from 'react-bootstrap/Badge'
-import { Line } from 'react-chartjs-2'
+import Button from 'react-bootstrap/Button';
+import ButtonGroup from 'react-bootstrap/ButtonGroup';
+import ProgressBar from 'react-bootstrap/ProgressBar';
+import { Basic } from 'react-dial-knob';
+import Badge from 'react-bootstrap/Badge';
+import { Line } from 'react-chartjs-2';
 import { Row, Col } from 'react-bootstrap';
+import { Adjust, Speed, WbSunnyOutlined, WavesOutlined, BatteryAlert, ArrowDownward, ArrowUpward } from '@material-ui/icons';
 
 
 export function CMDButton(props) {
@@ -47,7 +49,6 @@ export class CMDSlider extends React.Component {
   }
 }
 
-
 export function CMDKnob (props) {
   const [value, setValue] = useState(10);
 
@@ -69,8 +70,28 @@ export function CMDKnob (props) {
   </Basic>
 }
 
+export function CMDSensorCard (props) {
+  return <div className="sensorBox">
+    <div class="row">
+      <div class="col"></div>
+    </div>
+  </div>
+}
+
 export function CMDLabel (props) {
-  return <Badge variant="warning" style={{color:props.color}}>{props.label}</Badge>  
+  return (
+    <Row className="">
+      <Col><BatteryAlert style={{"font-size":"4em"}} /> </Col>
+      <Col>
+        <Row>23 c</Row>
+        <Row>
+          <Col> <ArrowDownward/> 10 </Col>
+          <Col> <ArrowUpward/> 33 </Col>
+        </Row>
+      </Col>
+    </Row>
+  )
+  // return <Badge variant="warning" style={{color:props.color}}>{props.label}</Badge>  
 }
 
 export function Plot(props) {
@@ -134,6 +155,92 @@ export function Plot(props) {
           <Button variant={(subset === 'D')? 'outline-success':'outline-secondary'} onClick={() => {setSubset('D')}} size="sm">Day</Button>
         </Col>
       </Row>      
+    </div>
+  )
+}
+
+// export function SensorChannel(props) {
+//   return 
+// }
+function getIcon(icon) {
+  switch(icon) {
+    case 'TEMP':
+      return  <WbSunnyOutlined style={{"fontSize":"5vh"}}/>
+
+    case 'HUMID':
+      return <WavesOutlined style={{"fontSize":"5vh"}}/>
+
+    case 'PRES':
+      return <Speed style={{"fontSize":"5vh"}}/>
+    
+    case 'BAT':
+      return <BatteryAlert style={{"fontSize":"5vh"}}/>
+
+    default:
+      return <Adjust style={{"fontSize":"5vh"}}/>
+  }
+}
+
+
+export function Sensor(props) {
+  const [showPlot, setShowPlot] = useState(false);
+  const [subset, setSubset] = useState('I');
+
+  function togglePlot() {
+    setShowPlot(!showPlot);
+  }
+  const buttons = (
+    <Col>
+    <ButtonGroup aria-label="timescales">
+      <Button variant={(showPlot)? 'outline-warning':'outline-secondary'} onClick={() => {togglePlot()}}>Plot</Button>
+      <Button variant={(subset === 'Y')? 'outline-success':'outline-secondary'} onClick={() => {setSubset('Y')}} >last Year</Button>
+      <Button variant={(subset === 'M')? 'outline-success':'outline-secondary'} onClick={() => {setSubset('M')}} >last 30d</Button>
+      <Button variant={(subset === 'W')? 'outline-success':'outline-secondary'} onClick={() => {setSubset('W')}} >last 7d</Button>
+      <Button variant={(subset === 'D')? 'outline-success':'outline-secondary'} onClick={() => {setSubset('D')}} >last 24h</Button>
+    </ButtonGroup>
+    </Col>
+  )
+
+  const channels = props.channels.map(chan => {
+    return (
+    <Row className="sensor_row" key={`chann_${chan.key}`}>
+      <Col>
+      <Row>
+        <Col xs="auto" style={{"alignSelf":"center"}}>{getIcon(chan.icon)}</Col>
+        <Col xs="6" style={{"alignSelf":"center","fontSize":"4vh"}}>
+          {parseFloat(props.data[subset].keys[chan.key].last).toFixed(2)}
+          <small>{chan.unit}</small>
+        </Col>
+        <Col xs="2">
+          <Row>
+            <Col><ArrowUpward/></Col>
+            <Col>{parseFloat(props.data[subset].keys[chan.key].max).toFixed(2)}</Col>
+          </Row>
+          <Row>
+            <Col><ArrowDownward/></Col>
+            <Col>{parseFloat(props.data[subset].keys[chan.key].min).toFixed(2)}</Col>
+          </Row>
+        </Col>
+      </Row>
+      <Row>
+        { showPlot ? <Col style={{"color":chan.color}}>Mini plot</Col> :'' }
+      </Row>
+      </Col>
+    </Row>)});
+
+    //TODO:: make this a X time ago 
+    const lastSeen = props.data["I"].data[props.data["I"].data.length -1];
+  return (
+    <div>
+      <Row><Col>
+        {channels}
+        </Col>
+        </Row>
+        <Row style={{"marginTop":".4em"}}>{buttons}</Row>
+        <Row style={{"marginTop":".4em"}}> 
+          <span>last update: {new Date(lastSeen.t).toLocaleString('en-GB')}</span>
+        </Row>
+        
     </div>
   )
 }

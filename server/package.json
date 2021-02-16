@@ -21,6 +21,7 @@
     "nodemon": "^2.0.4"
   },
   "dependencies": {
+    "material-design-icons": "^3.0.1",
     "mqtt": "^4.1.0",
     "node-cron": "^2.0.3",
     "node-fetch": "^2.6.1",

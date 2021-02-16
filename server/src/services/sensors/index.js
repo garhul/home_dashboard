@@ -13,10 +13,38 @@ class Sensor {
     this.name = name;
     this.series = new TimeSeries(config.sensors.timeSeriesDepth);
     this.file = path.resolve(config.sensors.dataPath, `${this.id}.data`);
-    this.state = "OPERATIVE";
+    this.status = "OPERATIVE";
   }
 
-  load
+  static fromFile(file) {
+    try {
+      const buff = fs.readFileSync(path.resolve(config.sensors.dataPath, file));
+      const lines = buff.toString().split('\n');
+      const header = JSON.parse(lines.shift());
+      const keys = lines.shift().split(',');
+      keys.shift(); //remove time entry
+      const sensor = new Sensor(header.id, header.name);
+      
+      lines.forEach(l => {
+        if (l.length === 0) return;
+        const vals = l.split(',');
+        const ts = vals.shift();
+        const v = {};
+
+        keys.forEach((k, i) => {
+          v[k.trim()] = vals[i];
+        });
+
+        sensor.addDataSet(v, Number(ts), false);
+      });
+      
+      return sensor;
+      
+    } catch (ex) {
+      logger.w(ex);
+      return null;
+    }
+  }
 
   persist(t, data) {
     try {
@@ -40,58 +68,46 @@ class Sensor {
    * @param {} data 
    */
   addDataSet(data, ts = null, persist = true) {
-    const t = ts ?? Date.now();
+    const t =   ts ?? Date.now();
     if (config.sensors.persistToFile && persist) this.persist(t, data);
-    logger.d(`Adding data point  `, data);    
     this.series.addDataPoint(t, data);
-    
   }
 
-  updateState(newState) {
-    this.state = newState;    
+  updateStatus(st) {
+    this.status = st;    
   }
 
   /**
    * Returns the data associated with each one of the sensor readouts grouped by timestamp and subset (day, week, etc)
    */
   get data() {
-    return this.series.data;
+    return { 
+      data: this.series.data,
+      state: {
+        status: this.status,
+        t: this.series.data.I.keys.t?.last.toFixed(2) ?? 'NA',
+        h: this.series.data.I.keys.h?.last.toFixed(2) ?? 'NA',
+        p: this.series.data.I.keys.p?.last.toFixed(2) ?? 'NA',
+        vbat: this.series.data.I.keys.vbat?.last.toFixed(2) ?? 'NA',
+      }
+    };
   }
 }
 
 class SensorsService {
   constructor() {
     this.sensors = new Map();
-        
+
     if (config.sensors.recoverOnStartup) {
       try {
-        fs.readdirSync(config.sensors.dataPath).forEach(f => {
-          const buff = fs.readFileSync(path.resolve(config.sensors.dataPath, f));
-          const lines = buff.toString().split('\n');
-          const header = JSON.parse(lines.shift());
-          const keys = lines.shift().split(',');
-          keys.shift(); //remove time entry
-          const sensor = this.sensors.get(header.id) ?? new Sensor(header.id, header.name);
+        fs.readdirSync(config.sensors.dataPath).forEach( f => {
+          const S = Sensor.fromFile(f);
+          this.sensors.set(S.id, S);
           
-          lines.forEach(l => {
-            if (l.length === 0) return;
-            const vals = l.split(',');
-            const ts = vals.shift();
-            const v = {};
-
-            keys.forEach((k, i) => {
-              v[k.trim()] = vals[i];
-            });
-
-            sensor.addDataSet(v, Number(ts));
-          });
-          
-          this.sensors.set(header.id, sensor);
-          eventBus.emit(events.SENSORS.UPDATE, sensor);
+          eventBus.emit(events.SENSORS.UPDATE, S);
         });
       } catch (e) {
-        console.dir(e);
-        logger.e(e.toString());
+        logger.e(e);
       }      
     }
 
@@ -100,18 +116,17 @@ class SensorsService {
       this.updateSensor(data);        
     });
   }
-
+  
   updateSensor(data) {
     const { id, name } = data
     const sensor = this.sensors.get(id) ?? new Sensor(id, name?? 'unknown');
     if (data.alert) {
-      sensor.updateState(data.alert)
+      sensor.updateStatus(data.alert);
     } else {
-      sensor.addDataSet(data);
+      sensor.addDataSet(data.data);
       this.sensors.set(id, sensor);
       logger.d(`New sensor [${name}] data`, data);
     }
-
     eventBus.emit(events.SENSORS.UPDATE, sensor);
   }
 

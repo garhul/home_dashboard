@@ -37,7 +37,7 @@ class mockSensor {
 
 exports.init = (count) => {  
   for (let i =0; i<count; i++) {
-    const m = new mockSensor(`Mock sensor ${i}`, 30000);
+    const m = new mockSensor(`Mock sensor ${i}`, 10000);
     m.start();
   }
 }

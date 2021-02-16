@@ -37,10 +37,11 @@ body {
 
 .widget > .title {
   text-align: center;
-  font-size:2rem;
+  text-shadow: #000000 .2vh .2vh ;
+  font-size:6vh;
   font-weight: bold;
   color:#ddd;
-  margin-bottom:.4em;
+  margin:.2em;
 }
 
 #DevicesList > h3 {
@@ -112,4 +113,11 @@ body {
 .badge-warning {
   color: #e7b621;
   background-color: #171b1f;
+}
+
+.sensor_row {
+  background-color: #212124;
+  color: #eee;
+  margin-top:.4em;
+
 }

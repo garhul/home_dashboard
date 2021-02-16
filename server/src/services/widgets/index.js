@@ -57,12 +57,12 @@ class WidgetsService {
     });
   }
 
-  parsecontrols(controls, state) {    
+  parsecontrols(controls, data) {  
     return controls.map(row => row.map(control => {        
       const ret = {};        
       Object.keys(control).forEach(prop => {
         if (typeof control[prop] === 'function') {
-          ret[prop] = control[prop](state);            
+          ret[prop] = control[prop](data);            
         } else {
           ret[prop] = control[prop];
         }
@@ -89,7 +89,6 @@ class WidgetsService {
   }
 
   updateFromSensors(sensor) {
-    logger.i("Updating sensor widgets");    
     this.store.set(sensor.id,
       {
         id: sensor.id,
