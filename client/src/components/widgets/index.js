@@ -1,8 +1,6 @@
 import React from 'react';
 import AdminControls from './admin';
 import DeviceControls from './device';
-import { BatteryAlert } from '@material-ui/icons';
-
 
 function getTitle(props) {
   if (props.type === 'admin')
