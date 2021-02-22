@@ -23,10 +23,10 @@ body {
 }
 
 .widget {  
-  border:.4em solid #222;
+  border:.8vh solid #222;
   background-color: #282c34;
-  margin: 4em auto;
-  min-height: 8em;
+  margin: 8vh auto;
+  min-height: 8vh;
   /* border: 1px solid rgb(93, 93, 100); */
   width:100%
 }
@@ -37,10 +37,15 @@ body {
 
 .widget > .title {
   text-align: center;
-  font-size:2rem;
+  font-size:4vh;
   font-weight: bold;
   color:#ddd;
-  margin-bottom:.4em;
+  margin:.2em;
+}
+
+.widget > .title > span {
+  vertical-align: middle;
+  text-shadow: #000000 .2vh .2vh ;
 }
 
 #DevicesList > h3 {
@@ -107,4 +112,25 @@ body {
 #ws-overlay.hide {
   visibility: hidden;
   display:none;
+}
+
+.badge-warning {
+  color: #e7b621;
+  background-color: #171b1f;
+}
+
+.battery-warning {
+  color: #e7b621;
+}
+
+.sensor_row {
+  background-color: #212124;
+  color: #eee;
+  margin-top:.4em;
+
+}
+
+span.last-seen {
+  color:#bbb;
+  font-size:1.8vh;
 }

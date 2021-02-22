@@ -1,39 +1,37 @@
 const mqtt = require('mqtt');
 const config = require('../../../config');
-const logger = require('../logger');
+const logger = require('../logger')('MQTT');
 const handlers = require('./handlers');
 
 const mqttClient = mqtt.connect(config.mqtt.broker);
 const busEvents = require('../../events');
 const eventBus = require('../../eventBus');
 
-const TAG = 'MQTT';
-
 mqttClient.on('connect', () => {
-  logger.i(`Connected to mosquitto broker on ${config.mqtt.broker}`, TAG);
+  logger.i(`Connected to mosquitto broker on ${config.mqtt.broker}`);
 
   handlers.forEach(h => {
     mqttClient.subscribe(h.topic, (err) => {
       if (err) {
-        logger.e(err, TAG);
+        logger.e(err);
         throw err;
       }
-      logger.i(`Subscribbed to topic ${h.topic}`, TAG);
+      logger.i(`Subscribbed to topic ${h.topic}`);
     });    
   });
 
 
   mqttClient.on('error', (err) => {
-    logger.e(err, TAG);
+    logger.e(err);
   });
 
   mqttClient.on('message', (topic, message) => {
-    logger.d(`Received |${message.toString()}| on topic: ${topic}`, TAG);
+    logger.d(`Received |${message.toString()}| on topic: ${topic}`);
 
     const hndlr = handlers.find((h) => h.topic === topic);
 
     if (hndlr === undefined) {
-      logger.e(`No handler registered for topic ${topic}`, TAG);
+      logger.e(`No handler registered for topic ${topic}`);
       return;
     }
 
@@ -42,7 +40,7 @@ mqttClient.on('connect', () => {
 });
 
 eventBus.addListener(busEvents.MQTT.PUBLISH, (data) => {
-  logger.i(`Sending mqtt device at topic ${data.topic} payload ${JSON.stringify(data.payload)}`, TAG);
+  logger.i(`Sending mqtt device at topic ${data.topic} payload ${JSON.stringify(data.payload)}`);
   
   mqttClient.publish(data.topic, JSON.stringify(data.payload));
 });

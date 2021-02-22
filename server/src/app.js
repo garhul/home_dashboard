@@ -1,13 +1,10 @@
-const eventBus = require('./eventBus');
 const ws = require('./services/ws');
 const DevicesService = require('./services/devices');
 const mqtt = require('./services/mqtt');
-const logger = require('./services/logger');
-const GroupsService = require('./services/groups');
-
-
-const devices = new DevicesService(eventBus);
-const groups = new GroupsService(eventBus);
+const logger = require('./services/logger')('MAIN');
+const WidgetService = require('./services/widgets');
+const SensorsService = require('./services/sensors');
+const config = require('../config');
 
 
 process.on('beforeExit', () => {

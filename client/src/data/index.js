@@ -36,11 +36,18 @@ class Bus {
   }
 
   handleEvent(ev, data) {
+    let hndlrs = 0;
     this.listeners.forEach(val => {      
       if (val.ev === ev) {
+        hndlrs++;
         val.fn.call(this, data);
       }
     });
+
+    if (hndlrs === 0) {
+      console.warn(`No handler registered for ev ${ev}`);
+      console.dir(data);
+    }
   }
 
   on(ev, fn) {
@@ -51,9 +58,7 @@ class Bus {
 const bus = new Bus(socket);
 
 bus.on('open', () => {
-  bus.emit('devices.list', {});
-  bus.emit('sensors.list', {});
-  bus.emit('groups.list', {});
+  bus.emit('WIDGETS_LIST', {});  
 })
 
 export default bus;

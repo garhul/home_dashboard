@@ -9,8 +9,8 @@ export default function NavBar(props) {
     props.onChange(loc)
     setLocation(loc);
   },[props]);
-
-  useEffect(() => { changeLocation(window.location.hash || '#home') });
+ 
+  useEffect(() => { changeLocation(window.location.hash || '#home') }, []);
 
   return (
     <Navbar  fixed="top" bg="dark" expand="lg" collapseOnSelect={true}>

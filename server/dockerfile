@@ -1,0 +1,19 @@
+FROM node:14-alpine
+
+WORKDIR /dashboard
+
+ADD ./src /dashboard/src
+ADD ./package-lock.json /dashboard/package-lock.json
+ADD ./package.json /dashboard/package.json
+ADD ./config /dashboard/config
+ADD ./data /dashboard/data
+
+RUN npm ci
+RUN apk update && apk add bash
+
+ENV NODE_ENV=prod
+ENV WS_PORT=3030
+
+EXPOSE 3030
+
+CMD ["node", "src/app.js"]

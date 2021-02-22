@@ -4,6 +4,7 @@
   "description": "",
   "main": "src/app.js",
   "scripts": {
+    "start": "node src/app.js",
     "dev": "npx nodemon src/app.js",
     "debug": "node --inspect-brk app.js ",
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -20,10 +21,12 @@
     "nodemon": "^2.0.4"
   },
   "dependencies": {
+    "material-design-icons": "^3.0.1",
     "mqtt": "^4.1.0",
     "node-cron": "^2.0.3",
     "node-fetch": "^2.6.1",
     "simple-fancy-logger": "^1.2.2",
+    "uuid": "^8.3.2",
     "ws": "^7.3.1"
   }
 }
