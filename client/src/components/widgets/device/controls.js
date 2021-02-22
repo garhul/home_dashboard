@@ -4,9 +4,10 @@ import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import ProgressBar from 'react-bootstrap/ProgressBar';
 import { Basic } from 'react-dial-knob';
 import Badge from 'react-bootstrap/Badge';
-import { Line } from 'react-chartjs-2';
+// import { Line } from 'react-chartjs-2';
 import { Row, Col } from 'react-bootstrap';
 import { Adjust, Speed, WbSunnyOutlined, WavesOutlined, BatteryAlert, ArrowDownward, ArrowUpward } from '@material-ui/icons';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 
 export function CMDButton(props) {
@@ -181,10 +182,54 @@ function getIcon(icon) {
   }
 }
 
+function timeSince(t) {
+  const min = 60;
+  const hour = 3600;
+  const day = 86400;
+  const week = 604800;
+
+ 
+  if (t < min) {
+    return `${t}s`;
+  }
+
+  if (t < hour) {
+    return `${Math.floor(t / 60)}m`;
+  }
+
+  if (t < day) {
+    return `${Math.floor(t / hour)}h`; 
+  }
+
+  if (t < week) {
+    return `${Math.floor(t/ day)}d`;
+  }
+
+  return `${Math.floor(t/ week)}w`;
+}
+
+function tinyPlot(props) {  
+    const labelFn = (l) => {
+      const d = new Date(l);
+      return `${d.toLocaleDateString('en-GB')}:${d.toLocaleTimeString('en-GB')}`;
+    }
+
+    return (
+      <ResponsiveContainer height={100} >
+        <LineChart width={600} height={100} data={props.data}>
+          <Line dot={false} type="monotone" dataKey="v" stroke={props.color} strokeWidth={2} margin={{ top: 0, right: 0, bottom: 0, left: 0}}/>
+          <CartesianGrid stroke="#888" strokeDasharray="4" horizontal={false}/>
+          <YAxis width={45}/>          
+          <Tooltip separator="" labelFormatter={labelFn} formatter={(v,n,p)=>[`${parseFloat(v).toFixed(2)}${props.unit}`,'']} contentStyle={{"backgroundColor":"#222","border":"0"}} />          
+          <XAxis hide={true} dataKey="t" tick={false}/>
+        </LineChart>      
+      </ResponsiveContainer>
+    );  
+}
 
 export function Sensor(props) {
   const [showPlot, setShowPlot] = useState(false);
-  const [subset, setSubset] = useState('I');
+  const [subset, setSubset] = useState('D');
 
   function togglePlot() {
     setShowPlot(!showPlot);
@@ -211,7 +256,7 @@ export function Sensor(props) {
           {parseFloat(props.data[subset].keys[chan.key].last).toFixed(2)}
           <small>{chan.unit}</small>
         </Col>
-        <Col xs="2">
+        <Col xs="2" style={{"fontSize":"2.6vh"}}>
           <Row>
             <Col><ArrowUpward/></Col>
             <Col>{parseFloat(props.data[subset].keys[chan.key].max).toFixed(2)}</Col>
@@ -222,14 +267,23 @@ export function Sensor(props) {
           </Row>
         </Col>
       </Row>
-      <Row>
-        { showPlot ? <Col style={{"color":chan.color}}>Mini plot</Col> :'' }
-      </Row>
+
+      {showPlot ?
+      (<Row>
+        <Col style={{"color":chan.color}}>{tinyPlot({
+          ...chan,
+          min: props.data[subset].keys[chan.key].min,
+          max: props.data[subset].keys[chan.key].max,          
+          data: props.data[subset].data.map(d => ({t: d.t, v: d.v[chan.key]}))
+        })}
+        </Col>
+      </Row>) : '' }
+      
       </Col>
     </Row>)});
 
-    //TODO:: make this a X time ago 
-    const lastSeen = props.data["I"].data[props.data["I"].data.length -1];
+    const lastSeen = Math.floor((Date.now() - props.data["I"].data[props.data["I"].data.length -1].t) / 1000);
+
   return (
     <div>
       <Row><Col>
@@ -237,10 +291,19 @@ export function Sensor(props) {
         </Col>
         </Row>
         <Row style={{"marginTop":".4em"}}>{buttons}</Row>
-        <Row style={{"marginTop":".4em"}}> 
-          <span>last update: {new Date(lastSeen.t).toLocaleString('en-GB')}</span>
-        </Row>
-        
+        <Row style={{"marginTop":".4em","paddingRight":".4em"}}>
+          <Col>
+            { 
+              (props.state.status !== 'OPERATIVE')
+              ? (<Badge variant="danger"><BatteryAlert /> Battery critical</Badge>): ''
+            }
+          </Col>
+          <Col style={{"textAlign":"right"}}>
+            <Badge variant={(lastSeen < 3600)? 'dark' : 'danger'}>{timeSince(lastSeen)} ago</Badge>
+          </Col>
+        </Row>       
     </div>
   )
 }
+
+

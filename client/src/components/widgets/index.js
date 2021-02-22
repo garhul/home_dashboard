@@ -1,21 +1,28 @@
 import React from 'react';
 import AdminControls from './admin';
 import DeviceControls from './device';
+import { BatteryAlert } from '@material-ui/icons';
 
 
-export function Widget(props) {
+function getTitle(props) {
+  if (props.type === 'admin')
+    return (<div className="title">Admin</div>);
+  
+  //TODO:: implement icon for battery alert
+  return (<div className="title">
+      <span>{(props.name)? props.name : props.human_name }</span>
+  </div>)
+}
+
+export function Widget(props) {  
   function getControls() {    
     if (props.type === 'admin') return <AdminControls {...props} />
     return <DeviceControls {...props} />
   }
 
-  const title = (props.type === 'admin') 
-    ? (<div className="title">Admin</div>)
-    : (<div className="title">{(props.name)? props.name : props.human_name }</div>)
-
   return (
     <div className="widget">
-      {title}      
+      {getTitle(props)}
       {getControls()}
     </div>
     );  
