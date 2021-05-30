@@ -48,17 +48,17 @@ module.exports = [
   [
     {
       label: 'Transition Speed',
-      type: 'Slider',
+      type: 'Range',
       field: 'spd',
-      payload: '{ "cmd": "fx", "payload": "$1" }',
+      payload: '{ "cmd": "spd", "payload": "$1" }',
       min: '0',
       max: '100',
     },
     {
       label: 'Brightness',
-      type: 'Slider',
+      type: 'Range',
       field: 'br',
-      payload: '{ "cmd": "fx", "payload": "$1" }',
+      payload: '{ "cmd": "br", "payload": "$1" }',
       transform: (v) => (1 + (100 - v)),
       min: '0',
       max: '100',
