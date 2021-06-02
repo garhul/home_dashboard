@@ -65,7 +65,9 @@ class Sensor {
    * creates a TimeSeries per key in the dataset
    * example dataSet : {temp:32, pressure: 45, etc:1234.5}
    * 
-   * @param {} data 
+   * @param {} data the data
+   * @param number ts the timestamp
+   * @param bool persist shall we persist this to a file?
    */
   addDataSet(data, ts = null, persist = true) {
     const t = ts ?? Date.now();
