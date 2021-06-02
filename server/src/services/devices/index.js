@@ -12,21 +12,26 @@
 const fetch = require('node-fetch');
 const logger = require('../logger')('DEVICES_SV');
 const config = require('../../../config');
-const mockData = require('../../../data/mocks/devices');
 const EVS = require('../../events.js');
-const { aurora } = require('../../../data/controls');
 const { timedPromise } = require('../../utils');
 const eventBus = require('../../eventBus');
 
 class DevicesService {
 
   constructor() {
-    this.store = new Map();    
-    if (config.mockDevices) {
-      mockData.forEach(val => this.store.set(val.device_id, { ...val, controls: aurora }));
-    }
+    this.store = new Map();
 
-    this.init();    
+    this.init();
+
+    if (config.mockDevices) {
+      setTimeout(() => {
+        require('./mocks').get(3).forEach(i => {
+          this.store.set(i.device_id, i);
+        });
+        this.notifyUpdate();
+      }, 5000);
+
+    }
     if (config.scanAtStartup) this.scan();
   }
 
@@ -35,33 +40,33 @@ class DevicesService {
       await this.scan();
       this.notifyUpdate();
     });
-    
-    eventBus.addListener(EVS.DEVICES.CMD, async (msg) => {     
-      logger.d('Relaying message',msg.payload, `to topics [${msg.topics.join(', ')}]`);      
+
+    eventBus.addListener(EVS.DEVICES.CMD, async (msg) => {
+      logger.d('Relaying message', msg.payload, `to topics [${msg.topics.join(', ')}]`);
       msg.topics.forEach(topic => {
         const payload = (msg.data !== undefined && msg.data !== null)
           ? msg.payload.replace('$1', `"${msg.data}"`)
           : msg.payload;
-    
+
         eventBus.emit(EVS.MQTT.PUBLISH, {
           topic,
           payload,
         });
       });
     });
-    
+
     eventBus.addListener(EVS.DEVICES.LIST, async (client) => {
       logger.d('Requested device list');
       this.notifyUpdate(client);
     });
-    
+
     eventBus.addListener(EVS.DEVICES.ANNOUNCE, async (payload) => {
       try {
         const msg = JSON.parse(payload.toString());
-        switch(msg.ev) {
+        switch (msg.ev) {
           case 'stateChange':
             this.updateState(msg.id,
-              { 
+              {
                 spd: msg.spd,
                 fx: msg.fx,
                 br: msg.br,
@@ -71,14 +76,14 @@ class DevicesService {
             break;
           case 'birth':
             const data = await this.queryDevice(msg.ip)
-            this.add(data);            
+            this.add(data);
             break;
           case 'death':
             await this.remove(msg.id);
             break;
           default:
             throw new Error(`Unexpected message event ${msg.ev}`);
-        }        
+        }
       } catch (e) {
         logger.e(e);
       }
@@ -119,25 +124,25 @@ class DevicesService {
   }
 
   add(...devices) {
-    devices.forEach( d => this.store.set(d.device_id, d));
+    devices.forEach(d => this.store.set(d.device_id, d));
     this.notifyUpdate();
   }
 
   async scan() {
     const { baseScanAddress, scanBatchSize, scanTimeout } = config;
-  
+
     const ips = [];
     const data = [];
     for (let i = 1; i < 255; i++) {
       ips.push(`${baseScanAddress}${i}`);
-  
+
       if (i % scanBatchSize === 0) {
         logger.i(`Scanning ips in range (${baseScanAddress}${i - scanBatchSize}, ${baseScanAddress}${i})`);
         await Promise.all(ips.map(async (ip) => {
-          try {            
+          try {
             await timedPromise((async () => {
               const d = await this.queryDevice(ip);
-              if (d) data.push(d);             
+              if (d) data.push(d);
             })(), scanTimeout);
           } catch (ex) {
             if (ex.code !== 'TIMEOUT') {
@@ -149,10 +154,10 @@ class DevicesService {
         }));
         ips.splice(0);
       }
-    }    
+    }
     this.add(...data);
   }
-  
+
   /** Retrieves info json and state from a given ip address 
    *
    * @param ip  the ip address
@@ -161,12 +166,12 @@ class DevicesService {
     try {
       const infoAddr = `http://${ip}/info`;
       const stateAddr = `http://${ip}/state`;
-      
-      const res = await fetch(infoAddr);      
+
+      const res = await fetch(infoAddr);
       const obj = await res.json();
-      if (this.isValidInfo(obj)) {      
+      if (this.isValidInfo(obj)) {
         const state = await fetch(stateAddr);
-        return {...obj, ...{state: await state.json()}};        
+        return { ...obj, ...{ state: await state.json() } };
       } else {
         logger.i(`Found device at ip ${ip} with invalid info json`, obj);
       }
@@ -178,5 +183,7 @@ class DevicesService {
   }
 
 }
+
+
 
 module.exports = new DevicesService();

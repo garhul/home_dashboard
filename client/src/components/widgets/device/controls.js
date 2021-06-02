@@ -53,7 +53,7 @@ export class CMDSlider extends React.Component {
 
 
 export function CMDRange(props) {
-  const [value, setValue] = useState(0);
+  const [value, setValue] = useState(props.val || 0);
 
   return (
     <div>

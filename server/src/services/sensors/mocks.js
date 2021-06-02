@@ -1,12 +1,11 @@
-const {v4: uuid} = require('uuid');
+const { v4: uuid } = require('uuid');
 const eventBus = require('../../eventBus');
 const events = require('../../events');
-
 class mockSensor {
   constructor(name, intervalTime) {
-    this.intervalTime = intervalTime;    
+    this.intervalTime = intervalTime;
     this.interval = null;
-    this.name = name;    
+    this.name = name;
     this.id = uuid();
     this.last = 0;
   }
@@ -16,7 +15,7 @@ class mockSensor {
   }
 
 
-  getRand(min, max) {    
+  getRand(min, max) {
     return (min + Math.random() * max).toFixed(2);
   }
 
@@ -35,8 +34,8 @@ class mockSensor {
   }
 }
 
-exports.init = (count) => {  
-  for (let i =0; i<count; i++) {
+exports.init = (count) => {
+  for (let i = 0; i < count; i++) {
     const m = new mockSensor(`Mock sensor ${i}`, 10000);
     m.start();
   }

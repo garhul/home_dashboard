@@ -2,14 +2,14 @@ const { resolve } = require('path');
 
 const baseCfg = {
   scanAtStartup: false, //true,
-  mockDevices: false,
+  mockDevices: true,
   mockSensors: true,
   wsPort: process.env.WS_PORT || 3030,
   baseScanAddress: '192.168.1.',
   scanBatchSize: 24,
   scanTimeout: 5000,
-  logger:{
-    path:null,
+  logger: {
+    path: null,
   },
   mqtt: {
     broker: 'mqtt://192.168.1.10',
@@ -17,10 +17,10 @@ const baseCfg = {
     sensorsTopic: 'sensors',
   },
   sensors: {
-    dataPath: resolve(__dirname, '../data/sensors'),
+    dataPath: resolve(__dirname, '../data'),
     persistToFile: false,
     recoverOnStartup: true,
-    
+
     /* 
     144 points in 24 hours -> 10 min resolution
     144 points in 7 days -> 70 min resolution 

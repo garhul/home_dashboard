@@ -4,7 +4,7 @@ const { v4: uuid } = require('uuid');
 const logger = require('../logger')('SENSORS_SV');
 const eventBus = require('../../eventBus');
 const events = require('../../events');
-const TimeSeries =  require('./timeSeries');
+const TimeSeries = require('./timeSeries');
 const config = require('../../../config');
 
 class Sensor {
@@ -24,7 +24,7 @@ class Sensor {
       const keys = lines.shift().split(',');
       keys.shift(); //remove time entry
       const sensor = new Sensor(header.id, header.name);
-      
+
       lines.forEach(l => {
         if (l.length === 0) return;
         const vals = l.split(',');
@@ -37,9 +37,9 @@ class Sensor {
 
         sensor.addDataSet(v, Number(ts), false);
       });
-      
+
       return sensor;
-      
+
     } catch (ex) {
       logger.w(ex);
       return null;
@@ -49,17 +49,17 @@ class Sensor {
   persist(t, data) {
     try {
       if (!fs.existsSync(this.file)) {
-        const header = `${JSON.stringify({id: this.id, name: this.name})}  \n` 
-        + 'time,' + Object.keys(data).join(', ') + '\n';
+        const header = `${JSON.stringify({ id: this.id, name: this.name })}  \n`
+          + 'time,' + Object.keys(data).join(', ') + '\n';
         fs.writeFileSync(this.file, header, { flag: 'w+' });
       }
       const row = `${t},${Object.keys(data).map(k => data[k]).join(',')}\n`;
-      fs.writeFileSync(this.file, row, {flag: 'a'});              
+      fs.writeFileSync(this.file, row, { flag: 'a' });
     } catch (e) {
       logger.e(e.toString());
     }
   }
-  
+
   /**
    * Adds a data set as data points to each time series
    * creates a TimeSeries per key in the dataset
@@ -68,20 +68,20 @@ class Sensor {
    * @param {} data 
    */
   addDataSet(data, ts = null, persist = true) {
-    const t =   ts ?? Date.now();
+    const t = ts ?? Date.now();
     if (config.sensors.persistToFile && persist) this.persist(t, data);
     this.series.addDataPoint(t, data);
   }
 
   updateStatus(st) {
-    this.status = st;    
+    this.status = st;
   }
 
   /**
    * Returns the data associated with each one of the sensor readouts grouped by timestamp and subset (day, week, etc)
    */
   get data() {
-    return { 
+    return {
       data: this.series.data,
       state: {
         status: this.status,
@@ -100,26 +100,28 @@ class SensorsService {
 
     if (config.sensors.recoverOnStartup) {
       try {
-        fs.readdirSync(config.sensors.dataPath).forEach( f => {
+        fs.readdirSync(config.sensors.dataPath).forEach(f => {
+          if (f.toUpperCase().split('.').lastIndexOf('DATA') === -1) return;
+
           const S = Sensor.fromFile(f);
           this.sensors.set(S.id, S);
-          
+
           eventBus.emit(events.SENSORS.UPDATE, S);
         });
       } catch (e) {
         logger.e(e);
-      }      
+      }
     }
 
-    eventBus.on(events.SENSORS.DATA, (payload) => {      
+    eventBus.on(events.SENSORS.DATA, (payload) => {
       const data = JSON.parse(payload.toString());
-      this.updateSensor(data);        
+      this.updateSensor(data);
     });
   }
-  
+
   updateSensor(data) {
     const { id, name } = data
-    const sensor = this.sensors.get(id) ?? new Sensor(id, name?? 'unknown');
+    const sensor = this.sensors.get(id) ?? new Sensor(id, name ?? 'unknown');
     if (data.alert) {
       sensor.updateStatus(data.alert);
     } else {
