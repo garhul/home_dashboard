@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Nav, Navbar } from 'react-bootstrap'
+import HomeIcon from '@material-ui/icons/Home';
 
 export default function NavBar(props) {
   const [location, setLocation] = useState(window.location.hash || '#home');
@@ -14,16 +15,17 @@ export default function NavBar(props) {
 
   return (
     <Navbar fixed="top" bg="dark" expand="lg" collapseOnSelect={true}>
-      <Navbar.Brand onClick={() => { changeLocation('#home') }} href="#home"><span>Dashboard</span>{` - ${location}`}</Navbar.Brand>
+      <Navbar.Brand><HomeIcon style={{ "fontSize": "3vh" }}></HomeIcon></Navbar.Brand>
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="mr-auto">
+          <Nav.Link onClick={() => { changeLocation('#home') }} href="#home">home</Nav.Link>
           <Nav.Link onClick={() => { changeLocation('#devices') }} href="#devices">Devices</Nav.Link>
           <Nav.Link onClick={() => { changeLocation('#sensors') }} href="#sensors">Sensors</Nav.Link>
           <Nav.Link onClick={() => { changeLocation('#admin') }} href="#admin">Admin</Nav.Link>
         </Nav>
       </Navbar.Collapse>
-    </Navbar>
+    </Navbar >
   );
 
 }

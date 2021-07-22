@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import MainView from './components/mainView';
 import * as serviceWorker from './serviceWorker';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import './app.css';
 import WsOverlay from './components/wsOverlay';
 ReactDOM.render(

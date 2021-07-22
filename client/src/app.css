@@ -55,8 +55,17 @@ body {
 
 /* #DeviceControl >  */
 
+.nav-link {
+  font-size: 2vh;
+  color:#d0d0d0 !important;
+}
+
 .navbar-brand > span {
   color:#BBB;
+}
+
+.navbar-nav > .active {
+  font-weight: bold;
 }
 
 #DeviceControl {
