@@ -8,9 +8,9 @@
 - ~~device cmd publishing~~
 - ~~groups definitions from files~~
 - ~~groups cmd publishing~~
-- startup scripts
-- sensors data plotting
-- sensors data gathering
+- ~~startup scripts~~
+- ~~sensors data plotting~~
+- ~~sensors data gathering~~
 - ~~ devices feedback (status, requires firmware upgrade) ~~
 ### v2 : 
 - cron tasks definition
