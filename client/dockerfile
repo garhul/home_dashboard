@@ -2,15 +2,11 @@ FROM node:14-alpine
 
 WORKDIR /dashboard
 
-ADD ./src /dashboard/src
-ADD ./package-lock.json /dashboard/package-lock.json
-ADD ./package.json /dashboard/package.json
-ADD ./public /dashboard/public
+ADD ./build /dashboard
+ADD ./public /dashboard
 
-RUN npm ci
-
+RUN npm install -g serve
 ENV NODE_ENV=prod
-
 EXPOSE 3000
 
-CMD ["npm", "start"]
+CMD ["serve", "-s", "build"]
