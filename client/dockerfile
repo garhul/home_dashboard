@@ -6,6 +6,6 @@ ADD ./build /dashboard
 
 RUN npm install -g serve
 ENV NODE_ENV=prod
-EXPOSE 3000
+
 
 CMD ["serve", "-s"]
