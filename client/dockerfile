@@ -3,10 +3,9 @@ FROM node:14-alpine
 WORKDIR /dashboard
 
 ADD ./build /dashboard
-ADD ./public /dashboard
 
 RUN npm install -g serve
 ENV NODE_ENV=prod
 EXPOSE 3000
 
-CMD ["serve", "-s", "build"]
+CMD ["serve", "-s"]
