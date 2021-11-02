@@ -1,12 +1,12 @@
 #!/bin/bash
-set -ex
+set -e
 ROOT_DIR=$(pwd)
 
-
 build_sv() {
-  echo "BUILDING SERVER CODE!"
+  echo "Building server!"
   cd "$ROOT_DIR/server"
-  # docker build -t dash_sv .
+  mkdir -p "$ROOT_DIR/data";
+  docker build -t dash_sv .
 };
 
 build_client() {
@@ -15,13 +15,19 @@ build_client() {
   docker build -t dash_web .
 };
 
-run_client() {
-  # docker run --restart=always -d -p 3000:3000 dash_web
-  docker run -d -p 3000:5000 dash_web 
-}
+if [ -z $1 ]; 
+  then 
+    echo "no target specified";
+    echo "Specify one of ['client', 'server', all]"
+  else
+    if [ "$1" == "client" ]; then build_client;
+      elif [ "$1" == "server" ]; then build_sv;
+      elif [ "$1" == "all" ]; then build_client; build_sv; 
+      else echo "$1 not recognized as valid target";
+    fi;
+fi
 
 
-build_client
-mkdir -p "$ROOT_DIR/data";
+# build_client
 
 # docker run --restart=always -v "$(pwd)":/data -d -p 3030:3030 dash_sv

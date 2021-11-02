@@ -9,7 +9,7 @@ ADD ./config /dashboard/config
 ADD ./data /dashboard/data
 
 RUN npm ci
-RUN apk update && apk add bash
+# RUN apk update && apk add bash
 
 ENV NODE_ENV=prod
 ENV WS_PORT=3030
