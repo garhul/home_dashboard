@@ -10,7 +10,7 @@ const baseCfg = {
   scanTimeout: 5000,
   logger: {
     logString: '[TSTAMP] [LEVEL] [TAG] [TEXT]',
-    level: process.env.LOG_LEVEL || 0, //defaults to DEBUG
+    level: process.env.LOG_LEVEL || 'DEBUG', //defaults to DEBUG
     of: process.env.LOG_FILE  || null,
   },
   mqtt: {

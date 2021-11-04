@@ -20,11 +20,11 @@
     "eslint-plugin-security": "^1.4.0",
     "nodemon": "^2.0.4"
   },
-  "dependencies": {    
+  "dependencies": {
+    "chalk": "^4.1.2",
     "mqtt": "^4.1.0",
     "node-cron": "^2.0.3",
     "node-fetch": "^2.6.1",
-    "simple-fancy-logger": "^1.2.2",
     "uuid": "^8.3.2",
     "ws": "^7.3.1"
   }
