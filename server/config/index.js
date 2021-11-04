@@ -37,9 +37,6 @@ const cfg = {
   prod: {
     mockDevices: false,
     mockSensors: false,
-    logger: {
-      path: process.env.LOG_FILE || path.resolve('/data/dashboard_sv.log')
-    },
     sensors: {
       dataPath: process.env.SENSOR_DATA_PATH || path.resolve('/data'),
       persistToFile: process.env.SENSOR_PERSIST || true,
