@@ -9,7 +9,9 @@ const baseCfg = {
   scanBatchSize: 24,
   scanTimeout: 5000,
   logger: {
-    path: process.env.LOG_FILE  || null,
+    logString: '[TSTAMP] [LEVEL] [TAG] [TEXT]',
+    level: process.env.LOG_LEVEL || 0, //defaults to DEBUG
+    of: process.env.LOG_FILE  || null,
   },
   mqtt: {
     broker: process.env.MQTT_BROKER || 'mqtt://192.168.1.10',

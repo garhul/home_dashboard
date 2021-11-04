@@ -1,5 +1,5 @@
-// const socket = new WebSocket(`ws://${window.location.host.split(':')[0]}:3030`);
-const socket = new WebSocket(`ws://192.168.0.135:3030`);
+const socket = new WebSocket(`ws://${window.location.host.split(':')[0]}:3030`);
+// const socket = new WebSocket(`ws://192.168.0.135:3030`);
 
 class Bus {
   constructor(socket) {
