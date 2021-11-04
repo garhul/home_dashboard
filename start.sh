@@ -7,4 +7,4 @@ docker run -v "$(pwd)/data":/data --name "dashboard_sv" -d -p 3030:3030 \
   -e MQTT_BROKER="mqtt://127.0.0.1" dash_sv
 
 echo "Starting up client"
-docker run --name "dashboard_client"-d -p 3000:5000 dash_web
+docker run --name "dashboard_client" -d -p 3000:5000 dash_web
