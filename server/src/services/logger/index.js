@@ -5,17 +5,20 @@ const chalk = require('chalk');
 const { inspect } = require('util');
 
 const levels = {
-  'DEBUG': { weight: 0, text:chalk.magenta.bold('  DEBUG  ')},  
+  'DEBUG': { weight: 0, text:chalk.green('  DEBUG  ')},  
   'INFO': { weight: 1, text: chalk.blue(        '  INFO   ')},
   'WARN': { weight: 2, text: chalk.magenta.bold('  WARN   ' )},
   'ERROR': { weight: 3, text: chalk.bgRed.bold( '  ERROR  ' )} 
 };
 
+const min_weight = levels[config.logger.level].weight;
+
 const log = (level, text, tag = 'GENERAL') => {
   const l = levels[level];
-  if (l.weight < levels[config.logger.level].level) return;
+  
+  if (l.weight < min_weight) return;
 
-  let output = config.log.logString.replace('[TSTAMP]', l.color(new Date().toISOString()));
+  let output = config.logger.logString.replace('[TSTAMP]', chalk.gray(new Date().toISOString()));
   // if (config.log.of === null)  {
     output = output.replace('[LEVEL]', l.text);
     output = output.replace('[TAG]', chalk.gray(`[ ${tag} ]`));
