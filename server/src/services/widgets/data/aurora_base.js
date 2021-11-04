@@ -82,7 +82,7 @@ module.exports = [
       type: 'Range',
       payload: '{"cmd":"spd", "payload":$1}',
       min: '0',
-      max: '100',
+      max: '255',
       val: ({ spd }) => spd
     },
   ],
