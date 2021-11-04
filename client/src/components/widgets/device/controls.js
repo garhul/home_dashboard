@@ -106,15 +106,14 @@ export function Plot(props) {
           callback: (value, index, values) => `${value} ${plot.unit}`,
           maxTicksLimit: 5,
           fontColor: plot.color,
-          suggestedMin: plot.min ?? 0,
-          suggestedMax: plot.max ?? 100,
+          suggestedMin: 900, //plot.min ?? 0,
+          suggestedMax: 1000//plot.max ?? 100,
         },
         type: 'linear',
         display: showScale,
         id: `axis-${plot.key}`,
-
-
       })),
+
       xAxes: [{
         type: 'time',
         distribution: 'linear',
@@ -205,6 +204,12 @@ function timeSince(t) {
 }
 
 function tinyPlot(props) {
+
+  function tickFormatter(tick) {
+    const d = new Date(tick);
+    return `${d.getDay()}.${d.getMonth()} ${d.getHours()}:${d.getMinutes()}`
+  }
+
   const labelFn = (l) => {
     const d = new Date(l);
     return `${d.toLocaleDateString('en-GB')}:${d.toLocaleTimeString('en-GB')}`;
@@ -214,10 +219,10 @@ function tinyPlot(props) {
     <ResponsiveContainer height={100} >
       <LineChart width={600} height={100} data={props.data}>
         <Line dot={false} type="monotone" dataKey="v" stroke={props.color} strokeWidth={2} margin={{ top: 0, right: 0, bottom: 0, left: 0 }} />
-        <CartesianGrid stroke="#888" strokeDasharray="4" horizontal={false} />
-        <YAxis width={45} />
+        <CartesianGrid stroke="#333" strokeDasharray="4" horizontal={true} />
+        <YAxis width={45} domain={[Math.floor(props.min), Math.ceil(props.max)]} style={{"fontSize":".8em"}}/>
         <Tooltip separator="" labelFormatter={labelFn} formatter={(v, n, p) => [`${parseFloat(v).toFixed(2)}${props.unit}`, '']} contentStyle={{ "backgroundColor": "#222", "border": "0" }} />
-        <XAxis hide={true} dataKey="t" tick={false} />
+        <XAxis hide={false} interval={Math.ceil(props.data.length / 10)} dataKey="t" tick={true} tickFormatter={tickFormatter} style={{"fontSize":".8em"}}/>
       </LineChart>
     </ResponsiveContainer>
   );

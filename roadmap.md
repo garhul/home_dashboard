@@ -12,14 +12,16 @@
 - ~~sensors data plotting~~
 - ~~sensors data gathering~~
 - ~~ devices feedback (status, requires firmware upgrade) ~~
-### v2 : 
+
+### v1.1 : 
 - cron tasks definition
+
+### v1.2
+- group editing
+
+### v1.3
 - message relay rules (redirect, etc)
+
+### v1.4
 - sensors api exposed
 - log management
-
-
-won't do:
-- groups settings / crud UI
-- devices settings UI
-- control sets
