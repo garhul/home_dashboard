@@ -42,11 +42,11 @@ mqttClient.on('connect', () => {
 eventBus.addListener(busEvents.MQTT.PUBLISH, (data) => {
   logger.i(`Sending mqtt device at topic ${data.topic} payload ${JSON.stringify(data.payload)}`);
   
-  if (typeof(data.playload) != 'string') {
-    mqttClient.publish(data.topic, JSON.stringify(data.payload));
-  } else {
-    mqttClient.publish(data.topic, data.payload);
+  if (typeof(data.payload) == 'object') {    
+    data.payload = JSON.stringify(data.payload);
   }
+    console.dir(data.payload);
+    mqttClient.publish(data.topic, data.payload); 
 });
 
 module.exports = mqttClient;
