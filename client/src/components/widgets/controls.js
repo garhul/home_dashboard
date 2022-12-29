@@ -1,17 +1,12 @@
 import React, { useState } from 'react';
-import Button from 'react-bootstrap/Button';
-import ButtonGroup from 'react-bootstrap/ButtonGroup';
-import ProgressBar from 'react-bootstrap/ProgressBar';
-import Badge from 'react-bootstrap/Badge';
-// import { Line } from 'react-chartjs-2';
-import { Row, Col } from 'react-bootstrap';
+import { Badge, Button, ButtonGroup, ProgressBar, Container, Row, Col, Alert } from 'react-bootstrap';
 import { Adjust, Speed, WbSunnyOutlined, WavesOutlined, BatteryAlert, ArrowDownward, ArrowUpward } from '@material-ui/icons';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import RangeSlider from 'react-bootstrap-range-slider';
 import 'react-bootstrap-range-slider/dist/react-bootstrap-range-slider.css';
+import DataBus from '../../data';
 
-
-export function CMDButton(props) {
+function CMDButton(props) {
   function clickHandler() {
     props.update({ data: null, payload: props.payload });
   }
@@ -21,38 +16,26 @@ export function CMDButton(props) {
     </Button>)
 }
 
-export class CMDSlider extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { value: 0 };
-  }
+function CMDSlider(props) {
+  let [value, setValue] = useState(0);
 
-  clickHandler(ev) {
+  function clickHandler(ev) {
     ev.preventDefault();
-
-    console.log(ev.currentTarget.offsetLeft);
-    console.log(ev.clientX);
-    console.log(ev.currentTarget.offsetWidth);
-
     const percentil = (ev.clientX - ev.currentTarget.offsetLeft) / ev.currentTarget.offsetWidth;
     // console.log(`${percentil * 100} %`);
-    this.setState({ value: Math.floor(percentil * 100) });
-
-    console.log(this.state);
-    this.props.update({ data: this.state.value, payload: this.props.payload });
+    setValue(Math.floor(percentil * 100));
+    props.update({ data: value, payload: props.payload });
   }
 
-  render() {
-    return <div className="sliderContainer" onClick={(ev) => this.clickHandler(ev)}>
-      <span>{this.props.label}</span>
-
-      <ProgressBar striped variant="dark" now={this.state.value} />
+  return (
+    <div className="sliderContainer" onClick={(ev) => clickHandler(ev)}>
+      <span>{props.label}</span>
+      <ProgressBar striped variant="dark" now={value} />
     </div>
-  }
+  );
 }
 
-
-export function CMDRange(props) {
+function CMDRange(props) {
   const [value, setValue] = useState(props.val || 0);
 
   return (
@@ -70,31 +53,7 @@ export function CMDRange(props) {
     </div >)
 }
 
-export function CMDSensorCard(props) {
-  return <div className="sensorBox">
-    <div class="row">
-      <div class="col"></div>
-    </div>
-  </div>
-}
-
-export function CMDLabel(props) {
-  return (
-    <Row className="">
-      <Col><BatteryAlert style={{ "font-size": "4em" }} /> </Col>
-      <Col>
-        <Row>23 c</Row>
-        <Row>
-          <Col> <ArrowDownward /> 10 </Col>
-          <Col> <ArrowUpward /> 33 </Col>
-        </Row>
-      </Col>
-    </Row>
-  )
-  // return <Badge variant="warning" style={{color:props.color}}>{props.label}</Badge>  
-}
-
-export function Plot(props) {
+function Plot(props) {
   const [showScale, setShowScale] = useState(false);
   const [subset, setSubset] = useState('D');
 
@@ -220,15 +179,15 @@ function tinyPlot(props) {
       <LineChart width={600} height={100} data={props.data}>
         <Line dot={false} type="monotone" dataKey="v" stroke={props.color} strokeWidth={2} margin={{ top: 0, right: 0, bottom: 0, left: 0 }} />
         <CartesianGrid stroke="#333" strokeDasharray="4" horizontal={true} />
-        <YAxis width={45} domain={[Math.floor(props.min), Math.ceil(props.max)]} style={{"fontSize":".8em"}}/>
+        <YAxis width={45} domain={[Math.floor(props.min), Math.ceil(props.max)]} style={{ "fontSize": ".8em" }} />
         <Tooltip separator="" labelFormatter={labelFn} formatter={(v, n, p) => [`${parseFloat(v).toFixed(2)}${props.unit}`, '']} contentStyle={{ "backgroundColor": "#222", "border": "0" }} />
-        <XAxis hide={false} interval={Math.ceil(props.data.length / 10)} dataKey="t" tick={true} tickFormatter={tickFormatter} style={{"fontSize":".8em"}}/>
+        <XAxis hide={false} interval={Math.ceil(props.data.length / 10)} dataKey="t" tick={true} tickFormatter={tickFormatter} style={{ "fontSize": ".8em" }} />
       </LineChart>
     </ResponsiveContainer>
   );
 }
 
-export function Sensor(props) {
+function Sensor(props) {
   const [showPlot, setShowPlot] = useState(false);
   const [subset, setSubset] = useState('D');
 
@@ -308,4 +267,75 @@ export function Sensor(props) {
   )
 }
 
+function CMDLabel(props) {
+  return (
+    <Badge block="true" variant={(!props.style) ? "outline-info" : props.style} size="lg">
+      {props.label}
+    </Badge>
+  )
+}
 
+export default function DeviceControl(props) {
+  const update = ({ data, payload }) => {
+    DataBus.emit('WIDGETS_CMD', {
+      id: props.id,
+      data,
+      payload
+    });
+  }
+
+  const Controls = props.controls.map((row, i) => (
+    <Row key={`row_${i}`}>
+      {row.map((ctrl, index) => {
+        if (!ctrl.type) return null;
+
+        switch (ctrl.type.toUpperCase()) {
+          case 'BUTTON':
+            return (<Col key={`btn_${index}`}>
+              <CMDButton update={(data) => update(data)} key={`btn_${index}`} {...ctrl}></CMDButton>
+            </Col>);
+
+          case 'SLIDER':
+            return (
+              <Col key={`slider_${index}`}>
+                <CMDSlider update={(data) => update(data)} key={`slider_${index}`} {...ctrl}></CMDSlider >
+              </Col>);
+
+          case 'LABEL':
+            return (
+              <Col key={`label_${index}`}>
+                <CMDLabel {...ctrl}></CMDLabel>
+              </Col>
+            )
+
+          case 'RANGE':
+            return (
+              <Col key={`range_${index}`}>
+                <CMDRange update={(data) => update(data)} key={`rng_${index}`} {...ctrl}></CMDRange>
+              </Col>
+            )
+
+          case 'PLOT':
+            return (
+              <Col key={`plot_${index}`}>
+                <Plot {...ctrl}></Plot>
+              </Col>
+            )
+
+          case 'SENSOR':
+            return (
+              <Col key={`sensor_${index}`}>
+                <Sensor {...ctrl}></Sensor>
+              </Col>
+            )
+
+          default:
+            return (<Alert key={`alert_${index}`} variant="warning">Control for {ctrl.type} not found!</Alert>);
+        }
+      })}
+    </Row>));
+
+  return (<Container id="DeviceControl">
+    {Controls}
+  </Container>)
+}

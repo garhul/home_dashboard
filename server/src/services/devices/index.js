@@ -20,7 +20,6 @@ class DevicesService {
 
   constructor() {
     this.store = new Map();
-
     this.init();
 
     if (config.mockDevices) {
@@ -75,7 +74,8 @@ class DevicesService {
               });
             break;
           case 'birth':
-            const data = await this.queryDevice(msg.ip)
+            const data = await this.queryDevice(msg.ip);
+            logger.i(data);
             this.add(data);
             break;
           case 'death':

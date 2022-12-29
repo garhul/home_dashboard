@@ -78,6 +78,8 @@ class WidgetsService {
       this.store.set(d.device_id,
         {
           id: d.device_id,
+          ip: d.ip,
+          state: d.state,
           type: 'aurora',
           name: d.human_name,
           topic: d.topic,

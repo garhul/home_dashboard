@@ -1,5 +1,5 @@
 body {
-  padding: 0px;
+  padding-top: 8vh;  
   margin: 0px;
   font-size: 14pt;
   font-family: Helvetica;
@@ -13,10 +13,10 @@ body {
   align-items: center;
 }
 
+
 #Widgets {
   width: 80%;
   margin: 0 auto;
-
   min-height: 100vh;
   /* font-size: calc(10px + 2vmin); */
   color: white;
@@ -25,7 +25,6 @@ body {
 .widget {  
   border:.8vh solid #222;
   background-color: #282c34;
-  margin: 8vh auto;
   min-height: 8vh;
   /* border: 1px solid rgb(93, 93, 100); */
   width:100%
@@ -36,16 +35,63 @@ body {
 }
 
 .widget > .title {
+  width:100%;
+  display: flex;
+  justify-content: space-between;
+  gap: 2vh;  
   text-align: center;
   font-size:4vh;
   font-weight: bold;
   color:#ddd;
   margin:.2em;
+  padding:.5em;
+  align-items: center;
 }
 
 .widget > .title > span {
   vertical-align: middle;
   text-shadow: #000000 .2vh .2vh ;
+}
+
+.widget > .title > span > a{
+  font-size: 4vh;
+  color:#ddd;
+  margin-left:4vh;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+ul.info {
+  list-style-type: none;
+  
+}
+
+ul.info > li {
+  border-bottom: 1px solid #5c5c5c;
+  padding: .25em;
+}
+
+ul.info > li > span{
+  font-weight:400;
+  color:#eee;
+}
+
+.widget > .title > div.info > svg{  
+  font-size: 4vh;
+  color:rgb(17, 154, 85);  
+  font-weight: bold;
+  text-decoration: none;
+  cursor:pointer;
+}
+
+.widget > .title > div.info:hover > svg {  
+  font-size: 4vh;
+  color:rgb(129, 234, 181);  
+  font-weight: bold;
+  text-decoration: none;
+  cursor:pointer;  
+  box-shadow: 0.1em 0.1em 1em #ffffff33;
+  border-radius: 0.5em;
 }
 
 #DevicesList > h3 {

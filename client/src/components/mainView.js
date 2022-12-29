@@ -1,43 +1,59 @@
 import React, { useState, useEffect } from 'react';
-import Widgets from './widgets';
-import Admin from './widgets/admin';
+
+import AdminView from './adminView';
+import GroupsView from './groupsView';
+import SensorsView from './sensorsView';
+import DevicesView from './devicesView';
+
 import NavBar from './navigation';
 import DataBus from '../data';
+import { Container } from 'react-bootstrap';
 
-export default function MainView() {
+export function MainView() {
   const [widgets, updateWidgets] = useState([]);
   const [location, updateLocation] = useState("");
 
   useEffect(() => {
-    DataBus.on('WIDGETS_UPDATE', (d) => {
-      // console.log('Received widgets.update', d);
-      updateWidgets(d);
-    });
+    DataBus.on('WIDGETS_UPDATE', updateWidgets);
+    return () => {
+      DataBus.off('WIDGETS_UPDATE', updateWidgets);
+    }
   }, []);
 
-  function getWidgets() {
-    switch (location) {
-      case 'devices':
-        return widgets.filter(w => w.type === 'aurora');
-
-      case 'sensors':
-        return widgets.filter(w => w.type === 'sensor');
-
-      case 'home':
-        return widgets.filter(w => w.type === 'group');
-
-      default:
-        return widgets;
-    }
-  }
-
-  const View = (location === 'admin') ? <Admin></Admin> : <Widgets location={location} widgets={getWidgets()}></Widgets>;
   return (
     <div>
       <NavBar onChange={(w) => updateLocation(w)}></NavBar>
-      <div id="MainView">
-        {View}
-      </div >
+      <Container id="MainView">
+        {location === 'admin' ? <AdminView /> : null}
+        {location === 'sensors' ? <SensorsView widgets={widgets.filter(w => w.type === 'sensor')} /> : null}
+        {location === 'devices' ? <DevicesView widgets={widgets.filter(w => w.type === 'aurora')} /> : null}
+        {location === 'home' ? <GroupsView widgets={widgets.filter(w => w.type === 'group')} /> : null}
+      </Container >
     </div>
   );
+}
+
+export function WsOverlay() {
+  const [visible, setVisibility] = useState(true);
+
+  useEffect(() => {
+    const makeVisible = () => setVisibility(true);
+    const hide = () => setVisibility(false);
+
+    DataBus.on('close', makeVisible);
+    DataBus.on('error', makeVisible);
+    DataBus.on('open', hide);
+
+    return () => {
+      DataBus.off('close', makeVisible);
+      DataBus.off('error', makeVisible);
+      DataBus.off('open', hide);
+    };
+  }, []);
+
+  return (<div id="ws-overlay" className={visible ? '' : 'hide'} >
+    <div>
+      <h2>WS not connected, please reload window</h2>
+    </div>
+  </div>)
 }
