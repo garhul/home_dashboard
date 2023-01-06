@@ -1,6 +1,4 @@
 const { v4: uuid } = require('uuid');
-const eventBus = require('../../eventBus');
-const events = require('../../events');
 
 exports.get = (amount) => {
   const ret = [];

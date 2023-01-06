@@ -1,15 +1,17 @@
 const { v4: uuid } = require('uuid');
-const events = require('../../events');
-const eventBus = require('../../eventBus');
+
+const eventBus = require('../evbus/');
+const evs = eventBus.evs;
 const controls = require('./data');
 const controlGroups = require('../../../data/controlGroups');
 const logger = require('../logger')('WIDGETS_SV');
+const config = require('../../../config');
 
 class Widget {
   constructor() {
     this.id = uuid();
-    this.type = "aurora",
-      this.controls = contorls.aurora;
+    this.type = "aurora";
+    this.controls = contorls.aurora;
     this.state = {};
   }
 
@@ -40,10 +42,12 @@ class WidgetsService {
 
   notifyUpdate(client = null) {
     logger.i('Widgets list updated');
-    eventBus.emit(events.WIDGETS.UPDATE, { client, data: Array.from(this.store.values()) });
+    eventBus.emit(evs.WIDGETS.UPDATE, { client, data: Array.from(this.store.values()) });
   }
 
   loadGroups() {
+
+    config.dataPath
     controlGroups.forEach(group => {
       const id = uuid();
       this.store.set(id, {
@@ -103,10 +107,10 @@ class WidgetsService {
 
   addEventHandlers() {
     logger.d('Adding event handlers');
-    eventBus.addListener(events.DEVICES.UPDATE, ({ data: devices }) => this.updateFromDevices(devices));
-    eventBus.addListener(events.SENSORS.UPDATE, (data) => this.updateFromSensors(data));
-    eventBus.addListener(events.WIDGETS.LIST, (client) => this.notifyUpdate(client));
-    eventBus.addListener(events.WIDGETS.CMD, (...args) => this.issueCMD(...args));
+    eventBus.addListener(evs.DEVICES.UPDATE, ({ data: devices }) => this.updateFromDevices(devices));
+    eventBus.addListener(evs.SENSORS.UPDATE, (data) => this.updateFromSensors(data));
+    eventBus.addListener(evs.WIDGETS.LIST, (client) => this.notifyUpdate(client));
+    eventBus.addListener(evs.WIDGETS.CMD, (...args) => this.issueCMD(...args));
   }
 
   issueCMD({ payload, data, id }) {
@@ -118,7 +122,7 @@ class WidgetsService {
     }
 
     const topics = widget.topics ?? [widget.topic];
-    eventBus.emit(events.DEVICES.CMD, { topics, payload, data });
+    eventBus.emit(evs.DEVICES.CMD, { topics, payload, data });
   }
 }
 

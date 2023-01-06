@@ -2,8 +2,8 @@ const fs = require('fs');
 const path = require('path');
 const { v4: uuid } = require('uuid');
 const logger = require('../logger')('SENSORS_SV');
-const eventBus = require('../../eventBus');
-const events = require('../../events');
+const eventBus = require('../evbus/');
+const EVS = eventBus.evs;
 const TimeSeries = require('./timeSeries');
 const config = require('../../../config');
 
@@ -108,14 +108,14 @@ class SensorsService {
           const S = Sensor.fromFile(f);
           this.sensors.set(S.id, S);
 
-          eventBus.emit(events.SENSORS.UPDATE, S);
+          eventBus.emit(EVS.SENSORS.UPDATE, S);
         });
       } catch (e) {
         logger.e(e);
       }
     }
 
-    eventBus.on(events.SENSORS.DATA, (payload) => {
+    eventBus.on(EVS.SENSORS.DATA, (payload) => {
       const data = JSON.parse(payload.toString());
       this.updateSensor(data);
     });
@@ -131,7 +131,7 @@ class SensorsService {
       this.sensors.set(id, sensor);
       logger.d(`New sensor [${name}] data`, data);
     }
-    eventBus.emit(events.SENSORS.UPDATE, sensor);
+    eventBus.emit(EVS.SENSORS.UPDATE, sensor);
   }
 
 }

@@ -12,15 +12,16 @@
 const fetch = require('node-fetch');
 const logger = require('../logger')('DEVICES_SV');
 const config = require('../../../config');
-const EVS = require('../../events.js');
-const { timedPromise } = require('../../utils');
-const eventBus = require('../../eventBus');
 
+const { timedPromise } = require('../../utils');
+const eventBus = require('../evbus/');
+const EVS = eventBus.evs;
 class DevicesService {
 
   constructor() {
     this.store = new Map();
     this.init();
+    this.scanning = false;
 
     if (config.mockDevices) {
       setTimeout(() => {
@@ -129,6 +130,9 @@ class DevicesService {
   }
 
   async scan() {
+    if (this.scanning) return;
+    this.scanning = true;
+
     const { baseScanAddress, scanBatchSize, scanTimeout } = config;
 
     const ips = [];
@@ -156,6 +160,8 @@ class DevicesService {
       }
     }
     this.add(...data);
+
+    this.scanning = false;
   }
 
   /** Retrieves info json and state from a given ip address 

@@ -1,6 +1,6 @@
 const { v4: uuid } = require('uuid');
-const eventBus = require('../../eventBus');
-const events = require('../../events');
+const eventBus = require('../evbus/');
+const EVS = eventBus.evs;
 class mockSensor {
   constructor(name, intervalTime) {
     this.intervalTime = intervalTime;
@@ -21,7 +21,7 @@ class mockSensor {
 
   // Generate a single random event of sensor input
   update() {
-    eventBus.emit(events.SENSORS.DATA, JSON.stringify({
+    eventBus.emit(EVS.SENSORS.DATA, JSON.stringify({
       id: this.id,
       name: this.name,
       data: {

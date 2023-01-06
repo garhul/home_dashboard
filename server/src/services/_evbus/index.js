@@ -1,5 +1,6 @@
 const { EventEmitter } = require('events');
-const logger = require('./services/logger')('EVENT_BUS');
+const logger = require('../logger')('EVENT_BUS');
+const evs = require('./events');
 class EventBus extends EventEmitter {
   emit(evName, ...args) {
     const hasListeners = super.emit(evName, ...args);
@@ -13,6 +14,10 @@ class EventBus extends EventEmitter {
   addListener(event, listener) {
     logger.d(`Added listener for ${event}`);
     super.addListener(event, listener);
+  }
+
+  get evs() {
+    return evs;
   }
 }
 
