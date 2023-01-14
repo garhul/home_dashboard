@@ -1,0 +1,5 @@
+{
+  "devDependencies": {
+    "@types/lokijs": "^1.5.7"
+  }
+}

@@ -40,7 +40,8 @@ export function init() {
   logger.info(`Websocket server started on port ${config.server.wsPort}`);
 
   WSServer.on('connection', (socket, req) => {
-    logger.info(`New WS connection incoming from ${req.headers['x-forwarded-for']}`)
+    logger.info(`New WS connection incoming from ${req.headers['x-forwarded-for']}`);
+
     socket.on('message', (message) => {
       const { ev, msg, replyTo } = JSON.parse(message.toString());
       logger.debug(`Data from ws ${ev}`);

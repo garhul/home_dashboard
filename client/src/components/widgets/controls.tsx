@@ -1,17 +1,19 @@
 import React, { useState } from 'react';
 import { Badge, Button, ButtonGroup, ProgressBar, Container, Row, Col, Alert } from 'react-bootstrap';
-import { Adjust, Speed, WbSunnyOutlined, WavesOutlined, BatteryAlert, ArrowDownward, ArrowUpward } from '@material-ui/icons';
+import { FiAirplay, FiBattery, FiWind, FiSun, FiArrowDown, FiArrowUp, FiCompass } from 'react-icons/fi';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import RangeSlider from 'react-bootstrap-range-slider';
 import 'react-bootstrap-range-slider/dist/react-bootstrap-range-slider.css';
-import DataBus from '../../data';
+// import DataBus from '../../data';
+import { deviceStateData } from '@backend/types';
 
-function CMDButton(props) {
-  function clickHandler() {
-    props.update({ data: null, payload: props.payload });
-  }
+function CMDButton(props) {  
   return (
-    <Button block="true" variant={(!props.style) ? "outline-info" : props.style} size="lg" onClick={() => clickHandler()}>
+    <Button 
+      variant={(!props.style) ? "outline-info" : props.style}
+      size="lg"
+      onClick={() =>  props.update(null)}
+      >
       {props.label}
     </Button>)
 }
@@ -24,7 +26,7 @@ function CMDSlider(props) {
     const percentil = (ev.clientX - ev.currentTarget.offsetLeft) / ev.currentTarget.offsetWidth;
     // console.log(`${percentil * 100} %`);
     setValue(Math.floor(percentil * 100));
-    props.update({ data: value, payload: props.payload });
+    props.update(`${value}`);
   }
 
   return (
@@ -48,7 +50,7 @@ function CMDRange(props) {
         size='lg'
         variant='dark'
         onChange={changeEvent => setValue(changeEvent.target.value)}
-        onAfterChange={ev => props.update({ data: ev.target.value, payload: props.payload })}
+        onAfterChange={ev => props.update(`${ev.target.value}`)}
       />
     </div >)
 }
@@ -95,7 +97,7 @@ function Plot(props) {
 
   return (
     <div>
-      <Line data={data} options={options} />
+      <Line data={data} {...options} />
       <Row>
         <Col>
           <Button variant={(showScale) ? 'outline-success' : 'outline-secondary'} onClick={() => { setShowScale(!showScale) }} size="sm">scale</Button>
@@ -120,19 +122,19 @@ function Plot(props) {
 function getIcon(icon) {
   switch (icon) {
     case 'TEMP':
-      return <WbSunnyOutlined style={{ "fontSize": "5vh" }} />
+      return <FiSun style={{ "fontSize": "5vh" }} />
 
     case 'HUMID':
-      return <WavesOutlined style={{ "fontSize": "5vh" }} />
+      return <FiWind style={{ "fontSize": "5vh" }} />
 
     case 'PRES':
-      return <Speed style={{ "fontSize": "5vh" }} />
+      return <FiCompass style={{ "fontSize": "5vh" }} />
 
     case 'BAT':
-      return <BatteryAlert style={{ "fontSize": "5vh" }} />
+      return <FiBattery style={{ "fontSize": "5vh" }} />
 
     default:
-      return <Adjust style={{ "fontSize": "5vh" }} />
+      return <FiAirplay style={{ "fontSize": "5vh" }} />
   }
 }
 
@@ -177,10 +179,10 @@ function tinyPlot(props) {
   return (
     <ResponsiveContainer height={100} >
       <LineChart width={600} height={100} data={props.data}>
-        <Line dot={false} type="monotone" dataKey="v" stroke={props.color} strokeWidth={2} margin={{ top: 0, right: 0, bottom: 0, left: 0 }} />
+        <Line dot={false} type="monotone" dataKey="v" stroke={props.color} strokeWidth={2}  />
         <CartesianGrid stroke="#333" strokeDasharray="4" horizontal={true} />
         <YAxis width={45} domain={[Math.floor(props.min), Math.ceil(props.max)]} style={{ "fontSize": ".8em" }} />
-        <Tooltip separator="" labelFormatter={labelFn} formatter={(v, n, p) => [`${parseFloat(v).toFixed(2)}${props.unit}`, '']} contentStyle={{ "backgroundColor": "#222", "border": "0" }} />
+        <Tooltip separator="" labelFormatter={labelFn} formatter={(v, n, p) => [`${parseFloat(v.toString()).toFixed(2)}${props.unit}`, '']} contentStyle={{ "backgroundColor": "#222", "border": "0" }} />
         <XAxis hide={false} interval={Math.ceil(props.data.length / 10)} dataKey="t" tick={true} tickFormatter={tickFormatter} style={{ "fontSize": ".8em" }} />
       </LineChart>
     </ResponsiveContainer>
@@ -218,11 +220,11 @@ function Sensor(props) {
             </Col>
             <Col xs="2" style={{ "fontSize": "2.6vh" }}>
               <Row>
-                <Col><ArrowUpward /></Col>
+                <Col><FiArrowUp /></Col>
                 <Col>{parseFloat(props.data[subset].keys[chan.key].max).toFixed(2)}</Col>
               </Row>
               <Row>
-                <Col><ArrowDownward /></Col>
+                <Col><FiArrowDown /></Col>
                 <Col>{parseFloat(props.data[subset].keys[chan.key].min).toFixed(2)}</Col>
               </Row>
             </Col>
@@ -256,11 +258,11 @@ function Sensor(props) {
         <Col>
           {
             (props.state.status !== 'OPERATIVE')
-              ? (<Badge variant="danger"><BatteryAlert /> Battery critical</Badge>) : ''
+              ? (<Badge bg="danger"><FiBattery /> Battery critical</Badge>) : ''
           }
         </Col>
         <Col style={{ "textAlign": "right" }}>
-          <Badge variant={(lastSeen < 3600) ? 'dark' : 'danger'}>{timeSince(lastSeen)} ago</Badge>
+          <Badge bg={(lastSeen < 3600) ? 'dark' : 'danger'}>{timeSince(lastSeen)} ago</Badge>
         </Col>
       </Row>
     </div>
@@ -269,73 +271,84 @@ function Sensor(props) {
 
 function CMDLabel(props) {
   return (
-    <Badge block="true" variant={(!props.style) ? "outline-info" : props.style} size="lg">
+    <Badge bg="primary">
       {props.label}
     </Badge>
   )
 }
 
+
+function parseControls(state: deviceStateData, control) {
+  const parsed = {};
+
+  Object.keys(control).forEach(key => {
+    if (typeof control[key] === 'function') 
+      parsed[key] = control[key].call(null, state);
+  });
+
+  return {...control, ...parsed};
+}
+
 export default function DeviceControl(props) {
-  const update = ({ data, payload }) => {
-    DataBus.emit('WIDGETS_CMD', {
-      id: props.id,
-      data,
-      payload
-    });
-  }
+  const Controls = props.controls.map((row, i :number) => {
 
-  const Controls = props.controls.map((row, i) => (
-    <Row key={`row_${i}`}>
-      {row.map((ctrl, index) => {
-        if (!ctrl.type) return null;
+    return (
+      <Row key={`row_${i}`}>
+        {row.map((rawCtrl, index) => {
+          if (!rawCtrl.type) return null;
+          const ctrl = parseControls(props.state, rawCtrl);
+          switch (ctrl.type.toUpperCase()) {
+            case 'BUTTON':
+              return (
+                <Col key={`btn_${index}`}>
+                  <CMDButton update={(data) => props.update(ctrl.payload, data)} key={`btn_${index}`} {...ctrl}></CMDButton>
+                </Col>);
 
-        switch (ctrl.type.toUpperCase()) {
-          case 'BUTTON':
-            return (<Col key={`btn_${index}`}>
-              <CMDButton update={(data) => update(data)} key={`btn_${index}`} {...ctrl}></CMDButton>
-            </Col>);
+            case 'SLIDER':
+              return (
+                <Col key={`slider_${index}`}>
+                  <CMDSlider update={(data) => props.update(ctrl.payload, data)} key={`slider_${index}`} {...ctrl}></CMDSlider >
+                </Col>);
 
-          case 'SLIDER':
-            return (
-              <Col key={`slider_${index}`}>
-                <CMDSlider update={(data) => update(data)} key={`slider_${index}`} {...ctrl}></CMDSlider >
-              </Col>);
+            case 'LABEL':
+              return (
+                <Col key={`label_${index}`}>
+                  <CMDLabel {...ctrl}></CMDLabel>
+                </Col>
+              )
 
-          case 'LABEL':
-            return (
-              <Col key={`label_${index}`}>
-                <CMDLabel {...ctrl}></CMDLabel>
-              </Col>
-            )
+            case 'RANGE':
+              return (
+                <Col key={`range_${index}`}>
+                  <CMDRange update={(data) => props.update(ctrl.payload, data)} key={`rng_${index}`} {...ctrl}></CMDRange>
+                </Col>
+              )
 
-          case 'RANGE':
-            return (
-              <Col key={`range_${index}`}>
-                <CMDRange update={(data) => update(data)} key={`rng_${index}`} {...ctrl}></CMDRange>
-              </Col>
-            )
+            case 'PLOT':
+              return (
+                <Col key={`plot_${index}`}>
+                  <Plot {...ctrl}></Plot>
+                </Col>
+              )
 
-          case 'PLOT':
-            return (
-              <Col key={`plot_${index}`}>
-                <Plot {...ctrl}></Plot>
-              </Col>
-            )
+            case 'SENSOR':
+              return (
+                <Col key={`sensor_${index}`}>
+                  <Sensor {...ctrl}></Sensor>
+                </Col>
+              )
 
-          case 'SENSOR':
-            return (
-              <Col key={`sensor_${index}`}>
-                <Sensor {...ctrl}></Sensor>
-              </Col>
-            )
+            default:
+              return (<Alert key={`alert_${index}`} variant="warning">Control for {ctrl.type} not found!</Alert>);
+          }
+        })}
+      </Row>
+    )
+  });
 
-          default:
-            return (<Alert key={`alert_${index}`} variant="warning">Control for {ctrl.type} not found!</Alert>);
-        }
-      })}
-    </Row>));
-
-  return (<Container id="DeviceControl">
-    {Controls}
-  </Container>)
+  return (
+    <Container>
+      {Controls}
+    </Container>
+  );
 }

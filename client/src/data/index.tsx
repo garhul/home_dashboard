@@ -1,8 +1,13 @@
+
+import { v4 as uuidv4 } from 'uuid';
 const socket = new WebSocket(`ws://${window.location.host.split(':')[0]}:3030`);
+
 // const socket = new WebSocket(`ws://192.168.0.135:3030`);
 
 class Bus {
-  constructor(socket) {
+  socket:WebSocket;
+  subscriptions: Map<any,any>;
+  constructor(socket: WebSocket) {
     this.socket = socket;
     this.subscriptions = new Map();
 
@@ -27,16 +32,30 @@ class Bus {
     })
   }
 
-  emit(ev, msg) {
-    console.log({ ev, msg });
-    if (this.socket.readyState === 1) {
-      this.socket.send(JSON.stringify({ ev, msg }));
-    } else {
-      console.log('not ready yet', ev, msg);
-    }
+  async emit(ev, msg, expectResponse = false) {
+    return new Promise((resolve, reject) => {
+      console.info(`Emitting message: ${JSON.stringify({ ev, msg })}`);
+
+      if (this.socket.readyState !== 1) {
+        console.log('not ready yet', ev, msg);
+        reject(new Error('Not ready to send'));
+      }
+
+      if (expectResponse) {
+        const rspKey = `${ev}|${uuidv4()}`;
+        this.on(rspKey, (rspData) => {
+          this.subscriptions.delete(rspKey);
+          resolve(rspData);
+        });
+        this.socket.send(JSON.stringify({ ev, msg, replyTo: rspKey }));
+      } else {
+        this.socket.send(JSON.stringify({ ev, msg, replyTo: false }));
+        resolve(null);
+      }
+    });
   }
 
-  handleEvent(ev, data) {
+  handleEvent(ev:string, data?:any) {
     const hndlrs = this.subscriptions.has(ev) ? this.subscriptions.get(ev) : [];
     hndlrs.forEach(fn => fn.call(this, data));
     if (hndlrs.length === 0) {
@@ -45,12 +64,12 @@ class Bus {
     }
   }
 
-  on(ev, fn) {
+  on(ev:string, fn:any) {
     const subs = this.subscriptions.has(ev) ? [...this.subscriptions.get(ev), fn] : [fn];
     this.subscriptions.set(ev, subs);
   }
 
-  off(ev, fn) {
+  off(ev:string, fn:any) {
     const subs = this.subscriptions.get(ev);
 
     if (subs === undefined) {

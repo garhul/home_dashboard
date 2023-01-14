@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 
 import AdminView from './adminView';
-import GroupsView from './groupsView';
-import SensorsView from './sensorsView';
+// import GroupsView from './groupsView';
+// import SensorsView from './sensorsView';
 import DevicesView from './devicesView';
 
 import NavBar from './navigation';
@@ -10,24 +10,16 @@ import DataBus from '../data';
 import { Container } from 'react-bootstrap';
 
 export function MainView() {
-  const [widgets, updateWidgets] = useState([]);
+  // const [devices, updateDevices] = useState([]);
   const [location, updateLocation] = useState("");
-
-  useEffect(() => {
-    DataBus.on('WIDGETS_UPDATE', updateWidgets);
-    return () => {
-      DataBus.off('WIDGETS_UPDATE', updateWidgets);
-    }
-  }, []);
-
   return (
     <div>
       <NavBar onChange={(w) => updateLocation(w)}></NavBar>
       <Container id="MainView">
         {location === 'admin' ? <AdminView /> : null}
-        {location === 'sensors' ? <SensorsView widgets={widgets.filter(w => w.type === 'sensor')} /> : null}
-        {location === 'devices' ? <DevicesView widgets={widgets.filter(w => w.type === 'aurora')} /> : null}
-        {location === 'home' ? <GroupsView widgets={widgets.filter(w => w.type === 'group')} /> : null}
+        {/* {location === 'sensors' ? <SensorsView widgets={devices.filter(w => w.type === 'sensor')} /> : null} */}
+        {location === 'devices' ? <DevicesView/> : null}
+        {/* {location === 'home' ? <GroupsView widgets={widgets.filter(w => w.type === 'group')} /> : null} */}
       </Container >
     </div>
   );

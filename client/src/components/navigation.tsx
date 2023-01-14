@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Nav, Navbar } from 'react-bootstrap'
-import HomeIcon from '@material-ui/icons/Home';
+import {AiFillHome} from 'react-icons/ai';
 
-export default function NavBar(props) {
+export default function NavBar(props: any) {
   const [, setLocation] = useState(window.location.hash || '#home');
 
   const changeLocation = useCallback((l) => {
@@ -15,7 +15,7 @@ export default function NavBar(props) {
 
   return (
     <Navbar fixed="top" bg="dark" expand="lg" collapseOnSelect={true}>
-      <Navbar.Brand><HomeIcon style={{ "fontSize": "3vh" }}></HomeIcon></Navbar.Brand>
+      <Navbar.Brand><AiFillHome style={{ "fontSize": "3vh" }}></AiFillHome></Navbar.Brand>
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="mr-auto">

@@ -1,12 +1,12 @@
 import React from 'react';
-import Widgets from './widgets';
+// import Widgets from './widgets';
 import { Container } from 'react-bootstrap';
 
-export default function GroupsView(props) {
+export default function GroupsView(props: any) {
   console.log(props);
   return (
     <Container>
-      <Widgets {...props}></Widgets>
+      {/* <Widgets {...props}></Widgets> */}
     </Container>
   );
 }

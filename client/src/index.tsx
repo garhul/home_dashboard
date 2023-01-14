@@ -5,7 +5,6 @@ import * as serviceWorker from './serviceWorker';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './app.css';
 
-
 ReactDOM.render(
   <React.StrictMode>
     <WsOverlay />

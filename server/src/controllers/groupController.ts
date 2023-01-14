@@ -1,5 +1,5 @@
 import { Groups } from '../services/db';
-import { groupData, deviceData, stateData } from '../types';
+import { groupData, deviceData, deviceStateData } from '../types';
 import { getTaggedLogger } from '../services/logger';
 // import config from '../../config';
 const logger = getTaggedLogger('GroupCTRL');

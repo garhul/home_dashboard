@@ -1,5 +1,5 @@
 import { Devices } from '../services/db';
-import { deviceData, stateData } from '../types';
+import { deviceData, deviceStateData } from '../types';
 import { getTaggedLogger } from '../services/logger';
 import { timedPromise } from '../utils';
 import config from '../../config';
@@ -142,7 +142,7 @@ async function queryDevice(ipAddr: string): Promise<deviceData | null> {
   return null;
 }
 
-function updateState(id: string, state: stateData) {
+function updateState(id: string, state: deviceStateData) {
   try {
     const dev = Devices.get(id);
     if (dev === null) throw new Error(`Device with id ${id} not found`);
@@ -167,8 +167,8 @@ export function get(deviceId: string): deviceData {
   return Devices.get(deviceId);
 }
 
-export function getAll(): [string, deviceData][] {
-  return Devices.getAll();
+export function getAll(): deviceData[] {
+  return Devices.getAll().map(d => d[1]);
 }
 
 

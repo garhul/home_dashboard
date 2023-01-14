@@ -1,10 +1,12 @@
 import express from 'express';
 import { logger, httpLogger } from './services/logger';
 import cfg from '../config';
+import cors from 'cors';
 import router from './router';
 import { closeConnections } from './evDispatcher';
 
 const app = express();
+app.use(cors());
 app.use(express.json());
 
 app.use(express.urlencoded({ extended: true }));
