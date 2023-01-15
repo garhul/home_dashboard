@@ -1,11 +1,21 @@
 :root {
+  /* Color Scheme defines */
+  /* TODO:: properly organize this */
+
   --black: #000;
   --dark_1:#222;
   --dark_2:#272727;
   --yellow:#ffff00;
+  --gray:#444;
   --dark_yellow:#e7b621;
   --green:rgb(17, 154, 85);
   --green-light:rgb(129, 234, 181);  
+
+  --bs-dark-rgb:34,34,34; /*override for navbar*/
+
+
+  --brand-color:#992299;
+  --brand-highlight:#ff3399;
 }
 
 
@@ -89,18 +99,17 @@ ul.info > li > span{
 
 .widget > .title > div.info > svg{  
   font-size: 4vh;
-  color:var(--green);
+  /* color:var(--green); */
   font-weight: bold;
   text-decoration: none;
   cursor:pointer;
-  box-shadow: .1em .1em .2em #000;   
-  border-radius: 0.5em;
+  /* box-shadow: .1em .1em .2em #000;    */
+  /* border-radius: 0.5em; */
  
 }
 
 .widget > .title > div.info:hover > svg {  
-  font-size: 4vh;
-  color:var(--green);
+  font-size: 4vh;  
   font-weight: bold;
   text-decoration: none;
   cursor:pointer;
@@ -113,7 +122,7 @@ ul.info > li > span{
   font-weight: bold;
   text-decoration: none;
   cursor:pointer;  
-  border-radius: 0.5em;
+  /* border-radius: 0.5em; */
 }
 
 #DevicesList > h3 {
@@ -122,6 +131,10 @@ ul.info > li > span{
 }
 
 /* #DeviceControl >  */
+.navbar {
+  padding:1em;
+  border-bottom:1px solid var(--gray);
+}
 
 .nav-link {
   font-size: 2vh;
@@ -132,9 +145,12 @@ ul.info > li > span{
   color:#BBB;
 }
 
-.navbar-nav > .active {
+
+.nav-link.active {
   font-weight: bold;
+  color:var(--brand-color) !important;
 }
+
 
 #DeviceControl {
   margin: 0 auto;
@@ -154,15 +170,15 @@ ul.info > li > span{
 }
 
 div.rule-item {
-  border: 1px solid #444;
+  border: 1px solid var(--gray);
   padding:1em;
   border-radius:.5em;
 }
 
-div.rule-item:hover {
+/* div.rule-item:hover {
   border: 1px solid var(--dark_1);
   background-color:var(--dark_2);
-}
+} */
 
 div.rule-row {
   display: flex;
@@ -175,6 +191,7 @@ div.actions-title {
   font-size:3vh;
   display: flex;
   justify-content: space-between;  
+  align-items: center;
 }
 
 .rule-action-btns {

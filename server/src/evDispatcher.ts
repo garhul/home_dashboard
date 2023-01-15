@@ -1,30 +1,36 @@
 import config from '../config';
-import { init as mqttInit, MQTTHandler } from './services/mqtt';
+import { getClient, MQTTHandler } from './services/mqtt';
 import { timedPromise } from './utils/';
 import { DeviceController, SensorController } from './controllers';
 import * as WebSocketServer from './services/ws';
 import { Devices } from './services/db';
+import { getTaggedLogger } from './services/logger';
+const logger = getTaggedLogger('EV_DISPATCHER');
 /*** Unify websockets and MQTT events to interact with entities */
 
-const mqttClient = mqttInit([
+
+const handlers: MQTTHandler[] = [
   {
     topic: config.mqtt.announceTopic,
-    fn: (_t, payload) => {
-      DeviceController.handleAnnouncement(payload)
+    fn: (_topic: string, payload: string) => {
+      DeviceController.handleAnnouncement(payload);
     }
   },
   {
     topic: config.mqtt.sensorsTopic,
-    fn: (_t, payload) => {
+    fn: (_toppic: string, payload: string) => {
       SensorController.addData(payload);
     },
   }
-]);
+];
+
+const mqttClient = getClient(handlers);
+
 
 WebSocketServer.init();
 
 Devices.onChange((devices) => {
-  WebSocketServer.send(null, { ev: 'DEVICES_UPDATE', data: devices });
+  WebSocketServer.send(null, { ev: 'DEVICES_UPDATE', data: devices.map(d => d[1]) });
 });
 
 

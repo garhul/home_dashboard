@@ -5,6 +5,8 @@ import { timedPromise } from '../utils';
 import config from '../../config';
 import fetch from 'node-fetch';
 import { v4 as uuid } from 'uuid';
+import { getClient as getMQTTClient } from '../services/mqtt'
+
 
 const logger = getTaggedLogger('DeviceCTRL');
 let scanning = false;
@@ -76,7 +78,7 @@ export function add(device: deviceData) {
 }
 
 export async function handleAnnouncement(payload: string) {
-  console.dir(payload);
+  logger.debug(payload);
   try {
     const msg = JSON.parse(payload);
     switch (msg.ev) {
@@ -104,6 +106,13 @@ export async function handleAnnouncement(payload: string) {
   } catch (e) {
     logger.error(e);
   }
+}
+
+export async function issueCMD(deviceIds: string[], payload: string) {
+  deviceIds.map(id => Devices.get(id).topic).forEach(topic => {
+    logger.info(`Emitting ${payload} to ${topic}`);
+    getMQTTClient().publish(topic, payload);
+  });
 }
 
 function validateDevInfo(info: deviceData): boolean {

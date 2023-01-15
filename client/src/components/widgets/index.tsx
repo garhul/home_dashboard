@@ -1,17 +1,16 @@
 import React, { useState } from 'react';
 import DeviceControls from './controls';
-import {AiFillInfoCircle} from 'react-icons/ai';
+import {AiOutlineInfoCircle} from 'react-icons/ai';
 import { Container } from 'react-bootstrap';
-import { deviceData } from '@backend/types';
+import { deviceData, expandedGroupData} from '@backend/types';
 import useStore from '../../store/';
 
 //TODO:: make use of proper data types
 type WidgetProps = {
   controls: any;
-  data: any;
+  data: deviceData | expandedGroupData;
   type: 'aurora' | 'sensor' | 'group';
 }
-
 
 function WidgetTitle(props: any) {  
   return (
@@ -21,12 +20,24 @@ function WidgetTitle(props: any) {
         :
         <span>{(props.name) ? props.name : props.human_name}</span>
       }
-      {props.showInfo && <div className="info"><AiFillInfoCircle fontSize="large" onClick={props.toggleViewInfo} /></div>}
+      {props.showInfo && <div className="info"><AiOutlineInfoCircle onClick={props.toggleViewInfo} /></div>}
     </div >
   );
 }
 
-function WidgetInfo(props: any) {
+function GroupInfo(props: expandedGroupData) {
+  return (
+    <ul className="info">
+      <li >id: <span>{props.id}</span></li>
+      <li >name: <span>{props.name}</span></li>
+      <li >device_ids: <span>{props.deviceIds.join(', ')}</span></li>      
+      <li >devices: <span>{props.devices.map(d => `${d.human_name} [${d.device_id}]`).join(', ')}</span></li>
+      {props.devices.map( (d,k) => (<li>{d.stateString}</li>) )}    
+    </ul>
+  )
+}
+
+function WidgetInfo(props: deviceData) {
   return (
     <ul className="info">
       <li >device id: <span>{props.device_id}</span></li>
@@ -37,30 +48,35 @@ function WidgetInfo(props: any) {
   )
 }
 
-export function Widget(props: WidgetProps) {
+export function Widget(props: WidgetProps ) {
   const [viewInfo, setViewInfo] = useState(false);
 
   const issueCMD = useStore((state) => state.issueCMD);
 
-  const update = (payload: string, value: string) => {    
-    issueCMD(props.data.device_id, JSON.stringify(payload).replace('$1', value));
+  const update = (payload: string, value: string) => {
+    if (props.type === 'aurora') {
+      issueCMD([(props.data as deviceData).device_id], JSON.stringify(payload).replace('$1', value));      
+    } else if (props.type === 'group') {
+      issueCMD((props.data as expandedGroupData).deviceIds, JSON.stringify(payload).replace('$1', value));
+    }
   }
   
-  const Controls = ((t) => {
+  const Body = ((t) => {
     switch (t) {
       case'aurora':
-        return <DeviceControls state={props.data.state} controls={props.controls} update={update}/>;
-      
+        if (viewInfo) return <WidgetInfo {...props.data as deviceData} />;
+        return <DeviceControls state={(props.data as deviceData).state } controls={props.controls} update={update}/>;
+            
       case 'group':
-        return null
-        //<DeviceControls state={props.data.state} controls={props.controls} />;
+        if (viewInfo) return <GroupInfo {...props.data as expandedGroupData} />;
+        return <DeviceControls state={(props.data as expandedGroupData).devices[0]?.state} controls={props.controls} update={update} />;
     }    
   })(props.type);
 
   return (
     <Container className="widget">      
-      <WidgetTitle {...props.data} type={props.type} showInfo={(props.type === 'aurora')} toggleViewInfo={() => setViewInfo(!viewInfo)}></WidgetTitle>
-      {viewInfo ? <WidgetInfo {...props.data} /> : Controls}
+      <WidgetTitle {...props.data} type={props.type} showInfo={true} toggleViewInfo={() => setViewInfo(!viewInfo)}></WidgetTitle>
+      {Body}     
     </Container>
   );
 }

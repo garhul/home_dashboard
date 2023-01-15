@@ -35,3 +35,7 @@ export type groupData = {
   name: string;
   deviceIds: string[];
 };
+
+export type expandedGroupData = groupData & {
+  devices: deviceData[];
+}

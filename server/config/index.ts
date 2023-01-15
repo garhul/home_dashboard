@@ -1,4 +1,6 @@
 import path from 'path';
+// TODO:: Move all of the config to env vars ?
+
 
 const baseCfg = {
   server: {
@@ -14,8 +16,12 @@ const baseCfg = {
   logger: {
     level: process.env.LOG_LEVEL || 'debug'
   },
+  db: {
+    groupsFile: process.env.DB_GROUPS_FILE || './data/controlGroups.json',
+    devicesFile: process.env.DB_GROUPS_FILE || './data/devices.json'
+  },
   mqtt: {
-    broker: process.env.MQTT_BROKER || 'mqtt://192.168.1.10',
+    broker: process.env.MQTT_BROKER || 'mqtt://10.10.1.37',
     announceTopic: process.env.MQTT_ANNOUNCE_T || 'announce',
     sensorsTopic: process.env.MQTT_SENSORS_T || 'sensors',
   },

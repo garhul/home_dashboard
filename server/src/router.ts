@@ -25,6 +25,9 @@ router.get('/devices', (_req: express.Request, res: express.Response) => {
   return res.json(DeviceController.getAll());
 });
 
+router.post('/devices', (req: express.Request, res: express.Response) => {
+  return res.json(DeviceController.issueCMD(req.body.deviceIds, req.body.payload));
+});
 /** Widget routes */
 // router.get('/widgets',(_req: express.Request, res: express.Response) => {
 //   return res.json(WidgetController.getAll());
@@ -33,6 +36,10 @@ router.get('/devices', (_req: express.Request, res: express.Response) => {
 /** Group routes */
 router.get('/groups', (_req: express.Request, res: express.Response) => {
   return res.json(GroupController.getAll());
+});
+
+router.post('/groups', (req: express.Request, res: express.Response) => {
+  return res.json(GroupController.issueCMD(req.body.deviceId, req.body.payload));
 });
 
 // router.post('/tags', exCatcher(TagsController.create));

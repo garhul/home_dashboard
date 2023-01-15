@@ -20,7 +20,7 @@ export async function send(client: Websocket.WebSocket | null = null, payload: W
   }
 
   if (client !== null) {
-    if (client.readyState === WebSocket.OPEN) {
+    if (client.readyState === Websocket.OPEN) {
       client.send(JSON.stringify(payload));
     } else {
       logger.error('Unable to send data, socket not open');
@@ -28,7 +28,7 @@ export async function send(client: Websocket.WebSocket | null = null, payload: W
   } else {
     const msg = JSON.stringify(payload);
     WSServer.clients.forEach((cl) => {
-      if (cl.readyState === WebSocket.OPEN) {
+      if (cl.readyState === Websocket.OPEN) {
         cl.send(msg);
       }
     });

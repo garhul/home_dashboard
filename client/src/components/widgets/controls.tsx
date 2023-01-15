@@ -18,25 +18,6 @@ function CMDButton(props) {
     </Button>)
 }
 
-function CMDSlider(props) {
-  let [value, setValue] = useState(0);
-
-  function clickHandler(ev) {
-    ev.preventDefault();
-    const percentil = (ev.clientX - ev.currentTarget.offsetLeft) / ev.currentTarget.offsetWidth;
-    // console.log(`${percentil * 100} %`);
-    setValue(Math.floor(percentil * 100));
-    props.update(`${value}`);
-  }
-
-  return (
-    <div className="sliderContainer" onClick={(ev) => clickHandler(ev)}>
-      <span>{props.label}</span>
-      <ProgressBar striped variant="dark" now={value} />
-    </div>
-  );
-}
-
 function CMDRange(props) {
   const [value, setValue] = useState(props.val || 0);
 
@@ -47,6 +28,8 @@ function CMDRange(props) {
       </div>
       <RangeSlider
         value={value}
+        min={parseInt(props.min) || 0}
+        max={parseInt(props.max) || 100}
         size='lg'
         variant='dark'
         onChange={changeEvent => setValue(changeEvent.target.value)}
@@ -296,18 +279,13 @@ export default function DeviceControl(props) {
       <Row key={`row_${i}`}>
         {row.map((rawCtrl, index) => {
           if (!rawCtrl.type) return null;
-          const ctrl = parseControls(props.state, rawCtrl);
+          const ctrl = (props.state) ? parseControls(props.state, rawCtrl) : rawCtrl;
+          
           switch (ctrl.type.toUpperCase()) {
             case 'BUTTON':
               return (
                 <Col key={`btn_${index}`}>
                   <CMDButton update={(data) => props.update(ctrl.payload, data)} key={`btn_${index}`} {...ctrl}></CMDButton>
-                </Col>);
-
-            case 'SLIDER':
-              return (
-                <Col key={`slider_${index}`}>
-                  <CMDSlider update={(data) => props.update(ctrl.payload, data)} key={`slider_${index}`} {...ctrl}></CMDSlider >
                 </Col>);
 
             case 'LABEL':

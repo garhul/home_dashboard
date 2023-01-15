@@ -1,12 +1,14 @@
 import create, { StateCreator } from 'zustand'
+import { unstable_batchedUpdates } from 'react-dom';
 import { deviceStateData, groupData, deviceData } from '@backend/types';
+import bus from '../data';
 const apiURL = `http://${window.location.host.split(':')[0]}:1984/`;
 
 interface DevicesSlice {
   devices: deviceData[];
   load(): void;
   updateDevices(devices: deviceData[]): void;
-  issueCMD(deviceId: string, payload: string): void;
+  issueCMD(deviceIds: string[], payload: string): void;
 }
 
 interface GroupsSlice {
@@ -19,9 +21,9 @@ type StateType = DevicesSlice & GroupsSlice;
 
 const createDevicesSlice: StateCreator<StateType, [], [], DevicesSlice> = (set) => ({
   devices: [],
-  load: async () => getRemote('devices').then(d => set((state) => ({ devices: d }))),
-  updateDevices: (devices) => console.log('updating devices', devices),
-  issueCMD: (deviceId, payload) => updateRemote('devices', { deviceId, payload }),
+  load: async () => getRemote('devices').then(d => set((state) => ({ devices: d.map(kp => kp[1]) }))),
+  updateDevices: (devices) => set((state) => ({ devices })),
+  issueCMD: (deviceIds, payload) => updateRemote('devices', { deviceIds, payload }),
 });
 
 const createGroupsSlice: StateCreator<StateType, [], [], GroupsSlice> = (set) => ({
@@ -48,10 +50,15 @@ const updateRemote = async (entity: 'devices' | 'groups' | 'scheduler', payload)
     });
 }
 
-
 const getRemote = async (entity: 'devices' | 'groups' | 'scheduler') => {
   return fetch(`${apiURL}${entity}`).then(r => r.json());
 };
+
+bus.on('DEVICES_UPDATE', (data) => {
+  unstable_batchedUpdates(() => {
+    useStore.getState().updateDevices(data)
+  })
+});
 
 const useStore = create<DevicesSlice & GroupsSlice>()((...a) => ({
   ...createDevicesSlice(...a),

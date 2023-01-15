@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import DataBus from '../data';
+// import DataBus from '../data';
 import { Button, Container, InputGroup, Form } from 'react-bootstrap';
 import { BsFilePlusFill } from 'react-icons/bs';
 
@@ -38,7 +38,7 @@ function RuleItem(props: any) {
       <div className='separator'></div>
       <div className='actions-title'>
         <h4>actions</h4>
-        <span className="clickable" onClick={() => console.log('hey')}><BsFilePlusFill size="lg" /></span>
+        <span className="clickable" onClick={() => console.log('hey')}><BsFilePlusFill /></span>
       </div>
       <div className='rule-row'>
         <label>topic</label>
@@ -50,8 +50,8 @@ function RuleItem(props: any) {
 
       <div className="rule-action-btns">
         <Button size="sm" variant="outline-success" onClick={async () => {
-          const t = await DataBus.emit('SCHEDULER_LIST', null, true);
-          console.dir(t);
+          // const t = await DataBus.emit('SCHEDULER_LIST', null, true);
+          // console.dir(t);
         }}>Save</Button>
       </div>
     </div>
@@ -62,11 +62,11 @@ function RuleItem(props: any) {
 function Rules(props: any) {
   let [rules, setRules] = useState([]);
 
-  useEffect(() => {
-    DataBus.on('SCHEDULER_LIST', console.log);
-    return () => DataBus.off('DEVICES_SCAN', console.log);
+  // useEffect(() => {
+  //   DataBus.on('SCHEDULER_LIST', console.log);
+  //   return () => DataBus.off('DEVICES_SCAN', console.log);
 
-  }, []);
+  // }, []);
 
   const ruleList = [<RuleItem></RuleItem>, ...rules.map(r => <RuleItem></RuleItem>)];
 
@@ -80,17 +80,17 @@ function Rules(props: any) {
 
 export default function AdminView(props: any) {
   let [isScanning, setScan] = useState(false);
-  useEffect(() => {
-    DataBus.on('DEVICES_SCAN', console.log);
+  // useEffect(() => {
+  //   DataBus.on('DEVICES_SCAN', console.log);
 
-    return () => DataBus.off('DEVICES_SCAN', console.log);
-  }, []);
+  //   return () => DataBus.off('DEVICES_SCAN', console.log);
+  // }, []);
 
   return (
     <div className="widget">
       <div className="AdminWidget">
         <h2>Administration</h2>
-        <Button variant="outline-info" size="lg" onClick={() => DataBus.emit('DEVICES_SCAN', {})}>
+        <Button variant="outline-info" size="lg" onClick={() => 0/*DataBus.emit('DEVICES_SCAN', {})*/}>
           Scan for devices
         </Button>
       </div>

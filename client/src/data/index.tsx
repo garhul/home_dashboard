@@ -89,9 +89,4 @@ class Bus {
 }
 
 const bus = new Bus(socket);
-
-bus.on('open', () => {
-  bus.emit('WIDGETS_LIST', {});
-});
-
 export default bus;

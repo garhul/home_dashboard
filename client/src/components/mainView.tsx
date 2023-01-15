@@ -4,6 +4,7 @@ import AdminView from './adminView';
 // import GroupsView from './groupsView';
 // import SensorsView from './sensorsView';
 import DevicesView from './devicesView';
+import HomeView from './homeView';
 
 import NavBar from './navigation';
 import DataBus from '../data';
@@ -19,7 +20,7 @@ export function MainView() {
         {location === 'admin' ? <AdminView /> : null}
         {/* {location === 'sensors' ? <SensorsView widgets={devices.filter(w => w.type === 'sensor')} /> : null} */}
         {location === 'devices' ? <DevicesView/> : null}
-        {/* {location === 'home' ? <GroupsView widgets={widgets.filter(w => w.type === 'group')} /> : null} */}
+        {location === 'home' ? <HomeView /> : null}
       </Container >
     </div>
   );
