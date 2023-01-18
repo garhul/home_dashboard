@@ -36,6 +36,33 @@ export type groupData = {
   deviceIds: string[];
 };
 
+
+
+type aggregatedData = {
+  min: number | null;
+  max: number | null;
+  avg: number | null;
+  median: number | null;
+  last: number | null;
+}
+
+export type sensorData = {
+  id: string;
+  name: string;
+  data: { key: string, series: timeSeriesSubset[] }[];
+  last_seen: number;
+}
+
 export type expandedGroupData = groupData & {
   devices: deviceData[];
 }
+
+export type timeSeriesSubsetKey = 'Immediate' | 'Day' | 'Week' | 'Month' | 'Year';
+export type timeSeriesDataPoint = [timestamp: number, value: number];
+
+export type timeSeriesSubset = {
+  key: timeSeriesSubsetKey;
+  series: timeSeriesDataPoint[];
+  timeWindow: number;
+  extras: aggregatedData;
+};

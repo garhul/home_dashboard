@@ -285,10 +285,21 @@ div.separator {
 .sensor_row {
   background-color: #212124;
   color: #eee;
-  margin-top:.4em;
-
+  margin-top:4px;
+  justify-content: space-between;
+  align-items: center;
+  padding:.8em;
 }
 
+.sensor_row > .row{  
+  padding: 0.5em;
+  align-items: center;
+  text-align: center;
+  justify-content: space-between;
+}
+.plot-buttons {
+  margin-top:1em;
+}
 span.last-seen {
   color:#bbb;
   font-size:1.8vh;
@@ -300,6 +311,7 @@ span.last-seen {
 
 .slider {
   -webkit-appearance: none;
+  appearance: none;
   width: 100%;
   height: 15px;
   border-radius: 5px;

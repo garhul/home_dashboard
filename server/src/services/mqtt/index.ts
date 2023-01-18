@@ -31,7 +31,7 @@ function init(handlers: MQTTHandler[]): MqttClient {
     });
 
     mqttClient.on('message', (topic, message) => {
-      logger.debug(`Received |${message.toString()}| on topic: ${topic}`);
+      // logger.debug(`Received |${message.toString()}| on topic: ${topic}`);
 
       const hndlr = handlers.find((h) => h.topic === topic);
 

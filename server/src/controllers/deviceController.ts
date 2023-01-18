@@ -7,7 +7,6 @@ import fetch from 'node-fetch';
 import { v4 as uuid } from 'uuid';
 import { getClient as getMQTTClient } from '../services/mqtt'
 
-
 const logger = getTaggedLogger('DeviceCTRL');
 let scanning = false;
 

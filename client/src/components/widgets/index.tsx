@@ -2,13 +2,13 @@ import React, { useState } from 'react';
 import DeviceControls from './controls';
 import {AiOutlineInfoCircle} from 'react-icons/ai';
 import { Container } from 'react-bootstrap';
-import { deviceData, expandedGroupData} from '@backend/types';
+import { deviceData, expandedGroupData, sensorData} from '@backend/types';
 import useStore from '../../store/';
 
 //TODO:: make use of proper data types
 type WidgetProps = {
   controls: any;
-  data: deviceData | expandedGroupData;
+  data: deviceData | expandedGroupData | sensorData;
   type: 'aurora' | 'sensor' | 'group';
 }
 
@@ -48,6 +48,17 @@ function WidgetInfo(props: deviceData) {
   )
 }
 
+function SensorInfo(props: sensorData) {
+  return (
+    <ul className="info">
+      <li>device id: <span>{props.id}</span></li>
+      <li>name: <span>{props.name}</span></li>
+      <li>last seen: <span>{(new Date(props.last_seen)).toISOString()}</span></li>
+    </ul>
+  )
+}
+
+
 export function Widget(props: WidgetProps ) {
   const [viewInfo, setViewInfo] = useState(false);
 
@@ -70,6 +81,10 @@ export function Widget(props: WidgetProps ) {
       case 'group':
         if (viewInfo) return <GroupInfo {...props.data as expandedGroupData} />;
         return <DeviceControls state={(props.data as expandedGroupData).devices[0]?.state} controls={props.controls} update={update} />;
+
+      case 'sensor':        
+        if (viewInfo) return <SensorInfo {...props.data as sensorData} />;
+        return <DeviceControls state={(props.data as sensorData)} controls={props.controls} />;
     }    
   })(props.type);
 

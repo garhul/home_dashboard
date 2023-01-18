@@ -32,7 +32,7 @@ class Bus {
     })
   }
 
-  async emit(ev, msg, expectResponse = false) {
+  async emit(ev: string, msg, expectResponse = false) {
     return new Promise((resolve, reject) => {
       console.info(`Emitting message: ${JSON.stringify({ ev, msg })}`);
 

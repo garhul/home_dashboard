@@ -241,7 +241,7 @@ export const SensorCtrl = [
         }
       ],
       data: ({ data }) => data,
-      state: ({ state }) => state,
+      lastSeen: ({ last_seen }) => (last_seen)
     }
   ]
 ];

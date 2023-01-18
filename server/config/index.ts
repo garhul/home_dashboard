@@ -18,7 +18,8 @@ const baseCfg = {
   },
   db: {
     groupsFile: process.env.DB_GROUPS_FILE || './data/controlGroups.json',
-    devicesFile: process.env.DB_GROUPS_FILE || './data/devices.json'
+    devicesFile: process.env.DB_DEVICES_FILE || './data/devices.json',
+    sensorsFile: process.env.DB_SENSORS_FILE || './data/sensors.json'
   },
   mqtt: {
     broker: process.env.MQTT_BROKER || 'mqtt://10.10.1.37',

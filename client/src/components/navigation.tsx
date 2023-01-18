@@ -3,14 +3,9 @@ import { Nav, Navbar } from 'react-bootstrap'
 import {AiFillHome} from 'react-icons/ai';
 
 export default function NavBar(props: any) {
-  const [location, setLocation] = useState(window.location.hash || '#home');
-  const changeLocation = useCallback((l) => {
-    const loc = l.slice(1);
-    props.onChange(loc)
-    setLocation(loc);
-  }, [props]);
-
-  useEffect(() => { changeLocation(window.location.hash || '#home') }, [changeLocation]);
+  const changeLocation = (f) => {
+    props.onChange(f);
+  }
 
   const locations = [
     ['#home','Home'],
@@ -18,7 +13,7 @@ export default function NavBar(props: any) {
     ['#sensors','Sensors'],
     ['#admin','Admin'],
   ].map(([hash, name]:[string, string]) => (
-    <Nav.Link key={`nav_${hash}`} onClick={() => { changeLocation(hash) }} href={hash} active={location === hash.slice(1)}>{name}</Nav.Link>
+    <Nav.Link key={`nav_${hash}`} onClick={() => { changeLocation(hash) }} href={hash} active={props.location === hash}>{name}</Nav.Link>
   ));
 
   return (

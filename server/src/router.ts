@@ -1,8 +1,7 @@
 import * as express from 'express';
 import { join } from 'path';
-import { logger } from './services/logger/';
 import cfg from '../config';
-import { DeviceController, GroupController } from './controllers';
+import { DeviceController, GroupController, SensorController } from './controllers';
 
 const router = express.Router();
 
@@ -28,10 +27,6 @@ router.get('/devices', (_req: express.Request, res: express.Response) => {
 router.post('/devices', (req: express.Request, res: express.Response) => {
   return res.json(DeviceController.issueCMD(req.body.deviceIds, req.body.payload));
 });
-/** Widget routes */
-// router.get('/widgets',(_req: express.Request, res: express.Response) => {
-//   return res.json(WidgetController.getAll());
-// });
 
 /** Group routes */
 router.get('/groups', (_req: express.Request, res: express.Response) => {
@@ -42,8 +37,10 @@ router.post('/groups', (req: express.Request, res: express.Response) => {
   return res.json(GroupController.issueCMD(req.body.deviceId, req.body.payload));
 });
 
-// router.post('/tags', exCatcher(TagsController.create));
-// router.delete('/tags', exCatcher(TagsController.remove));
+/** Sensors routes */
+router.get('/sensors', (_req: express.Request, res: express.Response) => {
+  return res.json(SensorController.getAll());
+});
 
 // Misc
 router.get('/cfg', (_req, res) => res.json(cfg));

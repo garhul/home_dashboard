@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
-import { Badge, Button, ButtonGroup, ProgressBar, Container, Row, Col, Alert } from 'react-bootstrap';
+import React, { useEffect, useState } from 'react';
+import { Badge, Button, ButtonGroup, Container, Row, Col, Alert } from 'react-bootstrap';
 import { FiAirplay, FiBattery, FiWind, FiSun, FiArrowDown, FiArrowUp, FiCompass } from 'react-icons/fi';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import RangeSlider from 'react-bootstrap-range-slider';
 import 'react-bootstrap-range-slider/dist/react-bootstrap-range-slider.css';
-// import DataBus from '../../data';
-import { deviceStateData } from '@backend/types';
+import { deviceStateData, timeSeriesSubset, timeSeriesSubsetKey } from '@backend/types';
+import { CMDButtonPropType, CMDRangeProps, PlotPropType, SensorPropType, CMDLabelPropType } from './widgetTypes';
 
-function CMDButton(props) {  
+function CMDButton(props: CMDButtonPropType) {  
   return (
     <Button 
       variant={(!props.style) ? "outline-info" : props.style}
@@ -18,7 +18,7 @@ function CMDButton(props) {
     </Button>)
 }
 
-function CMDRange(props) {
+function CMDRange(props: CMDRangeProps) {
   const [value, setValue] = useState(props.val || 0);
 
   return (
@@ -32,77 +32,13 @@ function CMDRange(props) {
         max={parseInt(props.max) || 100}
         size='lg'
         variant='dark'
-        onChange={changeEvent => setValue(changeEvent.target.value)}
+        onChange={changeEvent => setValue(parseInt(changeEvent.target.value))}
         onAfterChange={ev => props.update(`${ev.target.value}`)}
       />
     </div >)
 }
 
-function Plot(props) {
-  const [showScale, setShowScale] = useState(false);
-  const [subset, setSubset] = useState('D');
-
-  const options = {
-    maintainAspectRatio: true,
-    scales: {
-      yAxes: props.plots.map(plot => ({
-        ticks: {
-          callback: (value, index, values) => `${value} ${plot.unit}`,
-          maxTicksLimit: 5,
-          fontColor: plot.color,
-          suggestedMin: 900, //plot.min ?? 0,
-          suggestedMax: 1000//plot.max ?? 100,
-        },
-        type: 'linear',
-        display: showScale,
-        id: `axis-${plot.key}`,
-      })),
-
-      xAxes: [{
-        type: 'time',
-        distribution: 'linear',
-        time: {
-          unit: 'minute'
-        },
-        drawTicks: false
-      }],
-    }
-  };
-  const data = {
-    datasets: props.plots.map(plot => ({
-      label: plot.label,
-      borderColor: plot.color,
-      fill: false,
-      data: props.data[subset].data.map(p => ({ t: p.t, y: p.v[plot.key] })),
-      yAxisID: `axis-${plot.key}`,
-    }))
-  };
-
-  return (
-    <div>
-      <Line data={data} {...options} />
-      <Row>
-        <Col>
-          <Button variant={(showScale) ? 'outline-success' : 'outline-secondary'} onClick={() => { setShowScale(!showScale) }} size="sm">scale</Button>
-        </Col>
-        <Col>
-          <Button variant={(subset === 'Y') ? 'outline-success' : 'outline-secondary'} onClick={() => { setSubset('Y') }} size="sm">Year</Button>
-        </Col>
-        <Col>
-          <Button variant={(subset === 'M') ? 'outline-success' : 'outline-secondary'} onClick={() => { setSubset('M') }} size="sm">Month</Button>
-        </Col>
-        <Col>
-          <Button variant={(subset === 'W') ? 'outline-success' : 'outline-secondary'} onClick={() => { setSubset('W') }} size="sm">Week</Button>
-        </Col>
-        <Col>
-          <Button variant={(subset === 'D') ? 'outline-success' : 'outline-secondary'} onClick={() => { setSubset('D') }} size="sm">Day</Button>
-        </Col>
-      </Row>
-    </div>
-  )
-}
-
-function getIcon(icon) {
+function getIcon(icon: string) {
   switch (icon) {
     case 'TEMP':
       return <FiSun style={{ "fontSize": "5vh" }} />
@@ -121,7 +57,7 @@ function getIcon(icon) {
   }
 }
 
-function timeSince(t) {
+function timeSince(t:number) {    
   const min = 60;
   const hour = 3600;
   const day = 86400;
@@ -147,112 +83,134 @@ function timeSince(t) {
   return `${Math.floor(t / week)}w`;
 }
 
-function tinyPlot(props) {
+function Plot(props: PlotPropType) {
 
-  function tickFormatter(tick) {
+  function tickFormatter(tick:number) {
     const d = new Date(tick);
-    return `${d.getDay()}.${d.getMonth()} ${d.getHours()}:${d.getMinutes()}`
+    return `${d.toLocaleDateString('en-GB',{ month: 'numeric', 'day':'2-digit'})} : ${d.toLocaleTimeString('en-GB', {timeStyle:"short"})}`;
   }
 
-  const labelFn = (l) => {
+  const labelFn = (l:number) => {
     const d = new Date(l);
-    return `${d.toLocaleDateString('en-GB')}:${d.toLocaleTimeString('en-GB')}`;
+    return `${d.toLocaleDateString('en-GB', { month: 'numeric', 'day':'2-digit'})} : ${d.toLocaleTimeString('en-GB',{timeStyle:"short"})}`;
   }
 
   return (
-    <ResponsiveContainer height={100} >
-      <LineChart width={600} height={100} data={props.data}>
-        <Line dot={false} type="monotone" dataKey="v" stroke={props.color} strokeWidth={2}  />
-        <CartesianGrid stroke="#333" strokeDasharray="4" horizontal={true} />
-        <YAxis width={45} domain={[Math.floor(props.min), Math.ceil(props.max)]} style={{ "fontSize": ".8em" }} />
-        <Tooltip separator="" labelFormatter={labelFn} formatter={(v, n, p) => [`${parseFloat(v.toString()).toFixed(2)}${props.unit}`, '']} contentStyle={{ "backgroundColor": "#222", "border": "0" }} />
-        <XAxis hide={false} interval={Math.ceil(props.data.length / 10)} dataKey="t" tick={true} tickFormatter={tickFormatter} style={{ "fontSize": ".8em" }} />
-      </LineChart>
-    </ResponsiveContainer>
+    <Row>
+    {/* <Col style={{ "color": props.color }}> */}
+      <ResponsiveContainer height={180} >
+        <LineChart width={600} height={180} data={props.data}>
+          <Line dot={false} type="monotone" dataKey="v" stroke={props.color} strokeWidth={1}  />
+          <CartesianGrid stroke="#666" strokeDasharray="8" horizontal={true} vertical={false} strokeWidth={.5} />
+          <YAxis width={50}  style={{ "fontSize": ".8em" }} />
+          <Tooltip separator="" labelFormatter={labelFn} formatter={(v, n, p) => [`${parseFloat(v.toString()).toFixed(2)}${props.unit}`, '']} contentStyle={{ "backgroundColor": "#222", "border": "0" }} />
+          <XAxis hide={false} interval={Math.ceil(props.data.length / 5)} dataKey="t" tick={true} tickFormatter={tickFormatter} style={{ "fontSize": ".75em" }} />
+        </LineChart>
+      </ResponsiveContainer>
+    </Row>
   );
 }
 
-function Sensor(props) {
-  const [showPlot, setShowPlot] = useState(false);
-  const [subset, setSubset] = useState('D');
+type PlotButtonRowPropType = {
+  setDomain: (string) => void;
+  domain:timeSeriesSubsetKey;
+}
 
-  function togglePlot() {
-    setShowPlot(!showPlot);
-  }
-  const buttons = (
-    <Col>
-      <ButtonGroup aria-label="timescales">
-        <Button variant={(showPlot) ? 'outline-warning' : 'outline-secondary'} onClick={() => { togglePlot() }}>Plot</Button>
-        <Button variant={(subset === 'Y') ? 'outline-success' : 'outline-secondary'} onClick={() => { setSubset('Y') }} >last Year</Button>
-        <Button variant={(subset === 'M') ? 'outline-success' : 'outline-secondary'} onClick={() => { setSubset('M') }} >last 30d</Button>
-        <Button variant={(subset === 'W') ? 'outline-success' : 'outline-secondary'} onClick={() => { setSubset('W') }} >last 7d</Button>
-        <Button variant={(subset === 'D') ? 'outline-success' : 'outline-secondary'} onClick={() => { setSubset('D') }} >last 24h</Button>
-      </ButtonGroup>
-    </Col>
-  )
+function PlotButtonRow(props: PlotButtonRowPropType) {  
+  const setSubset = props.setDomain;
+  return (<Row className="plot-buttons">
+    <ButtonGroup aria-label="timescales">      
+      <Button variant={(props.domain === 'Year') ? 'outline-warning' : 'outline-secondary'} onClick={() => { setSubset('Year') }} >last Year</Button>
+      <Button variant={(props.domain === 'Month') ? 'outline-warning' : 'outline-secondary'} onClick={() => { setSubset('Month') }} >last 30d</Button>
+      <Button variant={(props.domain === 'Week') ? 'outline-warning' : 'outline-secondary'} onClick={() => { setSubset('Week') }} >last 7d</Button>
+      <Button variant={(props.domain === 'Day') ? 'outline-warning' : 'outline-secondary'} onClick={() => { setSubset('Day') }} >last 24h</Button>
+      <Button variant={(props.domain === 'Immediate') ? 'outline-warning' : 'outline-secondary'} onClick={() => { setSubset('Immediate') }} >instant</Button>
+    </ButtonGroup>    
+  </Row>);
+}
 
-  const channels = props.channels.map(chan => {
-    return (
-      <Row className="sensor_row" key={`chann_${chan.key}`}>
-        <Col>
-          <Row>
-            <Col xs="auto" style={{ "alignSelf": "center" }}>{getIcon(chan.icon)}</Col>
-            <Col xs="6" style={{ "alignSelf": "center", "fontSize": "4vh" }}>
-              {parseFloat(props.data[subset].keys[chan.key].last).toFixed(2)}
-              <small>{chan.unit}</small>
-            </Col>
-            <Col xs="2" style={{ "fontSize": "2.6vh" }}>
-              <Row>
-                <Col><FiArrowUp /></Col>
-                <Col>{parseFloat(props.data[subset].keys[chan.key].max).toFixed(2)}</Col>
-              </Row>
-              <Row>
-                <Col><FiArrowDown /></Col>
-                <Col>{parseFloat(props.data[subset].keys[chan.key].min).toFixed(2)}</Col>
-              </Row>
-            </Col>
-          </Row>
+type SensorChannelPropType = {
+  channelSeries: timeSeriesSubset;
+  channelKey : string;
+  icon: string;
+  unit: string;
+  color: string;
+}
 
-          {showPlot ?
-            (<Row>
-              <Col style={{ "color": chan.color }}>{tinyPlot({
-                ...chan,
-                min: props.data[subset].keys[chan.key].min,
-                max: props.data[subset].keys[chan.key].max,
-                data: props.data[subset].data.map(d => ({ t: d.t, v: d.v[chan.key] }))
-              })}
-              </Col>
-            </Row>) : ''}
+function SensorChannel(props: SensorChannelPropType) {
+  const aggregatedData = props.channelSeries.extras;
+  const plotData = props.channelSeries.series.map(datapoint => ({t: datapoint[0] * 1000, v: datapoint[1] / 1000}));
+  
+  return (
+    <Row className="sensor_row" key={`chann_${props.channelKey}`}>
+      {/* <Col> */}
+        <Row>
+          <Col xs="auto">{getIcon(props.icon)}</Col>
+          <Col xs="auto">
+            <h2>{(aggregatedData.last / 1000).toFixed(2)} <small>{props.unit}</small></h2>
+          </Col>
+          <Col xs="auto">
+            <Row>
+              <Col><FiArrowUp /> <Badge bg="dark">{(aggregatedData.max / 1000).toFixed(2)}</Badge></Col>              
+            </Row>
+            <Row>
+              <Col><FiArrowDown /> <Badge bg="dark">{(aggregatedData.min / 1000).toFixed(2)}</Badge></Col>                
+            </Row>
+          </Col>
+        </Row>        
+        <Plot 
+          unit={props.unit}
+          color={props.color}
+          data={plotData}
+          min={(aggregatedData.min / 1000)}
+          max={(aggregatedData.max / 1000)}
+          intervalWindow={props.channelSeries.timeWindow}
+        />                
+    </Row>)
+}
 
-        </Col>
-      </Row>)
-  });
 
-  const lastSeen = Math.floor((Date.now() - props.data["I"].data[props.data["I"].data.length - 1].t) / 1000);
+function ElapsedTimeBadge(props) {
+  const [ ,updateElapsed] = useState(0);
+  const elapsedSeconds = Math.ceil((Date.now() - props.lastSeen) / 1000);
+
+  useEffect(()=> {
+    const interval = setInterval(() => updateElapsed(Date.now()), 10000);
+    return () => {
+      clearInterval(interval);
+    };
+  },[]);    
+  return (
+    <Badge bg={(elapsedSeconds < 3600) ? 'dark' : 'danger'}>{timeSince(elapsedSeconds)} ago</Badge>
+  );
+}
+
+function Sensor(props: SensorPropType) {  
+  const [domain, setDomain] = useState<timeSeriesSubsetKey>('Immediate');  
+  
+  const channels = props.channels.map(chan => (<SensorChannel 
+    channelSeries = {props.data.find(subset => subset.key === chan.key).series.find(s => s.key === domain)}
+    icon={chan.icon}
+    channelKey={chan.key}
+    unit={chan.unit}
+    color={chan.color}
+    ></SensorChannel>))
 
   return (
-    <div>
-      <Row><Col>
-        {channels}
-      </Col>
-      </Row>
-      <Row style={{ "marginTop": ".4em" }}>{buttons}</Row>
-      <Row style={{ "marginTop": ".4em", "paddingRight": ".4em" }}>
+    <Container>
+      {channels}
+      <PlotButtonRow setDomain={(dom) => setDomain(dom) } domain={domain}/>
+      <Row>
         <Col>
-          {
-            (props.state.status !== 'OPERATIVE')
-              ? (<Badge bg="danger"><FiBattery /> Battery critical</Badge>) : ''
-          }
-        </Col>
-        <Col style={{ "textAlign": "right" }}>
-          <Badge bg={(lastSeen < 3600) ? 'dark' : 'danger'}>{timeSince(lastSeen)} ago</Badge>
+          <ElapsedTimeBadge lastSeen={props.lastSeen} />        
         </Col>
       </Row>
-    </div>
+    </Container>
   )
 }
 
-function CMDLabel(props) {
+
+function CMDLabel(props: CMDLabelPropType) {
   return (
     <Badge bg="primary">
       {props.label}
@@ -279,8 +237,7 @@ export default function DeviceControl(props) {
       <Row key={`row_${i}`}>
         {row.map((rawCtrl, index) => {
           if (!rawCtrl.type) return null;
-          const ctrl = (props.state) ? parseControls(props.state, rawCtrl) : rawCtrl;
-          
+          const ctrl = (props.state) ? parseControls(props.state, rawCtrl) : rawCtrl;          
           switch (ctrl.type.toUpperCase()) {
             case 'BUTTON':
               return (
@@ -299,13 +256,6 @@ export default function DeviceControl(props) {
               return (
                 <Col key={`range_${index}`}>
                   <CMDRange update={(data) => props.update(ctrl.payload, data)} key={`rng_${index}`} {...ctrl}></CMDRange>
-                </Col>
-              )
-
-            case 'PLOT':
-              return (
-                <Col key={`plot_${index}`}>
-                  <Plot {...ctrl}></Plot>
                 </Col>
               )
 

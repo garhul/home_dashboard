@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 
 import AdminView from './adminView';
-// import GroupsView from './groupsView';
-// import SensorsView from './sensorsView';
+
+import SensorsView from './sensorsView';
 import DevicesView from './devicesView';
 import HomeView from './homeView';
 
@@ -11,16 +11,15 @@ import DataBus from '../data';
 import { Container } from 'react-bootstrap';
 
 export function MainView() {
-  // const [devices, updateDevices] = useState([]);
-  const [location, updateLocation] = useState("");
+  const [location, updateLocation] = useState(window.location.hash || "#home");  
   return (
     <div>
-      <NavBar onChange={(w) => updateLocation(w)}></NavBar>
+      <NavBar onChange={(w) => updateLocation(w)} location={location}></NavBar>
       <Container id="MainView">
-        {location === 'admin' ? <AdminView /> : null}
-        {/* {location === 'sensors' ? <SensorsView widgets={devices.filter(w => w.type === 'sensor')} /> : null} */}
-        {location === 'devices' ? <DevicesView/> : null}
-        {location === 'home' ? <HomeView /> : null}
+        {location === '#admin' ? <AdminView /> : null}
+        {location === '#sensors' ? <SensorsView /> : null} 
+        {location === '#devices' ? <DevicesView/> : null}
+        {location === '#home' ? <HomeView /> : null}
       </Container >
     </div>
   );

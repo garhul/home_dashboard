@@ -1,6 +1,6 @@
 import create, { StateCreator } from 'zustand'
 import { unstable_batchedUpdates } from 'react-dom';
-import { deviceStateData, groupData, deviceData } from '@backend/types';
+import { groupData, deviceData, sensorData } from '@backend/types';
 import bus from '../data';
 const apiURL = `http://${window.location.host.split(':')[0]}:1984/`;
 
@@ -9,15 +9,20 @@ interface DevicesSlice {
   load(): void;
   updateDevices(devices: deviceData[]): void;
   issueCMD(deviceIds: string[], payload: string): void;
-}
+};
 
 interface GroupsSlice {
   groups: groupData[];
-  load(): void;
   updateGroups(groups: groupData[]): void;
-}
+};
 
-type StateType = DevicesSlice & GroupsSlice;
+interface SensorsSlice {
+  sensors: sensorData[];
+  loadSensors(): void;
+  updateSensors(sensors: sensorData[]): void;
+};
+
+type StateType = DevicesSlice & GroupsSlice & SensorsSlice;
 
 const createDevicesSlice: StateCreator<StateType, [], [], DevicesSlice> = (set) => ({
   devices: [],
@@ -32,8 +37,13 @@ const createGroupsSlice: StateCreator<StateType, [], [], GroupsSlice> = (set) =>
   updateGroups: (u) => console.log(u),
 });
 
+const createSensorsSlice: StateCreator<StateType, [], [], SensorsSlice> = (set) => ({
+  sensors: [],
+  loadSensors: async () => getRemote('sensors').then(d => set((state) => ({ sensors: d }))),
+  updateSensors: (sensors) => set((state) => ({ sensors })),
+});
+
 const updateRemote = async (entity: 'devices' | 'groups' | 'scheduler', payload) => {
-  console.log(`Updating remote ${entity}`, payload);
   fetch(`${apiURL}${entity}`, {
     method: 'POST', // or 'PUT'
     headers: {
@@ -50,7 +60,7 @@ const updateRemote = async (entity: 'devices' | 'groups' | 'scheduler', payload)
     });
 }
 
-const getRemote = async (entity: 'devices' | 'groups' | 'scheduler') => {
+const getRemote = async (entity: 'devices' | 'groups' | 'sensors' | 'scheduler') => {
   return fetch(`${apiURL}${entity}`).then(r => r.json());
 };
 
@@ -60,16 +70,24 @@ bus.on('DEVICES_UPDATE', (data) => {
   })
 });
 
-const useStore = create<DevicesSlice & GroupsSlice>()((...a) => ({
+bus.on('SENSORS_UPDATE', (data) => {
+  unstable_batchedUpdates(() => {
+    useStore.getState().updateSensors(data)
+  })
+});
+
+const useStore = create<DevicesSlice & GroupsSlice & SensorsSlice>()((...a) => ({
   ...createDevicesSlice(...a),
   ...createGroupsSlice(...a),
+  ...createSensorsSlice(...a)
 }));
 
 
 async function initStore() {
   useStore.setState({
     devices: await getRemote('devices'),
-    groups: await getRemote('groups')
+    groups: await getRemote('groups'),
+    sensors: await getRemote('sensors')
   });
 }
 
