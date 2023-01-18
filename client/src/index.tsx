@@ -1,19 +1,12 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
-import { MainView, WsOverlay } from './components/mainView';
-import * as serviceWorker from './serviceWorker';
+import { MainView } from './components/mainView';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './app.css';
 
-ReactDOM.render(
-  <React.StrictMode>
-    <WsOverlay />
-    <MainView />
-  </React.StrictMode>,
-  document.getElementById('root')
-);
+import { createRoot } from 'react-dom/client';
+const container = document.getElementById('root');
+const root = createRoot(container!); // createRoot(container!) if you use TypeScript
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
+root.render(<React.StrictMode>  
+  <MainView />
+</React.StrictMode>);

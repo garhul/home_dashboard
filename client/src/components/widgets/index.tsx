@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import DeviceControls from './controls';
 import {AiOutlineInfoCircle} from 'react-icons/ai';
-import { Container } from 'react-bootstrap';
+import { Badge, Container, Row, Col } from 'react-bootstrap';
 import { deviceData, expandedGroupData, sensorData} from '@backend/types';
 import useStore from '../../store/';
 
@@ -13,15 +13,22 @@ type WidgetProps = {
 }
 
 function WidgetTitle(props: any) {  
+  const Title =(props.type === 'aurora') ?
+      (<span>
+        <a href={`http://${props.ip}`} rel="noopener noreferrer" target="_blank">
+          {(props.name) ? props.name : props.human_name}
+        </a></span>):
+      (<span>{(props.name) ? props.name : props.human_name}</span>);
+  
+  const extraBadges = (props.type === 'group') ? 
+      (props.devices.map((d: deviceData , k:string) => <Badge bg="secondary" key={k} text="dark">{d.human_name}</Badge>)):'';
+    
   return (
-    <div className="title">
-      {(props.type === 'aurora') ?
-        <span><a href={`http://${props.ip}`} rel="noopener noreferrer" target="_blank">{(props.name) ? props.name : props.human_name}</a></span>
-        :
-        <span>{(props.name) ? props.name : props.human_name}</span>
-      }
-      {props.showInfo && <div className="info"><AiOutlineInfoCircle onClick={props.toggleViewInfo} /></div>}
-    </div >
+    <Row className="title">
+      <Col className="titleText">{Title}</Col>
+      {extraBadges && <Col className="badges">{extraBadges}</Col>}
+      <Col className="info">{props.showInfo && <AiOutlineInfoCircle onClick={props.toggleViewInfo} />}</Col>
+    </Row>    
   );
 }
 
@@ -57,7 +64,6 @@ function SensorInfo(props: sensorData) {
     </ul>
   )
 }
-
 
 export function Widget(props: WidgetProps ) {
   const [viewInfo, setViewInfo] = useState(false);

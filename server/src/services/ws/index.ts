@@ -1,9 +1,6 @@
 import Websocket from 'ws';
 import config from '../../../config';
 import { getTaggedLogger } from '../logger';
-import { Devices } from '../db';
-import { inspect } from 'node:util';
-
 const logger = getTaggedLogger('WS_SVC');
 
 export interface WsPayload {

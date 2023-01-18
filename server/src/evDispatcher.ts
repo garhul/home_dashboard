@@ -25,6 +25,7 @@ const handlers: MQTTHandler[] = [
 
 const mqttClient = getClient(handlers);
 
+
 WebSocketServer.init();
 
 Devices.onChange((devices) => {

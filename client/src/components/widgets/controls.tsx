@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Badge, Button, ButtonGroup, Container, Row, Col, Alert } from 'react-bootstrap';
-import { FiAirplay, FiBattery, FiWind, FiSun, FiArrowDown, FiArrowUp, FiCompass } from 'react-icons/fi';
+import { FiArrowDown, FiArrowUp} from 'react-icons/fi';
+import { WiAlien, WiBarometer, WiHumidity, WiThermometer,WiLightning } from "react-icons/wi";
+
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import RangeSlider from 'react-bootstrap-range-slider';
 import 'react-bootstrap-range-slider/dist/react-bootstrap-range-slider.css';
@@ -41,19 +43,19 @@ function CMDRange(props: CMDRangeProps) {
 function getIcon(icon: string) {
   switch (icon) {
     case 'TEMP':
-      return <FiSun style={{ "fontSize": "5vh" }} />
+      return <WiThermometer style={{ "fontSize": "5vh" }} />
 
     case 'HUMID':
-      return <FiWind style={{ "fontSize": "5vh" }} />
+      return <WiHumidity style={{ "fontSize": "5vh" }} />
 
     case 'PRES':
-      return <FiCompass style={{ "fontSize": "5vh" }} />
+      return <WiBarometer style={{ "fontSize": "5vh" }} />
 
     case 'BAT':
-      return <FiBattery style={{ "fontSize": "5vh" }} />
+      return <WiLightning style={{ "fontSize": "5vh" }} />
 
     default:
-      return <FiAirplay style={{ "fontSize": "5vh" }} />
+      return <WiAlien style={{ "fontSize": "5vh" }} />
   }
 }
 
@@ -142,30 +144,34 @@ function SensorChannel(props: SensorChannelPropType) {
   const plotData = props.channelSeries.series.map(datapoint => ({t: datapoint[0] * 1000, v: datapoint[1] / 1000}));
   
   return (
-    <Row className="sensor_row" key={`chann_${props.channelKey}`}>
-      {/* <Col> */}
-        <Row>
-          <Col xs="auto">{getIcon(props.icon)}</Col>
-          <Col xs="auto">
-            <h2>{(aggregatedData.last / 1000).toFixed(2)} <small>{props.unit}</small></h2>
-          </Col>
-          <Col xs="auto">
-            <Row>
-              <Col><FiArrowUp /> <Badge bg="dark">{(aggregatedData.max / 1000).toFixed(2)}</Badge></Col>              
-            </Row>
-            <Row>
-              <Col><FiArrowDown /> <Badge bg="dark">{(aggregatedData.min / 1000).toFixed(2)}</Badge></Col>                
-            </Row>
-          </Col>
-        </Row>        
-        <Plot 
-          unit={props.unit}
-          color={props.color}
-          data={plotData}
-          min={(aggregatedData.min / 1000)}
-          max={(aggregatedData.max / 1000)}
-          intervalWindow={props.channelSeries.timeWindow}
-        />                
+    <Row className="sensor_row" key={`chann_${props.channelKey}`}>     
+      <Row>        
+        <Col xs="auto">
+          <h2>{getIcon(props.icon)} {(aggregatedData.last / 1000).toFixed(2)} <small>{props.unit}</small></h2>
+        </Col>
+        <Col xs="auto">          
+          <Row>
+            <Col><FiArrowUp style={{ "fontSize": "2vh" }}/></Col>
+            <Col>
+              <Badge bg="dark" style={{ "fontSize": "1.5vh" }}>{(aggregatedData.max / 1000).toFixed(2)}</Badge>
+            </Col>
+          </Row>
+          <Row>
+            <Col><FiArrowDown style={{ "fontSize": "2vh" }} /></Col>
+            <Col>
+              <Badge bg="dark" style={{ "fontSize": "1.5vh" }}>{(aggregatedData.min / 1000).toFixed(2)}</Badge>
+            </Col>
+          </Row>         
+        </Col>
+      </Row>        
+      <Plot 
+        unit={props.unit}
+        color={props.color}
+        data={plotData}
+        min={(aggregatedData.min / 1000)}
+        max={(aggregatedData.max / 1000)}
+        intervalWindow={props.channelSeries.timeWindow}
+      />                
     </Row>)
 }
 
@@ -181,14 +187,16 @@ function ElapsedTimeBadge(props) {
     };
   },[]);    
   return (
-    <Badge bg={(elapsedSeconds < 3600) ? 'dark' : 'danger'}>{timeSince(elapsedSeconds)} ago</Badge>
+    <Row className="elapsed_time">
+      <Badge bg={(elapsedSeconds < 3600) ? 'dark' : 'danger'}>{`${timeSince(elapsedSeconds)} ago`}</Badge>
+    </Row>
   );
 }
 
 function Sensor(props: SensorPropType) {  
   const [domain, setDomain] = useState<timeSeriesSubsetKey>('Immediate');  
   
-  const channels = props.channels.map(chan => (<SensorChannel 
+  const channels = props.channels.map(chan => (<SensorChannel key={`sensor_${chan.key}`}
     channelSeries = {props.data.find(subset => subset.key === chan.key).series.find(s => s.key === domain)}
     icon={chan.icon}
     channelKey={chan.key}
@@ -200,15 +208,10 @@ function Sensor(props: SensorPropType) {
     <Container>
       {channels}
       <PlotButtonRow setDomain={(dom) => setDomain(dom) } domain={domain}/>
-      <Row>
-        <Col>
-          <ElapsedTimeBadge lastSeen={props.lastSeen} />        
-        </Col>
-      </Row>
+      <ElapsedTimeBadge lastSeen={props.lastSeen} />
     </Container>
   )
 }
-
 
 function CMDLabel(props: CMDLabelPropType) {
   return (
@@ -217,7 +220,6 @@ function CMDLabel(props: CMDLabelPropType) {
     </Badge>
   )
 }
-
 
 function parseControls(state: deviceStateData, control) {
   const parsed = {};

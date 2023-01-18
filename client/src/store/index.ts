@@ -1,7 +1,7 @@
 import create, { StateCreator } from 'zustand'
 import { unstable_batchedUpdates } from 'react-dom';
 import { groupData, deviceData, sensorData } from '@backend/types';
-import bus from '../data';
+import WS from './ws';
 const apiURL = `http://${window.location.host.split(':')[0]}:1984/`;
 
 interface DevicesSlice {
@@ -22,7 +22,12 @@ interface SensorsSlice {
   updateSensors(sensors: sensorData[]): void;
 };
 
-type StateType = DevicesSlice & GroupsSlice & SensorsSlice;
+interface SysSlice {
+  wsConnected: boolean;
+  setWsConnected(conn: boolean): void;
+}
+
+type StateType = DevicesSlice & GroupsSlice & SensorsSlice & SysSlice;
 
 const createDevicesSlice: StateCreator<StateType, [], [], DevicesSlice> = (set) => ({
   devices: [],
@@ -41,6 +46,11 @@ const createSensorsSlice: StateCreator<StateType, [], [], SensorsSlice> = (set) 
   sensors: [],
   loadSensors: async () => getRemote('sensors').then(d => set((state) => ({ sensors: d }))),
   updateSensors: (sensors) => set((state) => ({ sensors })),
+});
+
+const createSysSlice: StateCreator<SysSlice, [], [], SysSlice> = (set) => ({
+  wsConnected: false,
+  setWsConnected: (conn) => set((state) => ({ wsConnected: conn }))
 });
 
 const updateRemote = async (entity: 'devices' | 'groups' | 'scheduler', payload) => {
@@ -64,22 +74,12 @@ const getRemote = async (entity: 'devices' | 'groups' | 'sensors' | 'scheduler')
   return fetch(`${apiURL}${entity}`).then(r => r.json());
 };
 
-bus.on('DEVICES_UPDATE', (data) => {
-  unstable_batchedUpdates(() => {
-    useStore.getState().updateDevices(data)
-  })
-});
 
-bus.on('SENSORS_UPDATE', (data) => {
-  unstable_batchedUpdates(() => {
-    useStore.getState().updateSensors(data)
-  })
-});
-
-const useStore = create<DevicesSlice & GroupsSlice & SensorsSlice>()((...a) => ({
+const useStore = create<StateType>()((...a) => ({
   ...createDevicesSlice(...a),
   ...createGroupsSlice(...a),
-  ...createSensorsSlice(...a)
+  ...createSensorsSlice(...a),
+  ...createSysSlice(...a)
 }));
 
 
@@ -89,63 +89,35 @@ async function initStore() {
     groups: await getRemote('groups'),
     sensors: await getRemote('sensors')
   });
+
+  const ws = new WS();
+
+  ws.on('open', (data: deviceData[]) => {
+    unstable_batchedUpdates(() => {
+      useStore.getState().setWsConnected(true)
+    })
+  });
+
+  ws.on('close', (data: deviceData[]) => {
+    unstable_batchedUpdates(() => {
+      useStore.getState().setWsConnected(false)
+    })
+  });
+
+  ws.on('DEVICES_UPDATE', (data: deviceData[]) => {
+    unstable_batchedUpdates(() => {
+      useStore.getState().updateDevices(data)
+    })
+  });
+
+  ws.on('SENSORS_UPDATE', (data: sensorData[]) => {
+    unstable_batchedUpdates(() => {
+      useStore.getState().updateSensors(data)
+    })
+  });
+
+  ws.init(); // init ws connection after setting the subscriptions to connection to prevent missing the message
 }
 
 initStore();
 export default useStore;
-
-// /*
-//  The initial state shapes what values we can have in our store.
-//  We can order them as we like or use multiple stores.
-//  For our game, I'll use only one store.
-
-//  Our server only sends the game state updates so that's almost all we need.
-//  We use the 'ready' state to know if we are connected to the server or not.
-// */
-// const initialState = {
-//   game: null,
-//   ready: false,
-// };
-
-// /*
-//  Here we have access to two functions that
-//  let us mutate or get data from our state.
-
-//  This is where the magic happens, we can fully hide
-//  the WebSocket implementation here and then use our store anywhere in our app!
-//  */
-// const mutations = (setState, getState) => {
-//   const socket = ioClient();
-
-//   // this is enough to connect all our server events
-//   // to our state managment system!
-//   socket
-//     .on("connect", () => {
-//       setState({ ready: true });
-//     })
-//     .on("disconnect", () => {
-//       setState({ ready: false });
-//     })
-//     .on("state", (gameState) => {
-//       setState({ game: gameState });
-//     });
-
-//   return {
-//     actions: {
-//       startGame() {
-//         socket.emit("start-game");
-//       },
-
-//       play(boxId: number) {
-//         const isPlayerTurn = getState().game?.playerTurn === Players.PLAYER;
-
-//         if (isPlayerTurn) {
-//           socket.emit("play", boxId);
-//         }
-//       },
-//     },
-//   };
-// };
-
-//We created our first store!
-// export const useStore = create(combine(initialState, mutations));

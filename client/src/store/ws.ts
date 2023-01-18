@@ -1,16 +1,16 @@
 
 import { v4 as uuidv4 } from 'uuid';
-const socket = new WebSocket(`ws://${window.location.host.split(':')[0]}:3030`);
+export type evHandler = (data: any) => void;
 
-// const socket = new WebSocket(`ws://192.168.0.135:3030`);
-
-class Bus {
-  socket:WebSocket;
-  subscriptions: Map<any,any>;
-  constructor(socket: WebSocket) {
-    this.socket = socket;
+export default class WS {
+  socket: WebSocket;
+  subscriptions: Map<any, any>;
+  constructor() {
     this.subscriptions = new Map();
+  }
 
+  init() {
+    this.socket = new WebSocket(`ws://${window.location.host.split(':')[0]}:3030`);
     this.socket.addEventListener('open', (event) => {
       console.info('Socket connected')
       this.handleEvent('open');
@@ -55,21 +55,20 @@ class Bus {
     });
   }
 
-  handleEvent(ev:string, data?:any) {
+  handleEvent(ev: string, data?: any) {
     const hndlrs = this.subscriptions.has(ev) ? this.subscriptions.get(ev) : [];
     hndlrs.forEach(fn => fn.call(this, data));
     if (hndlrs.length === 0) {
       console.warn(`No handlers registered for ev ${ev}`);
-      console.dir(data);
     }
   }
 
-  on(ev:string, fn:any) {
+  on(ev: string, fn: evHandler) {
     const subs = this.subscriptions.has(ev) ? [...this.subscriptions.get(ev), fn] : [fn];
     this.subscriptions.set(ev, subs);
   }
 
-  off(ev:string, fn:any) {
+  off(ev: string, fn: evHandler) {
     const subs = this.subscriptions.get(ev);
 
     if (subs === undefined) {
@@ -86,7 +85,8 @@ class Bus {
       this.subscriptions.set(ev, subs);
     }
   }
-}
 
-const bus = new Bus(socket);
-export default bus;
+  isConnected() {
+    return this.socket.readyState === 1;
+  }
+}

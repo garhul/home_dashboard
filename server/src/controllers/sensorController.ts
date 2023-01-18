@@ -15,25 +15,15 @@ export function addData(payload: any) {
       data: parsedData.map(([key, timeSeries]: [string, TimeSeries]) => ({ key, series: timeSeries.getData() })),
       last_seen: Date.now()
     });
-    // console.log(parsedData);
-    // const sensorObj = {
-    //   id,
-    //   name, 
-    //   data: parsedData.map(([key, timeSeries]: [string, TimeSeries]) => ({ key, series: timeSeries.getData() }))
-    // };
-
-
-    // if (Sensors.exists(id)) {
-    //   const s = Sensors.get(id); // logger.info(Sensors.get(id));
-    //   s.data = 
-    // } else {
-
-    // }
   } catch (err) {
     logger.error(err);
   }
 };
 
 export function getAll() {
-  return Sensors.getAll().map(s => s[1]);
+  return Sensors.getAll().map(s => s[1]).sort((a, b) => {
+    if (a > b) return 1;
+    if (b === a) return 0;
+    return -1;
+  });
 }

@@ -18,7 +18,7 @@ function loadFromFile<T>(file: string): Array<[id: string, value: T]> {
   }
 }
 
-function persistToFile<T>(data: ArrayLike<[id: string, value: T]>, filePath: string) {
+function persistToFile<T>(data: Array<[id: string, value: T]>, filePath: string) {
   try {
     const parseableData = Array.from(data);
     fs.writeFileSync(filePath, JSON.stringify(parseableData));
@@ -31,12 +31,11 @@ export const Devices = new ObservableCollection<deviceData>('Devices', loadFromF
 Devices.onChange((d) => persistToFile<deviceData>(d, config.db.devicesFile));
 
 export const Groups = new ObservableCollection<groupData>('Groups', loadFromFile<groupData>(config.db.groupsFile));
-Groups.onChange((d) => console.dir(d));
+Groups.onChange((d) => persistToFile<groupData>(d, config.db.groupsFile));
 
-export const Sensors = new ObservableCollection<sensorData>('Sensors', loadFromFile<sensorData>(config.db.sensorsFile));
-Sensors.onChange((s) => {
-  // console.log(inspect(s));
-})
+export const Sensors = new ObservableCollection<sensorData>('Sensors', null);
+//TODO :: Implement persistence for sensor data
+// Sensors.onChange((s) => persistToFile<sensorData>(s, config.db.sensorsFile));
 
 const Series = new Map<string, TimeSeries>();
 export function processSensorData(sensorId: string, dataPointCollection: [key: string, value: number][]) {
