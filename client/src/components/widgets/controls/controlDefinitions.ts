@@ -1,6 +1,5 @@
-import { deviceStateData } from "@backend/types";
+import { deviceStateData, sensorData } from "@backend/types";
 const colors = ['#007bff', '#e83e8c', '#28a745', '#ffc107'];
-
 
 export type DeviceControlType = {
   label: string | ((s: deviceStateData) => string);
@@ -17,8 +16,23 @@ export type DevicePayloadType = {
   payload: string,
 };
 
-export type DeviceControlsList = Array<Array<DeviceControlType>>;
+type sensorChannel = {
+  icon: string;
+  key: string;
+  color: string;
+  unit: string;
+}
+
+export type SensorCtrlType = {
+  type: string;
+  channels: sensorChannel[];
+  data: (d: unknown & { data: sensorData }) => sensorData
+  lastSeen: (n: unknown & { last_seen: number }) => number
+};
+
+export type DeviceControlsList = DeviceControlType[][];
 export type GroupControlList = DeviceControlsList;
+export type SensorCtrlTypeList = SensorCtrlType[][];
 
 export const DeviceCtrl: DeviceControlsList = [
   [{
@@ -216,7 +230,7 @@ export const GroupCtrl: GroupControlList = [
   ],
 ];
 
-export const SensorCtrl = [
+export const SensorCtrl: SensorCtrlTypeList = [
   [
     {
       type: 'sensor',
@@ -245,3 +259,10 @@ export const SensorCtrl = [
     }
   ]
 ];
+
+
+// export const PayloadList: DevicePayloadTypeList = [
+//   ['Off', '{"cmd"="off", "payload":""}'],
+//   ['Play', ''],
+//   ['Pause, ''],
+// ]

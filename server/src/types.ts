@@ -36,8 +36,6 @@ export type groupData = {
   deviceIds: string[];
 };
 
-
-
 type aggregatedData = {
   min: number | null;
   max: number | null;
@@ -66,3 +64,19 @@ export type timeSeriesSubset = {
   timeWindow: number;
   extras: aggregatedData;
 };
+
+export type scheduleData = {
+  hour: string;
+  minute: string;
+  day: string;
+  month: string;
+}
+
+export type ruleActionData = [deviceId: string, payload: string];
+
+export type RuleData = {
+  id: string;
+  name: string;
+  schedule: string;
+  actions: ruleActionData[]
+}

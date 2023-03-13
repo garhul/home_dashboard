@@ -13,9 +13,12 @@
 
   --bs-dark-rgb:34,34,34; /*override for navbar*/
 
+  --brand-color:#6610f2;
+  --brad-color-dark:#400977;
+  --brand-highlight:#7327b5;
 
-  --brand-color:#992299;
-  --brand-highlight:#ff3399;
+  --bs-btn-border-color:#6610f2;
+  --bs-btn-bg:#6610f2;
 }
 
 
@@ -49,10 +52,6 @@ body {
     padding: 1em;
     box-shadow: 2px 2px 10px 0px #000;
     margin: 2em;
-}
-
-#Widgets > .selected {
-  box-shadow: 0em 0em 0.5em #ff0099;
 }
 
 .widget > .title {    
@@ -134,6 +133,12 @@ ul.info > li > span{
   /* border-radius: 0.5em; */
 }
 
+
+.widget_aurora .btn {
+  width:100%;
+}
+
+
 #DevicesList > h3 {
   margin-top: 1em;
   margin-bottom: 2em;
@@ -165,9 +170,9 @@ ul.info > li > span{
   margin: 0 auto;
 }
 
-#DeviceControl, .col > button {
-  width:100%;
+#DeviceControl, .col > button {  
   margin:.4em auto;
+  width:100%;
 }
 
 .sliderContainer {
@@ -176,6 +181,12 @@ ul.info > li > span{
 
 .AdminWidget {
   padding:1em;
+}
+
+div.rule {
+  border-top: 1px solid var(--gray);
+  border-bottom: 1px solid var(--gray);
+  padding:.5em;  
 }
 
 div.rule-item {
@@ -214,15 +225,24 @@ div.actions-title > span{
   cursor:pointer;
 }
 
-div.rule-row > input[type=text], div.rule-row > span > input[type=text] {
+span.text-sm {
+  font-size:.8em;
+}
+
+.sub-section {
+  margin-top:1em;
+  margin-bottom:.5em;
+}
+
+input, select {
   background-color: var(--dark_1);  
   color:var(--dark_yellow);
   border: none;
-  border-radius: .2em;
-  font-size:.9em;
-  margin:.5em;
+  border-radius: .2em;  
   outline:none;
   border-bottom: 1px solid var(--dark_yellow);
+  padding: 0.25em;
+  font-size:.9em;
 }
 
 
@@ -357,4 +377,27 @@ span.last-seen {
   border-radius: 50%;
   background: #4CAF50;
   cursor: pointer;
+}
+
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+} 
+
+
+.modal-content {
+  background-color: var(--dark_2);
+}
+
+.modal-header {
+  border:none;
+}
+
+.modal-footer {
+  border:none;
 }

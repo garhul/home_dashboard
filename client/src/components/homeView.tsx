@@ -2,9 +2,10 @@ import React from 'react';
 // import Widgets from './widgets';
 import { Container } from 'react-bootstrap';
 import useStore from '../store';
-import { GroupCtrl } from './controlDefinitions';
+import { GroupCtrl } from './widgets/controls/controlDefinitions';
 import { Widget } from './widgets';
 import { expandedGroupData } from '@backend/types';
+
 
 function QuickInfo() {
   return (

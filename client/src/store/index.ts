@@ -1,12 +1,11 @@
 import create, { StateCreator } from 'zustand'
 import { unstable_batchedUpdates } from 'react-dom';
-import { groupData, deviceData, sensorData } from '@backend/types';
+import { groupData, deviceData, sensorData, RuleData } from '@backend/types';
 import WS from './ws';
 const apiURL = `http://${window.location.host.split(':')[0]}:1984/`;
 
 interface DevicesSlice {
   devices: deviceData[];
-  load(): void;
   updateDevices(devices: deviceData[]): void;
   issueCMD(deviceIds: string[], payload: string): void;
 };
@@ -18,34 +17,42 @@ interface GroupsSlice {
 
 interface SensorsSlice {
   sensors: sensorData[];
-  loadSensors(): void;
   updateSensors(sensors: sensorData[]): void;
 };
+
+interface RulesSlice {
+  rules: RuleData[];
+  addRule: (data: RuleData) => void //Promise<void>
+  deleteRule: (id: string) => void //Promise<void>
+}
 
 interface SysSlice {
   wsConnected: boolean;
   setWsConnected(conn: boolean): void;
 }
 
-type StateType = DevicesSlice & GroupsSlice & SensorsSlice & SysSlice;
+type StateType = DevicesSlice & GroupsSlice & SensorsSlice & RulesSlice & SysSlice;
 
 const createDevicesSlice: StateCreator<StateType, [], [], DevicesSlice> = (set) => ({
   devices: [],
-  load: async () => getRemote('devices').then(d => set((state) => ({ devices: d.map(kp => kp[1]) }))),
   updateDevices: (devices) => set((state) => ({ devices })),
   issueCMD: (deviceIds, payload) => updateRemote('devices', { deviceIds, payload }),
 });
 
 const createGroupsSlice: StateCreator<StateType, [], [], GroupsSlice> = (set) => ({
   groups: [],
-  load: async () => getRemote('devices').then(d => set((state) => ({ devices: d }))),
   updateGroups: (u) => console.log(u),
 });
 
 const createSensorsSlice: StateCreator<StateType, [], [], SensorsSlice> = (set) => ({
   sensors: [],
-  loadSensors: async () => getRemote('sensors').then(d => set((state) => ({ sensors: d }))),
   updateSensors: (sensors) => set((state) => ({ sensors })),
+});
+
+const createSchedulesSlice: StateCreator<RulesSlice, [], [], RulesSlice> = (set) => ({
+  rules: [],
+  addRule: (data) => console.log(data),
+  deleteRule: (id) => console.log(id)
 });
 
 const createSysSlice: StateCreator<SysSlice, [], [], SysSlice> = (set) => ({
@@ -70,24 +77,25 @@ const updateRemote = async (entity: 'devices' | 'groups' | 'scheduler', payload)
     });
 }
 
-const getRemote = async (entity: 'devices' | 'groups' | 'sensors' | 'scheduler') => {
-  return fetch(`${apiURL}${entity}`).then(r => r.json());
+const getRemote = async <T>(entity: 'devices' | 'groups' | 'sensors' | 'scheduler'): Promise<T> => {
+  return fetch(`${apiURL}${entity}`).then(r => r.json()) as T;
 };
-
 
 const useStore = create<StateType>()((...a) => ({
   ...createDevicesSlice(...a),
   ...createGroupsSlice(...a),
   ...createSensorsSlice(...a),
-  ...createSysSlice(...a)
+  ...createSysSlice(...a),
+  ...createSchedulesSlice(...a)
 }));
 
 
 async function initStore() {
   useStore.setState({
-    devices: await getRemote('devices'),
-    groups: await getRemote('groups'),
-    sensors: await getRemote('sensors')
+    devices: await getRemote<deviceData[]>('devices'),
+    groups: await getRemote<groupData[]>('groups'),
+    sensors: await getRemote<sensorData[]>('sensors'),
+    rules: await getRemote<RuleData[]>('scheduler')
   });
 
   const ws = new WS();
@@ -116,7 +124,8 @@ async function initStore() {
     })
   });
 
-  ws.init(); // init ws connection after setting the subscriptions to connection to prevent missing the message
+  // init ws connection after setting the subscriptions to prevent missing the 'open' message
+  ws.init();
 }
 
 initStore();

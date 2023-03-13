@@ -1,7 +1,7 @@
 import * as express from 'express';
 import { join } from 'path';
 import cfg from '../config';
-import { DeviceController, GroupController, SensorController } from './controllers';
+import { DeviceController, GroupController, SensorController, SchedulerController } from './controllers';
 
 const router = express.Router();
 
@@ -40,6 +40,15 @@ router.post('/groups', (req: express.Request, res: express.Response) => {
 /** Sensors routes */
 router.get('/sensors', (_req: express.Request, res: express.Response) => {
   return res.json(SensorController.getAll());
+});
+
+/** Scheduler rules routes */
+router.get('/scheduler', (_req: express.Request, res: express.Response) => {
+  return res.json(SchedulerController.getAll());
+});
+
+router.post('/scheduler', (req: express.Request, res: express.Response) => {
+  console.log(req.body);
 });
 
 // Misc

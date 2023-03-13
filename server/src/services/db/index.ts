@@ -1,10 +1,9 @@
-import { deviceData, groupData, sensorData, timeSeriesDataPoint, timeSeriesSubset } from '../../types';
+import { deviceData, groupData, RuleData, sensorData, timeSeriesDataPoint, timeSeriesSubset } from '../../types';
 import { getTaggedLogger } from '../logger';
 import config from '../../../config';
 import fs from 'fs';
 import ObservableCollection from './observableCollection';
 import TimeSeries from './timeSeries';
-import { inspect } from 'util';
 
 const logger = getTaggedLogger('DB');
 
@@ -33,6 +32,8 @@ Devices.onChange((d) => persistToFile<deviceData>(d, config.db.devicesFile));
 export const Groups = new ObservableCollection<groupData>('Groups', loadFromFile<groupData>(config.db.groupsFile));
 Groups.onChange((d) => persistToFile<groupData>(d, config.db.groupsFile));
 
+export const SchedulerRules = new ObservableCollection<RuleData>('SchedulerRules', loadFromFile<RuleData>(config.db.schedulerRulesFile));
+
 export const Sensors = new ObservableCollection<sensorData>('Sensors', null);
 //TODO :: Implement persistence for sensor data
 // Sensors.onChange((s) => persistToFile<sensorData>(s, config.db.sensorsFile));
@@ -45,7 +46,7 @@ export function processSensorData(sensorId: string, dataPointCollection: [key: s
     const tsKey = `${sensorId}#${key}`;
     let timeSeries = Series.get(tsKey);
     if (!timeSeries)
-      timeSeries = new TimeSeries(config.sensors.timeSeriesDepth);
+      timeSeries = new TimeSeries(parseInt(config.sensors.timeSeriesDepth));
     timeSeries!.addSample(normalizedVal);
     Series.set(tsKey, timeSeries);
     return [key, timeSeries];
