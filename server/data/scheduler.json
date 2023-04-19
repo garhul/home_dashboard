@@ -1,0 +1,8 @@
+[["13216851", {
+  "id":"13216851",
+  "name":"Turn off lights at night",
+  "actions": [["topic","payload"]],
+  "schedule": "0 0 * * *",
+  "enabled" :true,
+  "last_trigger": 12314123
+}]]
