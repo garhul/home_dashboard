@@ -14,7 +14,8 @@ export default {
   scanBatchSize: 24,
   scanTimeout: 5000,
   logger: {
-    level: process.env.LOG_LEVEL || 'debug'
+    level: process.env.LOG_LEVEL || 'debug',
+    destination: process.env.LOG_PATH || 2 //defaults to stderr
   },
   db: {
     groupsFile: process.env.DB_GROUPS_FILE || './data/controlGroups.json',
