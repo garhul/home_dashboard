@@ -2,6 +2,8 @@ FROM docker.io/node:lts-slim
 
 WORKDIR /server
 
+RUN mkdir -p /server/data
+
 COPY ./server/dist .
 COPY ./server/package.json .
 COPY ./server/package-lock.json .
