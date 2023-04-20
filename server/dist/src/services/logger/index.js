@@ -7,7 +7,7 @@ exports.httpLogger = exports.getTaggedLogger = exports.logger = void 0;
 const pino_http_1 = __importDefault(require("pino-http"));
 const pino_1 = __importDefault(require("pino"));
 const config_1 = __importDefault(require("../../../config"));
-exports.logger = (0, pino_1.default)();
+exports.logger = (0, pino_1.default)({}, pino_1.default.destination(config_1.default.logger.destination));
 exports.logger.level = config_1.default.logger.level;
 const getTaggedLogger = (tag) => exports.logger.child({ tag });
 exports.getTaggedLogger = getTaggedLogger;
