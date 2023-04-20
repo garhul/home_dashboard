@@ -3,5 +3,5 @@ node_modules
 .vscode
 **/.vscode
 ./data
-./client/build/**
-./server/dist/**
+./client/build
+./server/dist
