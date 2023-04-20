@@ -2,7 +2,7 @@ import create, { StateCreator } from 'zustand'
 import { unstable_batchedUpdates } from 'react-dom';
 import { groupData, deviceData, sensorData, RuleData } from '@backend/types';
 import WS from './ws';
-const apiURL = `http://${window.location.host.split(':')[0]}:1984/`;
+const apiURL = `http://${window.location.host.split(':')[0]}/`;
 
 interface DevicesSlice {
   devices: deviceData[];
