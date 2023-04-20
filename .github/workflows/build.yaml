@@ -31,10 +31,7 @@ jobs:
 
       - name: Build image        
         run: docker build -t home_dash:latest -t home_dash:$(git rev-parse --short "$GITHUB_SHA") .
-      
-  publish:
-    runs-on: ubuntu-latest
-    steps:
+
       - name: Log in to registry      
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $ --password-stdin
 
