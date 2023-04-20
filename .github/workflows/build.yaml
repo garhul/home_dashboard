@@ -1,6 +1,6 @@
 on:
   push:
-    branches: main
+    branches: master
   
   workflow_dispatch:
 
@@ -11,7 +11,7 @@ jobs:
       - name: Checkout & install
         uses: actions/checkout@v3
         with:
-          ref: main
+          ref: master
 
       - name: Install
         uses: actions/setup-node@v3
