@@ -8,12 +8,14 @@ jobs:
   build:
     runs-on: ubuntu-latest    
     steps:
+    
       - name: Checkout & install
         uses: actions/checkout@v3
         # with:
         #   ref: master
 
       - name: Install
+
         uses: actions/setup-node@v3
         with:
           node-version: 18
@@ -40,7 +42,7 @@ jobs:
       
       - name: Build image        
         run: docker build -t home_dash:latest -t home_dash:$(git rev-parse --short "$GITHUB_SHA") .
-      
+        
       - name: Log in to registry      
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $ --password-stdin
 
