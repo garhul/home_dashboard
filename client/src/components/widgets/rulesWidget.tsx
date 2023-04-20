@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import Combo from './controls/Combo';
 import { RuleData } from '@backend/types';
-import { Button, Container, Row, Col, ButtonGroup, Modal } from 'react-bootstrap';
+import { Button, Container, Row, Col, Modal } from 'react-bootstrap';
 import { AiFillPlusCircle } from 'react-icons/ai';
 import useStore from '../../store';
 import AdminWidget from '../widgets/adminWidget';
@@ -203,7 +203,7 @@ function RulesList(props) {
 
 export default function Rules() {
   const [showAddModal, setShowAddModal] = useState(false);
-  const [showResult, setShowResult] = useState(null);
+  // const [showResult, setShowResult] = useState(null);
   const rules = useStore(st => st.rules);
 
   const addRuleHandler = (ruleData) => {

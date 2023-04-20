@@ -25,3 +25,7 @@
 ### v1.4
 - sensors api exposed
 - log management
+
+
+nice to have:
+  update firmware via server

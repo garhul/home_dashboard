@@ -3,11 +3,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.init = void 0;
+exports.getClient = void 0;
 const mqtt_1 = __importDefault(require("mqtt"));
 const config_1 = __importDefault(require("../../../config"));
 const logger_1 = require("../logger");
 const logger = (0, logger_1.getTaggedLogger)('MQTT');
+let client = null;
 function init(handlers) {
     const mqttClient = mqtt_1.default.connect(config_1.default.mqtt.broker);
     mqttClient.on('connect', () => {
@@ -25,7 +26,7 @@ function init(handlers) {
             logger.error(err);
         });
         mqttClient.on('message', (topic, message) => {
-            logger.debug(`Received |${message.toString()}| on topic: ${topic}`);
+            // logger.debug(`Received |${message.toString()}| on topic: ${topic}`);
             const hndlr = handlers.find((h) => h.topic === topic);
             if (hndlr === undefined) {
                 logger.error(`No handler registered for topic ${topic}`);
@@ -34,7 +35,8 @@ function init(handlers) {
             hndlr.fn(topic, message.toString());
         });
     });
-    return mqttClient;
+    client = mqttClient;
+    return client;
     // eventBus.addListener(busEvents.MQTT.PUBLISH, (data:unknown) => {
     //   logger.info(`Sending mqtt device at topic ${data.topic} payload ${JSON.stringify(data.payload)}`);
     //   if (typeof (data.payload) === 'object') {
@@ -43,4 +45,12 @@ function init(handlers) {
     //   mqttClient.publish(data.topic, data.payload);
     // });
 }
-exports.init = init;
+function getClient(handlers = null) {
+    if (client !== null)
+        return client;
+    if (handlers === null) {
+        logger.warn('MQTT client initialized without topics subscription');
+    }
+    return client = init(handlers || []);
+}
+exports.getClient = getClient;

@@ -3,9 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "main": "src/app.js",
-  "node": ">=16.0.0 <17.0.0",
+  "node": "18",
   "scripts": {
-    "start": "tsc && node ./dist/main.js",
+    "start": "node ./dist/src/main.js",
+    "build": "tsc && mkdir -p ./dist/public/ && git log --pretty='%h %cD [%s]' -n 1 > ./dist/public/build_version.txt",
     "dev": "ts-node-dev ./src/main.ts | pino-pretty",
     "debug": "node --inspect-brk app.js ",
     "test": "echo \"Error: no test specified\" && exit 1",
