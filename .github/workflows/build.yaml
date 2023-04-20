@@ -10,13 +10,13 @@ jobs:
     steps:
       - name: Checkout & install
         uses: actions/checkout@v3
+        with:
+          ref: main
 
       - name: Install
         uses: actions/setup-node@v3
         with:
-          ref: main
           node-version: 18
-        run: npm ci
       
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
@@ -24,14 +24,18 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
+      - name: Clean install fe        
+        run: cd client && npm ci && cd ..
+
+      - name: Clean install be
+        run: cd server && npm ci && cd ..
+
       - name: Build app
         run: build.sh
 
       - name: Build image        
         run: docker build -t home_dash:latest -t home_dash:$(git rev-parse --short "$GITHUB_SHA") .
       
-  publish:
-    steps:
       - name: Log in to registry      
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $ --password-stdin
 
