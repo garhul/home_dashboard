@@ -16,7 +16,7 @@ async function send(client = null, payload) {
         return;
     }
     if (client !== null) {
-        if (client.readyState === WebSocket.OPEN) {
+        if (client.readyState === ws_1.default.OPEN) {
             client.send(JSON.stringify(payload));
         }
         else {
@@ -26,7 +26,7 @@ async function send(client = null, payload) {
     else {
         const msg = JSON.stringify(payload);
         WSServer.clients.forEach((cl) => {
-            if (cl.readyState === WebSocket.OPEN) {
+            if (cl.readyState === ws_1.default.OPEN) {
                 cl.send(msg);
             }
         });

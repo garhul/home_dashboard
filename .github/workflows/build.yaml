@@ -24,15 +24,20 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Clean install fe        
-        run: cd client && npm ci && cd ..
-
-      - name: Clean install be
-        run: cd server && npm ci && cd ..
-
-      - name: Build app
-        run: build.sh
-
+      - name: Frontend build        
+        run: |
+          cd client 
+          npm ci
+          npm run build
+          cd ..
+        
+      - name: Backend build
+        run: |
+          cd server
+          npm ci
+          npm run build
+          cd ..
+      
       - name: Build image        
         run: docker build -t home_dash:latest -t home_dash:$(git rev-parse --short "$GITHUB_SHA") .
       

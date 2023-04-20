@@ -13,11 +13,11 @@ const router = express.Router();
 //   }
 // };
 
+router.use(express.static(join(__dirname, '../', cfg.server.clientFolder)));
+
 const notFoundHandler = (_req: express.Request, res: express.Response) => {
   res.status(404).send('Nope');
 };
-
-router.use('/assets', express.static(join(__dirname, 'assets')));
 
 /** Device routes */
 router.get('/devices', (_req: express.Request, res: express.Response) => {

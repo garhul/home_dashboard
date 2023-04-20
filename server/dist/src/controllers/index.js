@@ -23,7 +23,8 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GroupController = exports.SensorController = exports.DeviceController = void 0;
+exports.SchedulerController = exports.GroupController = exports.SensorController = exports.DeviceController = void 0;
 exports.DeviceController = __importStar(require("./deviceController"));
 exports.SensorController = __importStar(require("./sensorController"));
 exports.GroupController = __importStar(require("./groupController"));
+exports.SchedulerController = __importStar(require("./schedulerController"));

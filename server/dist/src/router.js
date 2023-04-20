@@ -38,24 +38,36 @@ const router = express.Router();
 //     console.log('y?');
 //   }
 // };
+router.use(express.static((0, path_1.join)(__dirname, '../', config_1.default.server.clientFolder)));
+console.log((0, path_1.join)(__dirname, '../', config_1.default.server.clientFolder));
 const notFoundHandler = (_req, res) => {
     res.status(404).send('Nope');
 };
-router.use('/assets', express.static((0, path_1.join)(__dirname, 'assets')));
 /** Device routes */
 router.get('/devices', (_req, res) => {
     return res.json(controllers_1.DeviceController.getAll());
 });
-/** Widget routes */
-// router.get('/widgets',(_req: express.Request, res: express.Response) => {
-//   return res.json(WidgetController.getAll());
-// });
+router.post('/devices', (req, res) => {
+    return res.json(controllers_1.DeviceController.issueCMD(req.body.deviceIds, req.body.payload));
+});
 /** Group routes */
 router.get('/groups', (_req, res) => {
     return res.json(controllers_1.GroupController.getAll());
 });
-// router.post('/tags', exCatcher(TagsController.create));
-// router.delete('/tags', exCatcher(TagsController.remove));
+router.post('/groups', (req, res) => {
+    return res.json(controllers_1.GroupController.issueCMD(req.body.deviceId, req.body.payload));
+});
+/** Sensors routes */
+router.get('/sensors', (_req, res) => {
+    return res.json(controllers_1.SensorController.getAll());
+});
+/** Scheduler rules routes */
+router.get('/scheduler', (_req, res) => {
+    return res.json(controllers_1.SchedulerController.getAll());
+});
+router.post('/scheduler', (req, res) => {
+    console.log(req.body);
+});
 // Misc
 router.get('/cfg', (_req, res) => res.json(config_1.default));
 router.get('*', notFoundHandler);

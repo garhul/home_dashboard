@@ -4,7 +4,9 @@ export default {
   server: {
     port: process.env.SV_PORT || 1984,
     wsPort: process.env.WS_PORT || 3030,
+    clientFolder: process.env.CLIENT_FOLDER || './public'
   },
+
   scanAtStartup: true, //true,
   mockDevices: true,
   mockSensors: true,
@@ -24,6 +26,7 @@ export default {
     broker: process.env.MQTT_BROKER || 'mqtt://10.10.1.37',
     announceTopic: process.env.MQTT_ANNOUNCE_T || 'announce',
     sensorsTopic: process.env.MQTT_SENSORS_T || 'sensors',
+
   },
   sensors: {
     dataPath: process.env.SENSOR_DATA_PATH || path.resolve(__dirname, '../data'),

@@ -3,13 +3,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAll = exports.get = exports.del = exports.handleAnnouncement = exports.add = exports.scan = void 0;
+exports.getAll = exports.get = exports.del = exports.issueCMD = exports.handleAnnouncement = exports.add = exports.scan = void 0;
 const db_1 = require("../services/db");
 const logger_1 = require("../services/logger");
 const utils_1 = require("../utils");
 const config_1 = __importDefault(require("../../config"));
 const node_fetch_1 = __importDefault(require("node-fetch"));
 const uuid_1 = require("uuid");
+const mqtt_1 = require("../services/mqtt");
 const logger = (0, logger_1.getTaggedLogger)('DeviceCTRL');
 let scanning = false;
 function getMockDev() {
@@ -69,7 +70,7 @@ function add(device) {
 }
 exports.add = add;
 async function handleAnnouncement(payload) {
-    console.dir(payload);
+    logger.debug(payload);
     try {
         const msg = JSON.parse(payload);
         switch (msg.ev) {
@@ -100,6 +101,13 @@ async function handleAnnouncement(payload) {
     }
 }
 exports.handleAnnouncement = handleAnnouncement;
+async function issueCMD(deviceIds, payload) {
+    deviceIds.map(id => db_1.Devices.get(id).topic).forEach(topic => {
+        logger.info(`Emitting ${payload} to ${topic}`);
+        (0, mqtt_1.getClient)().publish(topic, payload);
+    });
+}
+exports.issueCMD = issueCMD;
 function validateDevInfo(info) {
     return (info.topic !== undefined
         && info.human_name !== undefined
@@ -158,7 +166,7 @@ function get(deviceId) {
 }
 exports.get = get;
 function getAll() {
-    return db_1.Devices.getAll();
+    return db_1.Devices.getAll().map(d => d[1]);
 }
 exports.getAll = getAll;
 if (config_1.default.scanAtStartup)
