@@ -29,28 +29,29 @@ jobs:
         run: docker build -t home_dash:latest -t home_dash:$(git rev-parse --short "$GITHUB_SHA") .
       
   publish:
-    - name: Log in to registry      
-      run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $ --password-stdin
+    steps:
+      - name: Log in to registry      
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $ --password-stdin
 
-    - name: Push image
-      run: |
-        IMAGE_ID=ghcr.io/${{ github.repository_owner }}/home_dash:latest
+      - name: Push image
+        run: |
+          IMAGE_ID=ghcr.io/${{ github.repository_owner }}/home_dash:latest
 
-        # Change all uppercase to lowercase
-        IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
+          # Change all uppercase to lowercase
+          IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
 
-        # Strip git ref prefix from version
-        VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+          # Strip git ref prefix from version
+          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+          
+          # Strip "v" prefix from tag name
+          [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
         
-        # Strip "v" prefix from tag name
-        [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
-       
-        # Use Docker `latest` tag convention
-        [ "$VERSION" == "main" ] && VERSION=latest
-       
-        echo IMAGE_ID=$IMAGE_ID
-       
-        echo VERSION=$VERSION
-       
-        docker tag home_dash:latest $IMAGE_ID:$VERSION
-        docker push $IMAGE_ID:$VERSION
+          # Use Docker `latest` tag convention
+          [ "$VERSION" == "main" ] && VERSION=latest
+        
+          echo IMAGE_ID=$IMAGE_ID
+        
+          echo VERSION=$VERSION
+        
+          docker tag home_dash:latest $IMAGE_ID:$VERSION
+          docker push $IMAGE_ID:$VERSION
