@@ -60,9 +60,8 @@ jobs:
           # Use Docker `latest` tag convention
           [ "$VERSION" == "main" ] && VERSION=latest
         
-          echo IMAGE_ID=$IMAGE_ID
-        
+          echo IMAGE_ID=$IMAGE_ID        
           echo VERSION=$VERSION
         
-          docker tag home_dash:latest $IMAGE_ID:$VERSION
-          docker push $IMAGE_ID:$VERSION
+          docker tag home_dash:latest $IMAGE_ID
+          docker push $IMAGE_ID
