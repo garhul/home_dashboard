@@ -10,8 +10,8 @@ jobs:
     steps:
       - name: Checkout & install
         uses: actions/checkout@v3
-        with:
-          ref: master
+        # with:
+        #   ref: master
 
       - name: Install
         uses: actions/setup-node@v3
