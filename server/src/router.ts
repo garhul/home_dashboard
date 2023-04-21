@@ -4,6 +4,7 @@ import cfg from '../config';
 import { DeviceController, GroupController, SensorController, SchedulerController } from './controllers';
 
 const router = express.Router();
+const apiRouter = express.Router();
 
 // const exCatcher = (fn) => async (req, res, next) => {
 //   try {
@@ -13,43 +14,47 @@ const router = express.Router();
 //   }
 // };
 
-router.use(express.static(join(__dirname, '../', cfg.server.clientFolder)));
+
 
 const notFoundHandler = (_req: express.Request, res: express.Response) => {
   res.status(404).send('Nope');
 };
 
 /** Device routes */
-router.get('/devices', (_req: express.Request, res: express.Response) => {
+apiRouter.get('/devices', (_req: express.Request, res: express.Response) => {
   return res.json(DeviceController.getAll());
 });
 
-router.post('/devices', (req: express.Request, res: express.Response) => {
+apiRouter.post('/devices', (req: express.Request, res: express.Response) => {
   return res.json(DeviceController.issueCMD(req.body.deviceIds, req.body.payload));
 });
 
 /** Group routes */
-router.get('/groups', (_req: express.Request, res: express.Response) => {
+apiRouter.get('/groups', (_req: express.Request, res: express.Response) => {
   return res.json(GroupController.getAll());
 });
 
-router.post('/groups', (req: express.Request, res: express.Response) => {
+apiRouter.post('/groups', (req: express.Request, res: express.Response) => {
   return res.json(GroupController.issueCMD(req.body.deviceId, req.body.payload));
 });
 
 /** Sensors routes */
-router.get('/sensors', (_req: express.Request, res: express.Response) => {
+apiRouter.get('/sensors', (_req: express.Request, res: express.Response) => {
   return res.json(SensorController.getAll());
 });
 
 /** Scheduler rules routes */
-router.get('/scheduler', (_req: express.Request, res: express.Response) => {
+apiRouter.get('/scheduler', (_req: express.Request, res: express.Response) => {
   return res.json(SchedulerController.getAll());
 });
 
-router.post('/scheduler', (req: express.Request, res: express.Response) => {
+apiRouter.post('/scheduler', (req: express.Request, res: express.Response) => {
   console.log(req.body);
 });
+
+
+router.use('/api', apiRouter);
+router.use(express.static(join(__dirname, '../', cfg.server.clientFolder)));
 
 // Misc
 router.get('/cfg', (_req, res) => res.json(cfg));
