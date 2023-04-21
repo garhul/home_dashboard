@@ -31,3 +31,9 @@ Check scripts/start.sh
 - prequisites:
   - mqtt broker
   - docker
+
+## How to start a dev env:
+
+Start the server by going into server folder and running `npm run dev` this will start the server in development mode, the server listens for web socket connections in port 3030, and exposes a REST api on port 1984.
+
+Get into client folder and run `npm start` the client is served via react scripts and for dev it proxies api calls to the server port 1984, you can change this on `package.json` for client.
