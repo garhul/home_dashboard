@@ -1,30 +1,33 @@
 # About this project
-I started this project first as a simple way to control some wifi connected led lights (aurora) via an MQTT interface, 
-but as that project changed shape so did this. 
-
-It also became a sort of experimentation platform for different ideas around home automation.
+I started this project first as a simple way to control some wifi connected led lights (aurora)[https://github.com/garhul/aurora] via an MQTT interface, then it also started collecting information from (weather stations)[https://github.com/garhul/weather_stations], and as an experimental platform for some home automation ideas.
 
 ## Infrastructure
-Home Dashboard was originally intended to be run in an RPI with acess to an MQTT broker,
-there's no database requirement and persistence of server state is performed in simple json files.
-The app is now meant to be run in a docker container, so it should be easy to set up as a service running in an RPI
+Home Dashboard was originally intended to be run in an RPI with acess to an MQTT broker, though now it is running on a minipc server with an ssd.
+There's no database requirement and of server state is kept in simple json files.
 
+The app is now meant to be run in a docker container, so it should be easy to set up as a service running in an RPI
 *Please keep in mind that if persistence is enabled then this may mean a lot of write/reads to the rpi sd card and thus resulting in a shorter lifespan*
 
-## Features
+## Scripts
+In the scripts folder there's a few helpful scripts, refer to the readme file in that folder for instructions on each one of those
 
 
 ## Brief architecture tour
-put some images here, explain how it works
+Images will come once I find a satisfactory solution for doing a diagram, and not less important the time to do so.
 
-## Installation instructions
-App is meant to be run in two different docker containers one serving the front end, and the other the backend service which interfaces with mosquitto
+So a brief explanation goes like this:
+The server connects to a mosquito broker and can perform a scan on a given ip address range for detecting [aurora devices](https://github.com/garhul/aurora). 
 
-Prequisites:
-- Mosquitto broker
-- Docker
+When those are detected they get added to an in-memory list of devices, if persistence is enabled the list gets written to the disc.
 
-Running it:
- - run `startup.sh`
+From this list the server can send commands to the devices and also work with schedules and groups. 
+
+It also collects information from (weathers stations)[https://github.com/garhul/weather_stations], and presents them on a simple timeseries plot
 
 
+## How to run it?
+Check scripts/start.sh
+
+- prequisites:
+  - mqtt broker
+  - docker

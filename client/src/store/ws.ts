@@ -9,8 +9,8 @@ export default class WS {
     this.subscriptions = new Map();
   }
 
-  init() {
-    this.socket = new WebSocket(`ws://${window.location.host.split(':')[0]}:3030`);
+  init(uri: string) {
+    this.socket = new WebSocket(uri);
     this.socket.addEventListener('open', (event) => {
       console.info('Socket connected')
       this.handleEvent('open');

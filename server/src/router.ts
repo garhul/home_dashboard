@@ -14,6 +14,8 @@ const apiRouter = express.Router();
 //   }
 // };
 
+
+
 const notFoundHandler = (_req: express.Request, res: express.Response) => {
   res.status(404).send('Nope');
 };
@@ -51,10 +53,17 @@ apiRouter.post('/scheduler', (req: express.Request, res: express.Response) => {
 });
 
 router.use('/api', apiRouter);
-router.use(express.static(join(__dirname, '../', cfg.server.clientFolder)));
+
+//add route for exposing required config to frontend
+router.get('/api/cfg', (req: express.Request, res: express.Response) => {
+  res.status(200).send({
+    wsPort: cfg.server.wsPort
+  });
+})
+
+// router.use(express.static(join(__dirname, '../', cfg.server.clientFolder)));
 
 // Misc
-router.get('/cfg', (_req, res) => res.json(cfg));
 router.get('*', notFoundHandler);
 
 export default router;

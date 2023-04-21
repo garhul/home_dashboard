@@ -2,7 +2,7 @@ import create, { StateCreator } from 'zustand'
 import { unstable_batchedUpdates } from 'react-dom';
 import { groupData, deviceData, sensorData, RuleData } from '@backend/types';
 import WS from './ws';
-const apiURL = `http://${window.location.host.split(':')[0]}/`;
+const apiURL = `http://${window.location.host}/api/`;
 
 interface DevicesSlice {
   devices: deviceData[];
@@ -98,6 +98,8 @@ async function initStore() {
     rules: await getRemote<RuleData[]>('scheduler')
   });
 
+
+
   const ws = new WS();
 
   ws.on('open', (data: deviceData[]) => {
@@ -125,7 +127,8 @@ async function initStore() {
   });
 
   // init ws connection after setting the subscriptions to prevent missing the 'open' message
-  ws.init();
+  const { wsPort } = await fetch(`${apiURL}/cfg`).then(r => r.json()); // websocket port is set up on the backend
+  ws.init(`ws://${window.location.host.split(':')[0]}:${wsPort}`);
 }
 
 initStore();

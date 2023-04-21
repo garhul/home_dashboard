@@ -23,11 +23,12 @@
     "zustand": "^4.2.0"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "react-scripts start",    
     "build": "CI=true react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
+  "proxy": "http://localhost:1984",
   "eslintConfig": {
     "extends": [
       "react-app",
