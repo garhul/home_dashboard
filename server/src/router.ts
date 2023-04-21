@@ -14,8 +14,6 @@ const apiRouter = express.Router();
 //   }
 // };
 
-
-
 const notFoundHandler = (_req: express.Request, res: express.Response) => {
   res.status(404).send('Nope');
 };
@@ -51,7 +49,6 @@ apiRouter.get('/scheduler', (_req: express.Request, res: express.Response) => {
 apiRouter.post('/scheduler', (req: express.Request, res: express.Response) => {
   console.log(req.body);
 });
-
 
 router.use('/api', apiRouter);
 router.use(express.static(join(__dirname, '../', cfg.server.clientFolder)));
