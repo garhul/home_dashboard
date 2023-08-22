@@ -31,6 +31,7 @@ const path_1 = require("path");
 const config_1 = __importDefault(require("../config"));
 const controllers_1 = require("./controllers");
 const router = express.Router();
+const apiRouter = express.Router();
 // const exCatcher = (fn) => async (req, res, next) => {
 //   try {
 //     fn(req, res).catch((err) => next(err));
@@ -38,36 +39,43 @@ const router = express.Router();
 //     console.log('y?');
 //   }
 // };
-router.use(express.static((0, path_1.join)(__dirname, '../', config_1.default.server.clientFolder)));
 const notFoundHandler = (_req, res) => {
     res.status(404).send('Nope');
 };
 /** Device routes */
-router.get('/devices', (_req, res) => {
+apiRouter.get('/devices', (_req, res) => {
     return res.json(controllers_1.DeviceController.getAll());
 });
-router.post('/devices', (req, res) => {
+apiRouter.post('/devices', (req, res) => {
     return res.json(controllers_1.DeviceController.issueCMD(req.body.deviceIds, req.body.payload));
 });
 /** Group routes */
-router.get('/groups', (_req, res) => {
+apiRouter.get('/groups', (_req, res) => {
     return res.json(controllers_1.GroupController.getAll());
 });
-router.post('/groups', (req, res) => {
+apiRouter.post('/groups', (req, res) => {
     return res.json(controllers_1.GroupController.issueCMD(req.body.deviceId, req.body.payload));
 });
 /** Sensors routes */
-router.get('/sensors', (_req, res) => {
+apiRouter.get('/sensors', (_req, res) => {
     return res.json(controllers_1.SensorController.getAll());
 });
 /** Scheduler rules routes */
-router.get('/scheduler', (_req, res) => {
+apiRouter.get('/scheduler', (_req, res) => {
     return res.json(controllers_1.SchedulerController.getAll());
 });
-router.post('/scheduler', (req, res) => {
+apiRouter.post('/scheduler', (req, res) => {
     console.log(req.body);
 });
+router.use('/api', apiRouter);
+//add route for exposing required config to frontend
+router.get('/api/cfg', (req, res) => {
+    res.status(200).send({
+        wsPort: config_1.default.server.wsPort
+    });
+});
+router.use(express.static((0, path_1.join)(__dirname, '../', config_1.default.server.clientFolder)));
+console.log((0, path_1.join)(__dirname, '../', config_1.default.server.clientFolder));
 // Misc
-router.get('/cfg', (_req, res) => res.json(config_1.default));
 router.get('*', notFoundHandler);
 exports.default = router;

@@ -28,8 +28,11 @@ interface RulesSlice {
 
 interface SysSlice {
   wsConnected: boolean;
+  buildVersion: string;
+  scanInProgress: boolean;
   setWsConnected(conn: boolean): void;
 }
+
 
 type StateType = DevicesSlice & GroupsSlice & SensorsSlice & RulesSlice & SysSlice;
 
@@ -57,7 +60,12 @@ const createSchedulesSlice: StateCreator<RulesSlice, [], [], RulesSlice> = (set)
 
 const createSysSlice: StateCreator<SysSlice, [], [], SysSlice> = (set) => ({
   wsConnected: false,
-  setWsConnected: (conn) => set((state) => ({ wsConnected: conn }))
+  scanInProgress: false,
+  buildVersion: 'Build version not loaded',
+  setWsConnected: (conn) => {
+    set(state => ({ ...state, ...{ wsConnected: conn } }))
+  },
+  setScanInProgress: (flag) => set(state => state.scanInProgress)
 });
 
 const updateRemote = async (entity: 'devices' | 'groups' | 'scheduler', payload) => {
@@ -81,6 +89,14 @@ const getRemote = async <T>(entity: 'devices' | 'groups' | 'sensors' | 'schedule
   return fetch(`${apiURL}${entity}`).then(r => r.json()) as T;
 };
 
+const getBuildVersion = async () => {
+  const rsp = await fetch('/build_version.txt');
+  if (rsp.status === 200)
+    return `Build ${await rsp.text()}`;
+
+  return 'Build version not found';
+}
+
 const useStore = create<StateType>()((...a) => ({
   ...createDevicesSlice(...a),
   ...createGroupsSlice(...a),
@@ -95,10 +111,9 @@ async function initStore() {
     devices: await getRemote<deviceData[]>('devices'),
     groups: await getRemote<groupData[]>('groups'),
     sensors: await getRemote<sensorData[]>('sensors'),
-    rules: await getRemote<RuleData[]>('scheduler')
+    rules: await getRemote<RuleData[]>('scheduler'),
+    buildVersion: await getBuildVersion()
   });
-
-
 
   const ws = new WS();
 
@@ -127,7 +142,7 @@ async function initStore() {
   });
 
   // init ws connection after setting the subscriptions to prevent missing the 'open' message
-  const { wsPort } = await fetch(`${apiURL}/cfg`).then(r => r.json()); // websocket port is set up on the backend
+  const { wsPort } = await fetch(`${apiURL}cfg`).then(r => r.json()); // websocket port is set up on the backend
   ws.init(`ws://${window.location.host.split(':')[0]}:${wsPort}`);
 }
 

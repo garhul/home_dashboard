@@ -14,6 +14,8 @@ export default function DevicesWidget() {
     ...store.devices.map(d => [d.device_id, d.human_name, (<a href={d.ip} rel="noopener noreferrer" target="_blank">{d.ip} <AiOutlineLink /></a>), d.topic]),
     ...store.sensors.map(s => [s.id, s.name, 'N/A', 'sensors'])];
 
+  
+  
   return (
     <AdminWidget title="Devices" actions={
       <Button disabled={scanning} onClick={() => setScanning(true)} size="sm">

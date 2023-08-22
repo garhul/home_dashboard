@@ -1,1 +1,1 @@
-107b621 Fri, 21 Apr 2023 01:25:36 +0200 [fix logger output path]
+87ac6e9 Fri, 21 Apr 2023 15:59:14 +0200 [updated readme]

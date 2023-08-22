@@ -6,16 +6,6 @@ import { DeviceController, GroupController, SensorController, SchedulerControlle
 const router = express.Router();
 const apiRouter = express.Router();
 
-// const exCatcher = (fn) => async (req, res, next) => {
-//   try {
-//     fn(req, res).catch((err) => next(err));
-//   } catch (ex) {
-//     console.log('y?');
-//   }
-// };
-
-
-
 const notFoundHandler = (_req: express.Request, res: express.Response) => {
   res.status(404).send('Nope');
 };
@@ -27,6 +17,11 @@ apiRouter.get('/devices', (_req: express.Request, res: express.Response) => {
 
 apiRouter.post('/devices', (req: express.Request, res: express.Response) => {
   return res.json(DeviceController.issueCMD(req.body.deviceIds, req.body.payload));
+});
+
+apiRouter.put('/devices/scan', (req: express.Request, res: express.Response) => {
+
+  return res.json(DeviceController.scan())
 });
 
 /** Group routes */
@@ -61,8 +56,8 @@ router.get('/api/cfg', (req: express.Request, res: express.Response) => {
   });
 })
 
-// router.use(express.static(join(__dirname, '../', cfg.server.clientFolder)));
-
+router.use(express.static(join(__dirname, '../', cfg.server.clientFolder)));
+console.log(join(__dirname, '../', cfg.server.clientFolder));
 // Misc
 router.get('*', notFoundHandler);
 

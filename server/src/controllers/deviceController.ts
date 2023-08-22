@@ -6,9 +6,15 @@ import config from '../../config';
 import fetch from 'node-fetch';
 import { v4 as uuid } from 'uuid';
 import { getClient as getMQTTClient } from '../services/mqtt'
+import { send } from '../services/ws';
 
 const logger = getTaggedLogger('DeviceCTRL');
 let scanning = false;
+
+
+export function isScanning(): boolean {
+  return scanning;
+}
 
 function getMockDev(): deviceData {
   const br = 5 + Math.ceil(Math.random() * 80);
@@ -39,6 +45,9 @@ export async function scan() {
   const { baseScanAddress, scanBatchSize, scanTimeout } = config;
   let spawnedFuncs = 0;
   const queries = [];
+  
+  send('DEVICES.')
+  
   scanning = true;
 
   for (let i = 1; i < 255; i++) {
@@ -73,7 +82,7 @@ export async function scan() {
 }
 
 export function add(device: deviceData) {
-
+  logger.warn('Add device function not implemented');
 }
 
 export async function handleAnnouncement(payload: string) {
@@ -160,7 +169,6 @@ function updateState(id: string, state: deviceStateData) {
     logger.error(`Error updating state of device ${id} state:`, state);
     logger.error(e);
   }
-
 }
 
 export function del(deviceId: string) {
@@ -178,7 +186,6 @@ export function get(deviceId: string): deviceData {
 export function getAll(): deviceData[] {
   return Devices.getAll().map(d => d[1]);
 }
-
 
 if (config.scanAtStartup) scan();
 
